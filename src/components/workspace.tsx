@@ -48,11 +48,19 @@ import type { Command } from "@/domain/orders/commands";
 import { financialSummary, profitability } from "@/domain/finance/calculations";
 import { DataTable } from "./data-table";
 import { lineContributions } from "@/domain/finance/allocation";
+import { PackingWorkbench } from "./packing-workbench";
 type Section =
-  "dashboard" | "orders" | "inventory" | "invoices" | "finance" | "settings";
+  | "dashboard"
+  | "orders"
+  | "packing"
+  | "inventory"
+  | "invoices"
+  | "finance"
+  | "settings";
 const nav = [
   { id: "dashboard", name: "Operasyon Merkezi", icon: LayoutDashboard },
   { id: "orders", name: "Siparişler", icon: ShoppingBag },
+  { id: "packing", name: "Hazırlama Masası", icon: ScanBarcode },
   { id: "inventory", name: "Stok & Depo", icon: Boxes },
   { id: "invoices", name: "Fatura Merkezi", icon: FileText },
   { id: "finance", name: "Finans & Analitik", icon: ChartNoAxesCombined },
@@ -578,7 +586,7 @@ export function Workspace() {
               data.actor.role === "ADMIN" || data.actor.role === "WAREHOUSE"
                 ? data.actor.role === "ADMIN" ||
                   !["finance", "invoices", "settings"].includes(n.id)
-                : n.id !== "settings",
+                : !["settings", "packing"].includes(n.id),
             )
             .map((n) => (
               <button
@@ -658,6 +666,8 @@ export function Workspace() {
                       "Operasyonun nabzı. Bekleyen işler ve kayıtlarla hesaplanan sonuçlar.",
                     orders:
                       "Siparişleri kontrol edin, hazırlayın ve sevkiyata ilerletin.",
+                    packing:
+                      "Bekleyen FBS siparişlerini sırayla hazırlayın, barkodla doğrulayın ve sevk edin.",
                     inventory:
                       "Fiziksel stok, rezervasyon ve kullanılabilir miktar tek görünümde.",
                     invoices:
@@ -1089,6 +1099,14 @@ export function Workspace() {
                 label="Siparişler"
               />
             </>
+          )}
+          {section === "packing" && allowed("SCAN") && (
+            <PackingWorkbench
+              data={data}
+              busy={busy}
+              onCommand={run}
+              onOpen={setOrderId}
+            />
           )}
           {section === "inventory" && (
             <>
