@@ -122,9 +122,11 @@ export async function GET(request: Request) {
         "Katkı kârı",
         "Para birimi",
       ]);
-      const allocated = r.orders.flatMap((o) =>
-        lineContributions(o, r.entries),
-      );
+      const allocated = r.orders
+        .filter((o) =>
+          ["SHIPPED", "RETURN_PENDING", "RETURNED"].includes(o.status),
+        )
+        .flatMap((o) => lineContributions(o, r.entries));
       s.products.forEach((p) => {
         const lines = allocated.filter((l) => l.productId === p.id);
         if (!lines.length) return;

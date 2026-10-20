@@ -1,7 +1,8 @@
 import { actor } from "@/server/auth";
 import { authorize } from "@/domain/permissions";
 import { snapshot } from "@/server/snapshot";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+import { DomainError } from "@/domain/permissions";
 import { PrintButton } from "@/components/print-button";
 export const dynamic = "force-dynamic";
 export default async function InvoicePage({
@@ -9,7 +10,11 @@ export default async function InvoicePage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const a = await actor();
+  const a = await actor().catch((e) => {
+    if (e instanceof DomainError && e.status === 401) redirect("/");
+    throw e;
+  });
+  if (a.role === "WAREHOUSE") notFound();
   authorize(a.role, "INVOICE");
   const s = await snapshot(a),
     { id } = await params;
