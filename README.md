@@ -1,5 +1,7 @@
 # Marketplace OS
 
+[Canlı demoyu aç](https://marketplace-os-amber.vercel.app/) · [Doğrulama raporu](docs/TEST_REPORT.md)
+
 Ozon Global üzerinde satış yapan bir işletme için masaüstü öncelikli, Türkçe operasyon platformu. **Çalışan FBS demo**: sipariş → rezervasyon → barkod doğrulama → sevkiyat → stok çıkışı → fatura taslağı → finans → Excel/PDF rapor.
 
 Gerçek Ozon/Paraşüt bağlantısı ve e-Fatura gönderimi yoktur. FBO yalnızca açıkça işaretli referans görünümüdür. API anahtarı gerekmez. Belgeler **DEMO / TASLAK** niteliğindedir.

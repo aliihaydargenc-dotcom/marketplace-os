@@ -4,16 +4,16 @@ Tarih: 20 Ekim 2026, Europe/Istanbul. Yalnız kurgusal demo verisi kullanıldı.
 
 ## Yerel sonuçlar
 
-| Kontrol                | Sonuç                                                 | Kanıt                                                             |
-| ---------------------- | ----------------------------------------------------- | ----------------------------------------------------------------- |
-| TypeScript             | Başarılı                                              | `npm run typecheck`                                               |
-| ESLint                 | Başarılı, sıfır uyarı                                 | `npm run lint`                                                    |
-| Biçim                  | Başarılı                                              | `npm run format:check`                                            |
-| Production build       | Başarılı                                              | Next.js 16.4.2, App Router, Node 24                               |
-| PostgreSQL entegrasyon | 15/15 başarılı                                        | Gerçek Neon PostgreSQL 18, iki izole test workspace'i             |
-| HTTP regresyon         | 2/2 başarılı                                          | Origin/Host kontrolü ve sahte forwarded host reddi                |
-| Finans birim testleri  | 2/2 başarılı                                          | Tam kuruş gider tahsisi, ürün maliyeti ve toplam katkı mutabakatı |
-| Playwright E2E         | 2/2 başarılı; son değişiklikler için tekrar çalışıyor | Headless Chromium, production Next.js sunucusu                    |
+| Kontrol                | Sonuç                                      | Kanıt                                                             |
+| ---------------------- | ------------------------------------------ | ----------------------------------------------------------------- |
+| TypeScript             | Başarılı                                   | `npm run typecheck`                                               |
+| ESLint                 | Başarılı, sıfır uyarı                      | `npm run lint`                                                    |
+| Biçim                  | Başarılı                                   | `npm run format:check`                                            |
+| Production build       | Başarılı                                   | Next.js 16.4.2, App Router, Node 24                               |
+| PostgreSQL entegrasyon | 15/15 başarılı                             | Gerçek Neon PostgreSQL 18, iki izole test workspace'i             |
+| HTTP regresyon         | 2/2 başarılı                               | Origin/Host kontrolü ve sahte forwarded host reddi                |
+| Finans birim testleri  | 2/2 başarılı                               | Tam kuruş gider tahsisi, ürün maliyeti ve toplam katkı mutabakatı |
+| Playwright E2E         | 2/2 başarılı (son revizyon: 57.2s + 21.7s) | Headless Chromium, production Next.js sunucusu                    |
 
 Veritabanı paketinin son başarılı çalışması 143.21 saniye sürdü. Toplam 19 domain/HTTP/finans testi ayrı test koşularında doğrulandı. İlk bulunan foreign key temizlik sırası hatası deferred FK migration ile giderildi; testler ve cleanup tekrar geçti. Kısıtlı ortamda tarayıcı dağıtımı npm Chromium paketiyle sağlandı; web güvenliği kapatan ve çoklu context'i bozan Chromium bayrakları kaldırıldı.
 
@@ -45,7 +45,18 @@ Veritabanı paketinin son başarılı çalışması 143.21 saniye sürdü. Topla
 
 ## Yayın doğrulaması
 
-GitHub aktarımı, GitHub Actions sonucu ve Vercel canlı kontrolü henüz bu raporda başarı olarak işaretlenmedi. Yayın kontrolünden sonra bu bölüm güncellenecek.
+- GitHub: `main` dalına araştırma/çekirdek, altı modüllü uygulama ve rapor/erişim düzeltmesi anlamlı ayrı commit'lerle aktarıldı.
+- Yayındaki uygulama commit'i: `facdcb52da6b0345d77fe0cf62732152f57419ea`.
+- Vercel production: **READY**, deployment `dpl_GUtLgrZyMgHCnzApW2bigCwypx8B`; fonksiyon bölgesi `fra1`, Node 24, Next.js 16.4.2.
+- Canlı adres: https://marketplace-os-amber.vercel.app/
+- Canlı tarayıcıda izole alan açıldı; `DEMO-0CBF31BA` siparişi oluşturuldu → rezerve edildi → `8690100000002` barkodu doğrulandı → sevk edildi → DEMO fatura taslağı oluşturuldu.
+- Kaynak sonuç: 1.175,00 RUB satış − 176,25 RUB komisyon − 250,00 RUB lojistik − 128,87 RUB ürün maliyeti = **619,88 RUB katkı**. Ana depo çıkışı −1 adet ve tek sevkiyat referansı detayda görüldü.
+- Son deployment sonrasında sayfa yenilendi; aynı workspace ve oluşturulan sipariş/fatura korundu.
+- Son deployment için error/fatal runtime log sorgusunda kayıt bulunmadı. Harici monitoring/alerting veya log drain kurulmadı; uzun dönem gözlemlenebilirlik iddia edilmez.
+- GitHub Actions **başarısız / doğrulanamadı**: ilk run `39492346366`, verify job `118868507625`, adımlar boş. Günlük isteği **404 BlobNotFound**. Kök neden loglardan kanıtlanamadı; uzak CI başarılı olarak raporlanmaz. Yerel doğrulamalar ve Vercel build sonucu bundan ayrıdır.
+- İlk başarısız fixture temizlik adımından kalan iki test workspace'i, oluşturulma zamanı ve UUID'leri doğrulanarak yalnız bu iki kaydı hedefleyen işlemle temizlendi.
+
+![Canlı sipariş, fatura taslağı ve finans kanıtı](live-verification-20261020.jpg)
 
 ## Üretim sınırları
 
