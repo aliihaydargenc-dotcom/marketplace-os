@@ -37,6 +37,8 @@ Bu turdaki tek geliştirme işi Demo Merkezi / çalışma ekranı ayrımıdır. 
 
 UI-01: TypeScript, lint (sıfır uyarı), format ve production build PASS. Hedefli URL/rol testleri 2/2 PASS. Production build hem root hem `/workspace` rotasını içeriyor. DB entegrasyon/E2E bu dilimde çalıştırılmadı; mevcut E2E login helper'ı yeni giriş etiketine/rol ana ekranına uyarlandı. Kullanıcının gerçek kullanım kabulü bekliyor. Yeni yayın READY/smoke sonucu ayrıca izlenir; build PASS canlı iş akışı PASS demek değildir.
 
+UI-01 yayın ek kaydı: kod commit'i `a11f607`, Vercel `dpl_4DKPDGk7yFQh5mw4R7XZqgm4n3JR` READY. Mevcut yönetici oturumunda Demo Merkezi → çalışma ekranı → Hazırlama Masası → Demo Merkezi dönüş seçimi read-only olarak gözlendi. [Kapsam ve ekran kaydı](../research/UI01_SMOKE.md). Bu, yeni login/rol değişimi veya tam E2E geçti demek değildir. Kullanıcı kontrolü beklenirken sonraki görev başlatılmadı.
+
 | ID | Durum | Yapılan / kalan |
 | --- | --- | --- |
 | PLAN-01 | IMPLEMENTED | AGENTS, ürün talimatı, yol haritası, ilerleme ve test devir kayıtları; README bağlantıları |

@@ -2,6 +2,8 @@
 
 ## 21 Ekim 2026 — UI-01 giriş / çalışma ayrımı
 
+Canlı ek kayıt: `a11f607` kodu Vercel production'da READY. Mevcut yönetici oturumunda merkeze/çalışma ekranına geçiş ve Hazırlama Masası'na dönüş seçimi gözlendi. [Smoke kapsamı ve görüntü](research/UI01_SMOKE.md); yeni oturum/rol değişimi ve tam E2E bu kapsamda değil.
+
 TypeScript, lint (sıfır uyarı), biçim kontrolü ve production build PASS. `npx vitest run tests/navigation.test.ts`: **2/2 PASS**; role uygun başlangıç, yasak bölüm ve allowlist dışı URL/nesne/prototype değerlerinde güvenli varsayılan. `/` Demo Merkezi ve `/workspace` session kontrollü çalışma rotası build edildi. Session/stock/finans yazma kuralları değiştirilmedi; `currentActor` mevcut resolver'ın salt okuma paylaşımıdır. DB entegrasyon/E2E bu turda çalıştırılmadı. Önceki E2E helper'ı yeni rol seçimine uyarlandı; test kaynak güncellemesi başarılı test koşusu anlamına gelmez. Kullanıcı kontrolü ve kapsamlı regresyon [test devir listesinde](planning/TEST_HANDOFF.md) bekliyor.
 
 ---
