@@ -13,6 +13,7 @@
 | SRC-REA | [REA incelemesi](REA.md) / [kaynak manifesti](references/rea/manifest.json) | Evidence/unknown/feature tracing yöntemi | 21 Ekim README/lisans/workflow dosyaları okundu; CLI/MCP çalışmadı |
 | SRC-LOCAL | `src/components/workspace.tsx`, `src/server/execute.ts`, `src/domain/integrations/adapters.ts` | Mevcut ürün boşlukları ve OPS-01 sınırı | Başlangıç commit 84e5de9 kaynak okuması; yeni davranış testleri ayrı |
 | SRC-DESIGN-01 | [Tabler / Medusa tasarım incelemesi](DESIGN_REFERENCES.md), [dosya SHA kayıtları](design-sources.json) | Public/çalışma kabuğu ayrımı, görev/form hiyerarşisi, yoğun başlık/eylem düzeni | 21 Ekim kaynak kod okuması; tam UX audit değil. Tabler MIT; Medusa open-core sınırı incelendi; dış kod/varlık kopyalanmadı |
+| SRC-OPS02 | [Sipariş listesi / görünüm kararı](OPS02_DESIGN.md), [kaynak SHA kayıtları](ops02-sources.json) | Medusa order-list-table ve DataTable durum ayrımı; kendi kalıcı kişisel görünüm ve uygunluk uygulamamız | Statik kaynak okuması; rakip sunucu saklama yöntemi varsayılmadı, dış kod alınmadı |
 
 ## Yeni bulgu şablonu
 

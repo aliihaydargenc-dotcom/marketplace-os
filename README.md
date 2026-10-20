@@ -18,6 +18,7 @@ Gerçek Ozon/Paraşüt bağlantısı ve e-Fatura gönderimi yoktur. FBO yalnızc
 
 - Operasyon Merkezi: DB kayıtlarından göstergeler, tarih/para birimi filtreleri, günlük satış ve işlem kuyruğu.
 - Siparişler: çok satır, SKU/alıcı araması, durum/model/tarih filtreleri, sıralama, sayfalama, sütun seçimi, toplu rezervasyon/sevkiyat, detay paneli ve geçmiş.
+- OPS-02: sunucuda kullanıcıya özel 12 kayıtlı sipariş görünümü; filtre/sıralama/sütun/sayfa boyutu, aktif görünüm geri yükleme, uygun FBS toplu işlem adayları ve sipariş bazlı sonuçlar. Görünümler demo alanı ve kullanıcıya aittir; kaydedilen tarihler sabittir. Operasyon listesi Türkiye takvim gününü kullanır; finansın UTC kohort kuralı değişmez.
 - Hazırlama Masası (OPS-01): yönetici/depo için FBS kuyruğu, stok engeli ve eksik adetler, sipariş/SKU/barkod araması, inline ürün-adet tablosu, Enter ile barkod, manuel rezervasyon ve sevk sonrası sıradakine geçiş. Tüm tarihleri kapsar; yeni ekranın tarayıcı/fiziksel scanner kabulü test devir listesinde bekliyor.
 - Stok & Depo: fiziksel/rezerve/kullanılabilir/karantina bakiyeleri, kritik eşik, maliyet kartı güncelleme, gerekçeli sayım farkı, hareket defteri ve iade QC.
 - Fatura Merkezi: siparişe bağlı unique taslak, hata/iptal/yeniden açma, yazdırma ve tarayıcıdan PDF kaydı.

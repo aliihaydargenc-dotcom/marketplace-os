@@ -33,7 +33,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import type { ColumnDef, RowSelectionState } from "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
 import type {
   WorkspaceSnapshot,
   Order,
@@ -50,6 +50,7 @@ import { financialSummary, profitability } from "@/domain/finance/calculations";
 import { DataTable } from "./data-table";
 import { lineContributions } from "@/domain/finance/allocation";
 import { PackingWorkbench } from "./packing-workbench";
+import { OrdersView } from "./orders-view";
 import {
   canOpenSection,
   type WorkspaceSection as Section,
@@ -115,14 +116,12 @@ export function Workspace({
     [notice, setNotice] = useState("");
   const [search, setSearch] = useState(""),
     [status, setStatus] = useState("ALL"),
-    [fulfillment, setFulfillment] = useState("ALL"),
     [stockFilter, setStockFilter] = useState("ALL"),
     [currency, setCurrency] = useState<"RUB" | "TRY">("RUB"),
     [from, setFrom] = useState(() =>
       new Date(Date.now() - 29 * 86400000).toISOString().slice(0, 10),
     ),
-    [to, setTo] = useState(today),
-    [selection, setSelection] = useState<RowSelectionState>({});
+    [to, setTo] = useState(today);
   const [orderId, setOrderId] = useState<string | null>(null),
     [productId, setProductId] = useState<string | null>(null),
     [creating, setCreating] = useState(false),
@@ -217,38 +216,7 @@ export function Workspace({
     setSection(next);
     window.history.replaceState(null, "", `/workspace?section=${next}`);
     setSearch("");
-    setSelection({});
     setStatus("ALL");
-  }
-  async function bulk(action: "RESERVE" | "SHIP") {
-    const ids = Object.keys(selection).filter((id) => selection[id]);
-    setBusy(true);
-    let success = 0;
-    const failures: string[] = [];
-    for (const id of ids) {
-      try {
-        await api("/api/command", {
-          method: "POST",
-          body: JSON.stringify({
-            key: crypto.randomUUID(),
-            generation: data!.workspace.generation,
-            command: { action, orderId: id },
-          }),
-        });
-        success++;
-      } catch (e) {
-        failures.push(
-          `${data!.orders.find((o) => o.id === id)?.number}: ${(e as Error).message}`,
-        );
-      }
-    }
-    await load();
-    setSelection({});
-    setBusy(false);
-    setNotice(
-      `${success} sipariş işlendi.${failures.length ? " " + failures.length + " sipariş işlenemedi." : ""}`,
-    );
-    setError(failures.join(" • "));
   }
   if (loading)
     return (
@@ -313,23 +281,6 @@ export function Workspace({
       !profitability(o, entries).complete,
   ).length;
   const low = data.products.filter((p) => p.available <= p.threshold);
-  const filtered = data.orders.filter(
-    (o) =>
-      (status === "ALL" || o.status === status) &&
-      (fulfillment === "ALL" || o.fulfillment === fulfillment) &&
-      o.created_at.slice(0, 10) >= from &&
-      o.created_at.slice(0, 10) <= to &&
-      [
-        o.number,
-        o.customer,
-        ...o.lines.map(
-          (l) => data.products.find((p) => p.id === l.product_id)?.sku ?? "",
-        ),
-      ]
-        .join(" ")
-        .toLocaleLowerCase("tr")
-        .includes(search.toLocaleLowerCase("tr")),
-  );
   const products = data.products.filter(
     (p) =>
       [p.name, p.sku, p.barcode, p.variant]
@@ -490,7 +441,6 @@ export function Workspace({
         o.status,
       ),
   );
-  const selectedCount = Object.values(selection).filter(Boolean).length;
   const progress = order ? order.lines.reduce((s, l) => s + l.packed, 0) : 0,
     totalUnits = order ? order.lines.reduce((s, l) => s + l.quantity, 0) : 0;
   const financialOrder = order ? profitability(order, data.financial) : null;
@@ -518,6 +468,7 @@ export function Workspace({
               <button
                 key={n.id}
                 className={section === n.id ? "active" : ""}
+                disabled={busy}
                 onClick={() => navigate(n.id)}
               >
                 <n.icon size={18} />
@@ -543,6 +494,7 @@ export function Workspace({
             </div>
             <button
               aria-label="Çıkış yap"
+              disabled={busy}
               onClick={() => {
                 void api("/api/session", { method: "DELETE" })
                   .then(() =>
@@ -570,6 +522,10 @@ export function Workspace({
               className="demo-center-link"
               href={`/?returnTo=${section}`}
               prefetch={false}
+              aria-disabled={busy}
+              onClick={(e) => {
+                if (busy) e.preventDefault();
+              }}
             >
               <LayoutDashboard size={15} /> Demo Merkezi
             </Link>
@@ -667,7 +623,7 @@ export function Workspace({
               </button>
             </div>
           )}
-          {["dashboard", "orders", "finance"].includes(section) && (
+          {["dashboard", "finance"].includes(section) && (
             <div className="period-toolbar">
               <div>
                 <Clock size={16} />
@@ -679,7 +635,6 @@ export function Workspace({
                     value={from}
                     onChange={(e) => {
                       if (e.target.value) setFrom(e.target.value);
-                      setSelection({});
                     }}
                   />
                 </label>
@@ -692,7 +647,6 @@ export function Workspace({
                     value={to}
                     onChange={(e) => {
                       if (e.target.value) setTo(e.target.value);
-                      setSelection({});
                     }}
                   />
                 </label>
@@ -931,110 +885,16 @@ export function Workspace({
             </>
           )}
           {section === "orders" && (
-            <>
-              <div className="tabs">
-                {[
-                  ["ALL", "Tüm siparişler"],
-                  ["NEW", "Yeni"],
-                  ["RESERVED", "Rezerve"],
-                  ["PACKING", "Hazırlanıyor"],
-                  ["READY", "Sevke hazır"],
-                  ["SHIPPED", "Sevk edildi"],
-                  ["RETURN_PENDING", "İadeler"],
-                ].map(([id, label]) => (
-                  <button
-                    className={status === id ? "active" : ""}
-                    key={id}
-                    onClick={() => {
-                      setStatus(id);
-                      setSelection({});
-                    }}
-                  >
-                    {label}
-                    <span>
-                      {id === "ALL"
-                        ? data.orders.length
-                        : data.orders.filter((o) => o.status === id).length}
-                    </span>
-                  </button>
-                ))}
-              </div>
-              <div className="filterbar">
-                <div className="search-field">
-                  <Search size={17} />
-                  <input
-                    ref={searchRef}
-                    aria-label="Sipariş ara"
-                    placeholder="Sipariş, alıcı veya SKU ara…"
-                    value={search}
-                    onChange={(e) => {
-                      setSearch(e.target.value);
-                      setSelection({});
-                    }}
-                  />
-                  <kbd>Ctrl K</kbd>
-                </div>
-                <select
-                  aria-label="Sipariş durumu"
-                  value={status}
-                  onChange={(e) => {
-                    setStatus(e.target.value);
-                    setSelection({});
-                  }}
-                >
-                  <option value="ALL">Tüm durumlar</option>
-                  {Object.entries(statusLabels).map(([k, v]) => (
-                    <option key={k} value={k}>
-                      {v}
-                    </option>
-                  ))}
-                </select>
-                <select
-                  aria-label="Lojistik modeli"
-                  value={fulfillment}
-                  onChange={(e) => {
-                    setFulfillment(e.target.value);
-                    setSelection({});
-                  }}
-                >
-                  <option value="ALL">FBS + FBO</option>
-                  <option>FBS</option>
-                  <option>FBO</option>
-                </select>
-              </div>
-              {selectedCount > 0 && (
-                <div className="bulkbar">
-                  <strong>{selectedCount} sipariş seçildi</strong>
-                  {allowed("RESERVE") && (
-                    <button
-                      disabled={busy}
-                      onClick={() => void bulk("RESERVE")}
-                    >
-                      Stok rezerve et
-                    </button>
-                  )}
-                  {allowed("SHIP") && (
-                    <button disabled={busy} onClick={() => void bulk("SHIP")}>
-                      Hazır siparişleri sevk et
-                    </button>
-                  )}
-                  <button onClick={() => setSelection({})}>
-                    Seçimi temizle
-                  </button>
-                  <small>
-                    Her sipariş ayrı transaction; hatalar listelenir.
-                  </small>
-                </div>
-              )}
-              <DataTable
-                data={filtered}
-                columns={orderColumns}
-                onOpen={(o) => setOrderId(o.id)}
-                selection={selection}
-                onSelection={setSelection}
-                label="Siparişler"
-              />
-            </>
+            <OrdersView
+              key={`${data.workspace.id}:${data.actor.userId}:${data.workspace.generation}`}
+              data={data}
+              columns={orderColumns}
+              onOpen={(o) => setOrderId(o.id)}
+              initialStatus={status !== "ALL" ? status : undefined}
+              busy={busy}
+              onBulkBusy={setBusy}
+              onRefresh={load}
+            />
           )}
           {section === "packing" && allowed("SCAN") && (
             <PackingWorkbench

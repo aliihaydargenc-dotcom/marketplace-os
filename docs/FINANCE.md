@@ -1,5 +1,7 @@
 # Finans veri sözlüğü ve hesaplama kuralları
 
+OPS-02 notu: Siparişler çalışma listesinin tarih filtresi Europe/Istanbul takvim gününe göre işler ve kişisel görünüme kaydedilir. Finans / Operasyon Merkezi göstergelerinin aşağıda tanımlı UTC kohortu bu görevde değişmemiştir. Sipariş listesi filtresi rapor para birimi dönüşümü değildir; FX-01 bekliyor.
+
 Finans görünümü resmi muhasebe veya tahsilat mutabakatı değildir. Demo komisyon/lojistik değerleri kurgusaldır; Ozon tarifesi oldukları iddia edilmez.
 
 - Tutarlar minor-unit tamsayı: 100 kopek = 1 RUB; 100 kuruş = 1 TRY.
@@ -26,3 +28,4 @@ Tarih filtresi siparişin UTC oluşturma gününe göre bir kohort seçer. Seçi
 Ürün raporu: komisyon/lojistik/iade sipariş satır tutarı oranında tam kuruş/kopek dağıtımıyla tahsis edilir; en büyük kalan yöntemi toplamı korur. Ürün alış maliyeti her satırın kendi maliyet fotoğrafıdır; gelir oranında dağıtılmaz. QC onaylı iadede ilgili satır maliyeti geri alınır. Eksik maliyetli siparişin ürün katkıları da belirsizdir. Adet/gün = iade hariç sevk adedi / seçili takvim günü. Stok devri = dönemde ana depo sevk adedi / ((dönem başı fiziksel + dönem sonu fiziksel)/2). Açılış/kapanış stok ledger'dan hesaplanır, payda sıfırsa boş gösterilir. Ürün devir miktarı fiziksel olduğundan para birimi filtresinden bağımsızdır.
 
 Excel: sipariş bazında brüt/iade/net/gider/maliyet/katkı, eksik maliyet işareti, kur ve kur tarihi; ayrı finans hareket sayfası ve özet. PDF: aynı kohort ve özet + sipariş listesi. Fatura PDF'i tarayıcı yazdırma/PDF kaydet akışıdır ve DEMO / TASLAK işaretlidir. Vergi hesaplaması veya mali geçerlilik yoktur.
+

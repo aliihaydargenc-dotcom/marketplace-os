@@ -1,5 +1,7 @@
 # Araştırma ve ürün kararları
 
+OPS-02 ek kaydı: [Medusa sipariş listesi / görünüm kaynak okuması ve özgün kararlar](research/OPS02_DESIGN.md), [SHA manifesti](research/ops02-sources.json). Kişisel görünüm saklama ve toplu uygunluk davranışı özgün uygulamamızdır; referansın iç sunucu davranışını bildiğimiz iddia edilmez.
+
 UI-01 tasarım ek kaydı: [Tabler ve Medusa dosya incelemesi](research/DESIGN_REFERENCES.md), [kaynak SHA/karar manifesti](research/design-sources.json). Genel giriş/çalışma ayrımı ilkeleri özgün React/CSS'e dönüştürüldü; kod/varlık kopyalanmadı. Bu çalışma önceki araştırmanın veya rakip runtime davranışının yeniden doğrulaması değildir.
 
 21 Ekim 2026 ek kaydı: [REA kaynak incelemesi](research/REA.md), [kaynak dizini](research/SOURCE_INDEX.md) ve [kaynak dosyası manifesti](research/references/rea/manifest.json). Aşağıdaki 20 Ekim araştırması bu ekle yeniden doğrulanmış sayılmaz. REA kaynakları okunmuş ve MIT lisansıyla saklanmıştır; araç çalıştırılması veya rakip runtime incelemesi iddia edilmez. Ürün talimatı ve sonraki işler [planlama dizinindedir](planning/ROADMAP.md).

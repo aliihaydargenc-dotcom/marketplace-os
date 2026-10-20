@@ -1,0 +1,27 @@
+{
+  "task": "OPS-02",
+  "reviewedAt": "2026-10-21",
+  "method": "Static primary-source reading, not a competitor runtime audit",
+  "codeCopied": false,
+  "licenseBoundary": "Medusa open-core; previously read LICENSE and ENTERPRISE-LICENSE.md. No third-party code or assets copied. Enterprise RBAC/SSO implementation not used.",
+  "sources": [
+    {
+      "repository": "medusajs/medusa",
+      "ref": "develop",
+      "path": "packages/admin/dashboard/src/routes/orders/order-list/components/order-list-table/order-list-table.tsx",
+      "blobSha": "1e11bba07557ac2f70c6ef5ad4d9a00848141004",
+      "url": "https://github.com/medusajs/medusa/blob/develop/packages/admin/dashboard/src/routes/orders/order-list/components/order-list-table/order-list-table.tsx",
+      "observation": "Order list; filter/query/table state and page size grouped in one Container with heading/actions.",
+      "decision": "Siparişler kendi filtreleri ve görünüm aracıyla ayrı çalışma bileşeni olur."
+    },
+    {
+      "repository": "medusajs/medusa",
+      "ref": "develop",
+      "path": "packages/admin/dashboard/src/components/data-table/data-table.tsx",
+      "blobSha": "6a9393f9bcab58fbcae6896b47ff461fa5afa430",
+      "url": "https://github.com/medusajs/medusa/blob/develop/packages/admin/dashboard/src/components/data-table/data-table.tsx",
+      "observation": "DataTable exposes view selector, search, filter/sort/visibility/page state; selection and row navigation are separate.",
+      "decision": "Kayıtlı görünüm kişisel; filtre/sütun/sıralama/sayfa boyutu birlikte kaydedilir; satır seçimi kaydedilmez; aksiyon uygunluğu ayrı hesaplanır."
+    }
+  ]
+}

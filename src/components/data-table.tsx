@@ -10,7 +10,13 @@ import {
   type SortingState,
   type VisibilityState,
   type RowSelectionState,
+  type PaginationState,
 } from "@tanstack/react-table";
+export type DataTableLayout = {
+  sorting: SortingState;
+  visibility: VisibilityState;
+  pageSize: number;
+};
 export function DataTable<T extends { id: string }>({
   data,
   columns,
@@ -18,6 +24,9 @@ export function DataTable<T extends { id: string }>({
   selection,
   onSelection,
   label = "Kayıtlar",
+  layout,
+  onLayoutChange,
+  disabled = false,
 }: {
   data: T[];
   columns: ColumnDef<T>[];
@@ -25,19 +34,56 @@ export function DataTable<T extends { id: string }>({
   selection?: RowSelectionState;
   onSelection?: (s: RowSelectionState) => void;
   label?: string;
+  layout?: DataTableLayout;
+  onLayoutChange?: (layout: DataTableLayout) => void;
+  disabled?: boolean;
 }) {
   const [sorting, setSorting] = useState<SortingState>([]),
     [visibility, setVisibility] = useState<VisibilityState>({}),
     [internalSelection, setInternalSelection] = useState<RowSelectionState>({});
   const rowSelection = selection ?? internalSelection;
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: layout?.pageSize ?? 20,
+  });
+  const currentSorting = layout?.sorting ?? sorting;
+  const currentVisibility = layout?.visibility ?? visibility;
+  const currentPagination = {
+    ...pagination,
+    pageSize: layout?.pageSize ?? pagination.pageSize,
+  };
   // React Compiler does not memoize TanStack Table; this component is intentionally uncompiled.
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data,
     columns,
-    state: { sorting, columnVisibility: visibility, rowSelection },
-    onSortingChange: setSorting,
-    onColumnVisibilityChange: setVisibility,
+    state: {
+      sorting: currentSorting,
+      columnVisibility: currentVisibility,
+      rowSelection,
+      pagination: currentPagination,
+    },
+    onSortingChange: (updater) => {
+      const next =
+        typeof updater === "function" ? updater(currentSorting) : updater;
+      if (layout && onLayoutChange)
+        onLayoutChange({ ...layout, sorting: next });
+      else setSorting(next);
+    },
+    onColumnVisibilityChange: (updater) => {
+      const next =
+        typeof updater === "function" ? updater(currentVisibility) : updater;
+      if (layout && onLayoutChange)
+        onLayoutChange({ ...layout, visibility: next });
+      else setVisibility(next);
+    },
+    onPaginationChange: (updater) => {
+      const next =
+        typeof updater === "function" ? updater(currentPagination) : updater;
+      setPagination(next);
+      if (layout && onLayoutChange && next.pageSize !== layout.pageSize)
+        onLayoutChange({ ...layout, pageSize: next.pageSize });
+    },
     onRowSelectionChange: (updater) => {
       const next =
         typeof updater === "function" ? updater(rowSelection) : updater;
@@ -47,7 +93,6 @@ export function DataTable<T extends { id: string }>({
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    initialState: { pagination: { pageSize: 20 } },
     autoResetPageIndex: true,
   });
   return (
@@ -65,6 +110,7 @@ export function DataTable<T extends { id: string }>({
                   <input
                     type="checkbox"
                     checked={c.getIsVisible()}
+                    disabled={disabled}
                     onChange={c.getToggleVisibilityHandler()}
                   />
                   {typeof c.columnDef.header === "string"
@@ -85,6 +131,7 @@ export function DataTable<T extends { id: string }>({
                     <input
                       aria-label="Sayfadaki siparişleri seç"
                       type="checkbox"
+                      disabled={disabled}
                       ref={(el) => {
                         if (el)
                           el.indeterminate = table.getIsSomePageRowsSelected();
@@ -108,6 +155,7 @@ export function DataTable<T extends { id: string }>({
                   >
                     <button
                       className="sort"
+                      disabled={disabled || !h.column.getCanSort()}
                       onClick={h.column.getToggleSortingHandler()}
                     >
                       {flexRender(h.column.columnDef.header, h.getContext())}
@@ -134,6 +182,7 @@ export function DataTable<T extends { id: string }>({
                   <td>
                     <input
                       type="checkbox"
+                      disabled={disabled}
                       aria-label={`${r.id} seç`}
                       checked={r.getIsSelected()}
                       onChange={r.getToggleSelectedHandler()}
@@ -149,6 +198,7 @@ export function DataTable<T extends { id: string }>({
                   <td>
                     <button
                       className="row-open"
+                      disabled={disabled}
                       onClick={() => onOpen(r.original)}
                       aria-label={`${r.id} detay`}
                     >
@@ -176,6 +226,7 @@ export function DataTable<T extends { id: string }>({
         <div>
           <select
             aria-label="Sayfa başına kayıt"
+            disabled={disabled}
             value={table.getState().pagination.pageSize}
             onChange={(e) => table.setPageSize(Number(e.target.value))}
           >
@@ -184,13 +235,13 @@ export function DataTable<T extends { id: string }>({
             <option value={100}>100 kayıt</option>
           </select>
           <button
-            disabled={!table.getCanPreviousPage()}
+            disabled={disabled || !table.getCanPreviousPage()}
             onClick={() => table.previousPage()}
           >
             ← Önceki
           </button>
           <button
-            disabled={!table.getCanNextPage()}
+            disabled={disabled || !table.getCanNextPage()}
             onClick={() => table.nextPage()}
           >
             Sonraki →

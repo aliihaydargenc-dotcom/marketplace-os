@@ -145,7 +145,7 @@ async function apply(tx: Tx, a: Actor, c: Command): Promise<string> {
   }
   if (c.action === "SETTINGS") {
     await tx.execute(
-      sql`UPDATE workspaces SET name=${c.name},settings=${JSON.stringify({ autoDraft: c.autoDraft })}::jsonb WHERE id=${w}::uuid`,
+      sql`UPDATE workspaces SET name=${c.name},settings=settings || ${JSON.stringify({ autoDraft: c.autoDraft })}::jsonb WHERE id=${w}::uuid`,
     );
     return w;
   }

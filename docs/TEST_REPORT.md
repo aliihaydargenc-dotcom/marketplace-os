@@ -1,5 +1,11 @@
 # Doğrulama raporu
 
+## 21 Ekim 2026 — OPS-02 kayıtlı görünümler
+
+TypeScript, lint (0 uyarı), format ve production build PASS. `/api/order-views` route'u build edildi. `ORDER_VIEWS_DB_TEST=1 npx vitest run tests/order-views.test.ts tests/order-views.db.test.ts`: **8/8 PASS**, 19.02s. 4 saf test: tarih/sütun doğrulama, Türkçe isim tekilliği/silme, birleşik SKU/barkod/Türkiye günü filtresi, FBO/hazırlama uygunluğu. 4 gerçek PostgreSQL testi: workspace/kullanıcı izolasyonu ve shared snapshot redaksiyonu; mağaza ayarında view/sentinel korunması; aynı revision'da eşzamanlı yazmalardan birinin 409 olması; eski generation/pasif kullanıcı reddi. Testler ayrı Neon `dev-ops02-validation` dalında çalıştı, yalnız kendi iki UUID workspace'ini oluşturup temizledi. Canlı veritabanında test/reset/migration yok. Önceki tam domain/E2E paketi bu dilimde tekrarlanmadı; [yeni kabul listesi](planning/TEST_HANDOFF.md) açık. Uzak Actions başarısı ayrıca doğrulanmalıdır.
+
+---
+
 ## 21 Ekim 2026 — UI-01 giriş / çalışma ayrımı
 
 Canlı ek kayıt: `a11f607` kodu Vercel production'da READY. Mevcut yönetici oturumunda merkeze/çalışma ekranına geçiş ve Hazırlama Masası'na dönüş seçimi gözlendi. [Smoke kapsamı ve görüntü](research/UI01_SMOKE.md); yeni oturum/rol değişimi ve tam E2E bu kapsamda değil.

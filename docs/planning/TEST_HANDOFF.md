@@ -12,7 +12,21 @@
 
 DB testleri kendi UUID alanlarını oluşturup temizler; üretim/live workspace üzerinde toplu reset veya regresyon çalıştırma. Migration/test setup eksikse sonucu BLOCKED yaz.
 
-## UI-01 — Demo Merkezi ve çalışma ekranı
+## OPS-02 — Güncel kullanıcı / Codex kontrolü
+
+Hedefli komut: ayrı test DB bağlantısıyla `ORDER_VIEWS_DB_TEST=1 npx vitest run tests/order-views.test.ts tests/order-views.db.test.ts`. Flag verilmezse yeni DB dosyası bilinçli atlanır; saf testler çalışır. Mevcut domain testlerinin de DB istediği unutulmamalı. CI yeni DB dosyasını açık flag'li ayrı step'te çalıştırır; bu bir CI başarı kanıtı değildir.
+
+- [ ] Siparişler: FBS + Sevke hazır seç; görünüm adıyla kaydet; sütun gizle/sırala/sayfa boyutunu ayarla ve güncelle; yenile, aynı görünüm ve son kaydedilen düzen geri gelsin.
+- [ ] Görünümü değiştir/yeniden adlandır/yeni olarak kaydet/sil; kaydedilmemiş değişiklik bildirimi doğru olsun. Silme siparişi etkilemesin. Zorunlu Sipariş sütunu gizlenemesin.
+- [ ] Tarih/model/durum/arama birlikte çalışsın. Operasyon günü Türkiye saatine göre, kaydedilmiş aralık sabit olsun. Finans UTC kohortu ayrı kalsın.
+- [ ] Filtre veya görünüm değişince satır seçimi temizlensin. Sadece sayfa değiştirince seçim korunsun. Toplu aday sayısı görünür/filtreli kayıtlardan hesaplansın.
+- [ ] FBO, sevk edilmiş ve eksik doğrulamalı kayıtlar toplu uygunlukta doğru ayrılsın; atlanan/başarılı/hatalı sonuçlar sipariş bazında listelensin. Ağ sonucu belirsizse otomatik tekrar olmasın.
+- [ ] Aynı alanda depo/muhasebe kişisel görünümü yöneticiye karışmasın. Başka tarayıcı/alan tercihi farklı olsun. Ortak snapshot veya rapor başka kullanıcının görünümünü içermesin.
+- [ ] Aynı revision'da iki sekme: ikinci yazma 409; kullanıcı yeniden yükleyince veri kaybı yerine güncel tercih görünsün. Reset sonrası eski generation yazması reddedilsin. Reset tercihleri koruyabilir; satır seçimi saklanmasın.
+- [ ] Mağaza adı/autoDraft düzenlemesi tüm kişisel görünümleri korusun. Pasif kullanıcı read/write alamaz. Oturumsuz /api/order-views 401 ve farklı Origin write 403 verir.
+- [ ] 1440×900 / 1920×1080 / 390px: toolbar, filtre ve sonuçlar taşmasın; tablolar kendi içinde kayabilsin. Ctrl/Cmd+K aramayı odaklasın.
+
+## UI-01 — Önceki giriş/çalışma kabul listesi
 
 - [ ] Oturumsuz `/` Demo Merkezi açar; rol ve başlangıç ekranı seçilebilir. İlk giriş tek demo alanı oluşturur; çift tık iki istek göndermez.
 - [ ] Yönetici Operasyon Merkezi, depo Hazırlama Masası, muhasebe Fatura Merkezi ile başlar. Role göre başlangıç seçenekleri ve görev açıklamaları değişir.

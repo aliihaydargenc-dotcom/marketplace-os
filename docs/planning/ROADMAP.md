@@ -10,9 +10,23 @@ Her görev: sorun, dosya sınırı, bağımlılık, kabul, doğrulama, kalan ris
 
 ## Aktif geliştirme dilimi — Aşama 2
 
-### UI-01 — Demo Merkezi / çalışma ekranı ayrımı
+### OPS-02 — Kişisel kayıtlı sipariş görünümleri
 
-Kullanıcının son yönlendirmesiyle bu turdaki tek görev. OPS-01 sonrasında tasarım ve kullanım ayrımını gözden geçirebilmesi için önceliklendirildi; OPS-02 ve diğer işler aynı turda başlatılmaz.
+21 Ekim kullanıcının “Devam” yönlendirmesiyle bu turdaki tek görev. UI-01 hakkında ayrıntılı kabul bulgusu verilmedi; devam izni tamamının kullanıcı tarafından doğrulandığı anlamına gelmez.
+
+- Sorun: filtre/sütun/sıralama tekrar kuruluyor; seçimin kaçının toplu işlem için uygun olduğu belirsiz.
+- Sınır: ayrı `orders-view.tsx`, saf `domain/orders/views.ts`, `server/order-views.ts`, `/api/order-views`. Yeni SQL tablo/migration, finans/kur veya stok hareket kuralı yok.
+- Kalıcılık: mevcut workspace JSONB ayarının kullanıcıya özel alt anahtarı; en çok 12 görünüm. Aktif görünüm, filtreler, sıralama, sütun görünürlüğü ve sayfa boyutu saklanır. Tablo satır seçimi ve sayfa numarası saklanmaz.
+- Güvenlik: owner session'dan; workspace+aktif kullanıcı kontrolü; workspace transaction kilidi, revision çakışması, generation kontrolü. Ortak snapshot yalnız mağaza autoDraft ayarını döndürür; kişisel tercihleri yaymaz. Mağaza ayarı JSON merge ile korunur.
+- Deneyim: kişisel görünüm seç/kaydet/güncelle/sil, kaydedilmemiş değişiklik bildirimi; tarih/model/durum/SKU-barkod araması; filtre değişince seçim temizlenir; durum uygunluğuna göre toplu işlem aday sayıları ve sipariş bazlı sonuçlar.
+- Tarih: operasyon listesinde Türkiye takvim günü; kayıtlı aralıklar sabittir. Finans raporunun mevcut UTC kohort kuralı bu görevde değişmedi.
+- Kabul: kaydet → refresh → aynı görünüm; diğer kullanıcı/alan izolasyonu; ayar düzenleme kaydı silmez; aynı revision'da iki yazmadan biri reddedilir; FBO ve eksik doğrulamalı sipariş sevkiyata aday olmaz.
+- Kontrol: typecheck/lint/format/build PASS; 4 saf + 4 PostgreSQL testi PASS, 19.02s. Kapsamlı E2E/user kabulü ayrı açık. Kaynak ve tasarım kararları `../research/OPS02_DESIGN.md` içinde.
+- Teslim: yalnız Siparişler ekranı için kullanıcıya üç somut kontrol; geri bildirimden önce FX-01 veya başka işe geçme.
+
+### UI-01 — Önceki teslim: Demo Merkezi / çalışma ekranı ayrımı
+
+Önceki teslimin tek görevi. OPS-01 sonrasında tasarım ve kullanım ayrımını gözden geçirebilmesi için önceliklendirildi; o teslimde OPS-02 ve diğer işler başlatılmadı.
 
 - Sorun: tanıtım/rol seçimi ve günlük çalışma aynı root ekranında birleşiyor; kullanıcı iki deneyim arasındaki farkı göremiyor.
 - Kaynak: Tabler giriş/condensed layout, Medusa public layout/shell/login dosyaları; SHA ve gözlem `../research/DESIGN_REFERENCES.md` içinde. Bileşen veya varlık kopyalanmaz.

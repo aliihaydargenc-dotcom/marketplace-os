@@ -20,7 +20,7 @@ export async function snapshot(
   // One repeatable-read transaction is used by the HTTP endpoint to avoid mixing generations.
   const [workspace] = await rows<WorkspaceSnapshot["workspace"]>(
     conn,
-    sql`SELECT id,name,generation,settings FROM workspaces WHERE id=${w}::uuid`,
+    sql`SELECT id,name,generation,jsonb_build_object('autoDraft',COALESCE((settings->>'autoDraft')::boolean,false)) settings FROM workspaces WHERE id=${w}::uuid`,
   );
   const products = await rows<Product>(
     conn,

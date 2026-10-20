@@ -23,7 +23,22 @@ PARTIAL / REFERENCE_ONLY tabloda kapsam açıklamasıdır; görev akışı ROADM
 
 ## 21 Ekim çalışma dilimi
 
-### UI-01 — Son kullanıcı yönlendirmesi
+### OPS-02 — Güncel teslim
+
+Kullanıcının “Devam” talimatıyla yalnız OPS-02 uygulandı. Durum IMPLEMENTED; hedefli kontroller PASS, kullanıcı kabulü bekliyor. UI-01 için devam izni alındı; ayrıntılı kullanıcı testi yapılmış sayılmadı.
+
+- Kişisel görünümler sunucuda workspace ve user ID sınırında saklanıyor. Aktif görünüm, durum/model/tarih/arama, sıralama, sütunlar ve sayfa boyutu yeniden açılışta geri yükleniyor.
+- Görünüm oluştur/güncelle/ad değiştir/sil; en çok 12 görünüm; kayıtlı olmayan değişiklik bildirimi. Tarihler sabit, operasyon günü Europe/Istanbul. Satır seçimleri kaydedilmiyor.
+- Sipariş listesi `OrdersView` bileşenine ayrıldı. Ortak DataTable isteğe bağlı kontrollü layout alıyor; sipariş domain'ine bağımlı değil. Diğer tablolar varsayılan davranışını sürdürüyor.
+- Toplu çubuk: filtrelenen listenin sayfalar arası seçili kayıt sayısı; durumu uygun FBS rezervasyon/sevkiyat adetleri; atlanan/hatalı/başarılı sipariş sonuçları ve ilerleme. Nihai stok/yetki kontrolü mevcut sunucu komutunda kalıyor.
+- `/api/order-views`: session owner, aktif kullanıcı, workspace kilidi, revision/generation, Origin ve Zod. Ortak snapshot tercihleri içermiyor. Mağaza ayarı güncellemesi JSON'u merge ediyor.
+- Yeni migration veya finans/kur dönüşümü yok. FX-01 bekliyor. Paylaşılan görünüm, göreli tarih aralığı, sayfa numarası, çoklu cihazda sekme anlık senkronu kapsam dışı; kullanıcı aynı demo oturumunu taşımadıkça farklı tarayıcı yeni alan alır.
+
+Doğrulama: typecheck/lint (0 uyarı)/format/build PASS. `tests/order-views.test.ts` 4/4 ve `tests/order-views.db.test.ts` 4/4 PASS; toplam 19.02s. DB testleri `dev-ops02-validation` (`br-royal-fog-bael0zdv`) dalında kendi UUID alanlarını oluşturup temizledi. Canlı demo DB'sinde bu testler çalıştırılmadı; bağlantı bilgisi dosyaya/repoya yazılmadı. Test compute'u iş bitiminde suspend isteğiyle durduruldu; dal sonraki Codex kontrolü için korunuyor. Yeni endpoint/saved-view UI için kapsamlı E2E henüz koşulmadı.
+
+CI tanımına yeni DB testi ayrı komut ve açık flag ile eklendi. Uzak GitHub Actions sonucunun başarılı olduğu iddia edilmiyor. Yayın/kısa canlı gözlem ayrıca izlenir.
+
+### UI-01 — Önceki teslim
 
 Bu turdaki tek geliştirme işi Demo Merkezi / çalışma ekranı ayrımıdır. UI-01 IMPLEMENTED; kullanıcı geçiş kabulü bekliyor. Sonraki göreve geri bildirimden sonra geçilecek. Kaynaklar: [tasarım araştırması](../research/DESIGN_REFERENCES.md), [dosya SHA kayıtları](../research/design-sources.json).
 
