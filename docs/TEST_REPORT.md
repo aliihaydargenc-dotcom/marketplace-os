@@ -1,5 +1,11 @@
 # Doğrulama raporu
 
+## 21 Ekim 2026 — UI-01 giriş / çalışma ayrımı
+
+TypeScript, lint (sıfır uyarı), biçim kontrolü ve production build PASS. `npx vitest run tests/navigation.test.ts`: **2/2 PASS**; role uygun başlangıç, yasak bölüm ve allowlist dışı URL/nesne/prototype değerlerinde güvenli varsayılan. `/` Demo Merkezi ve `/workspace` session kontrollü çalışma rotası build edildi. Session/stock/finans yazma kuralları değiştirilmedi; `currentActor` mevcut resolver'ın salt okuma paylaşımıdır. DB entegrasyon/E2E bu turda çalıştırılmadı. Önceki E2E helper'ı yeni rol seçimine uyarlandı; test kaynak güncellemesi başarılı test koşusu anlamına gelmez. Kullanıcı kontrolü ve kapsamlı regresyon [test devir listesinde](planning/TEST_HANDOFF.md) bekliyor.
+
+---
+
 ## 21 Ekim 2026 — OPS-01 ek kontrolü
 
 Hazırlama masası ve repo planlama kayıtları eklendi. Typecheck, lint, format kontrolü ve production build PASS. `npx vitest run tests/packing.test.ts`: **3/3 PASS**, FBS/durum uygunluğu, sıra, rezervasyon/stok engeli, kuyruk ayrımı ve arama. Yeni UI için browser/DB E2E ve fiziksel scanner testi bu turda çalıştırılmadı. Sonraki Codex/kullanıcı kabul listesi: [TEST_HANDOFF.md](planning/TEST_HANDOFF.md). Bu sonuçlar aşağıdaki önceki çalışma sonuçlarını güncel sürümde tekrar doğrulamaz. Vercel yeni commit için ayrı izlenmelidir.

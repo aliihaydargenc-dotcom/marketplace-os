@@ -1,0 +1,77 @@
+{
+  "reviewedAt": "2026-10-21",
+  "task": "UI-01",
+  "method": "Primary-source file reading; not a full UX/runtime audit",
+  "codeCopied": false,
+  "assetsCopied": false,
+  "files": [
+    {
+      "repository": "tabler/tabler",
+      "ref": "dev",
+      "path": "preview/pages/sign-in-cover.astro",
+      "blobSha": "5b92d99ae05684f23f7e1a2da30d1f80005855da",
+      "url": "https://github.com/tabler/tabler/blob/dev/preview/pages/sign-in-cover.astro",
+      "observation": "Giriş formu ayrı bir BaseLayout içinde; büyük ekran için iki kolon, tek bir birincil giriş alanı.",
+      "decision": "Giriş/tanıtım ile çalışma kabuğunu ayır; fotoğraf veya Bootstrap bileşeni taşımadan kendi rol/iş seçimini uygula."
+    },
+    {
+      "repository": "tabler/tabler",
+      "ref": "dev",
+      "path": "preview/pages/layout-condensed.astro",
+      "blobSha": "a4141d0eea812ab9e63ef6bb27640be5e9f96859",
+      "url": "https://github.com/tabler/tabler/blob/dev/preview/pages/layout-condensed.astro",
+      "observation": "Condensed dashboard sayfası ortak layout'a başlık/önbaşlık ve header action slotu geçiriyor.",
+      "decision": "Aksiyonları çalışma başlığında tut; tanıtım metnini operatör ekranına taşıma."
+    },
+    {
+      "repository": "medusajs/medusa",
+      "ref": "develop",
+      "path": "packages/admin/dashboard/src/components/layout/public-layout/public-layout.tsx",
+      "blobSha": "e3dbfaa0536c550cf1d5a26404eefb6d3c43438a",
+      "url": "https://github.com/medusajs/medusa/blob/develop/packages/admin/dashboard/src/components/layout/public-layout/public-layout.tsx",
+      "observation": "PublicLayout belge başlığı ve route outlet ile sınırlı.",
+      "decision": "Demo Merkezi kendi hafif giriş bileşeni; operasyon grafikleri burada yüklenmez."
+    },
+    {
+      "repository": "medusajs/medusa",
+      "ref": "develop",
+      "path": "packages/admin/dashboard/src/components/layout/shell/shell.tsx",
+      "blobSha": "5d1218243f572fd71463babbf9e2857adb6ee7e3",
+      "url": "https://github.com/medusajs/medusa/blob/develop/packages/admin/dashboard/src/components/layout/shell/shell.tsx",
+      "observation": "Uygulama Shell'i navigasyon, sidebar, topbar, breadcrumb ve ana içeriği ayırıyor; ana içerik gutter/max width kullanıyor.",
+      "decision": "Çalışma ekranına ayrı URL ve merkeze dönüş ekle; yeniden tanıtım paneli göstermeden mevcut operasyon yoğunluğunu koru."
+    },
+    {
+      "repository": "medusajs/medusa",
+      "ref": "develop",
+      "path": "packages/admin/dashboard/src/routes/login/login.tsx",
+      "blobSha": "07ad0793b8444f1c2d97528ac0e4e09457a91917",
+      "url": "https://github.com/medusajs/medusa/blob/develop/packages/admin/dashboard/src/routes/login/login.tsx",
+      "observation": "Login akışı uygulama gövdesinden ayrı; başlangıç hedefine geri dönüş yönlendirmesi var.",
+      "decision": "Yalnız izinli bölüm kimliği üzerinden returnTo; dış URL kabul etme. Burada gerçek auth implementasyonu kopyalanmaz."
+    }
+  ],
+  "licenses": [
+    {
+      "repository": "tabler/tabler",
+      "path": "LICENSE",
+      "blobSha": "aa69649cde83c2d6517ec2498a9c10f5bb3bf54c",
+      "url": "https://github.com/tabler/tabler/blob/dev/LICENSE",
+      "scope": "MIT"
+    },
+    {
+      "repository": "medusajs/medusa",
+      "path": "LICENSE",
+      "blobSha": "2bc747bf4b0a88864584b033fdeab86012a44c79",
+      "url": "https://github.com/medusajs/medusa/blob/develop/LICENSE",
+      "scope": "Open-core; MIT except identified Enterprise paths; see separate Enterprise license"
+    },
+    {
+      "repository": "medusajs/medusa",
+      "path": "ENTERPRISE-LICENSE.md",
+      "blobSha": "56ec107aaf946c18f88955a031ba1dec9396111d",
+      "url": "https://github.com/medusajs/medusa/blob/develop/ENTERPRISE-LICENSE.md",
+      "scope": "RBAC/SSO enterprise path boundary read; no enterprise material copied"
+    }
+  ]
+}

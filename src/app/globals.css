@@ -2078,3 +2078,37 @@ progress {
     grid-template-columns: 1fr;
   }
 }
+
+/* UI-01: workspace entry and demo navigation */
+.workspace-unavailable {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  padding: 30px;
+  text-align: center;
+}
+.workspace-unavailable h1 {
+  margin: 0;
+  font-size: 22px;
+}
+.workspace-unavailable p {
+  color: var(--muted);
+  margin: 0 0 12px;
+  max-width: 460px;
+}
+.demo-center-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #526581;
+  padding: 5px 9px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+}
+.demo-center-link:hover {
+  background: #f0f5fb;
+}

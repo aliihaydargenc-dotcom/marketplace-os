@@ -1,5 +1,7 @@
 # Araştırma ve ürün kararları
 
+UI-01 tasarım ek kaydı: [Tabler ve Medusa dosya incelemesi](research/DESIGN_REFERENCES.md), [kaynak SHA/karar manifesti](research/design-sources.json). Genel giriş/çalışma ayrımı ilkeleri özgün React/CSS'e dönüştürüldü; kod/varlık kopyalanmadı. Bu çalışma önceki araştırmanın veya rakip runtime davranışının yeniden doğrulaması değildir.
+
 21 Ekim 2026 ek kaydı: [REA kaynak incelemesi](research/REA.md), [kaynak dizini](research/SOURCE_INDEX.md) ve [kaynak dosyası manifesti](research/references/rea/manifest.json). Aşağıdaki 20 Ekim araştırması bu ekle yeniden doğrulanmış sayılmaz. REA kaynakları okunmuş ve MIT lisansıyla saklanmıştır; araç çalıştırılması veya rakip runtime incelemesi iddia edilmez. Ürün talimatı ve sonraki işler [planlama dizinindedir](planning/ROADMAP.md).
 
 İnceleme: 20 Ekim 2026. Yöntem: kamuya açık resmi dokümanlar, açık kaynak veri yapıları ve ürün yardım sayfaları. Kod kopyalanmadı; tüm uygulama TypeScript ile özgün yazıldı. Kapalı uygulamalarda oturum açma/kimlik doğrulama aşılmadı.

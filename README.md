@@ -8,6 +8,8 @@ Gerçek Ozon/Paraşüt bağlantısı ve e-Fatura gönderimi yoktur. FBO yalnızc
 
 ## Geliştirmeye devam
 
+**UI-01:** Ana adres Demo Merkezi'dir; günlük çalışma `/workspace` altında açılır. Rol ve izinli başlangıç ekranı seçilebilir. Açık oturuma devam veya aynı demo alanında rol değişimi yapılır; merkeze dönüş kayıtları sıfırlamaz. Gerçek kullanıcı hesabı/şifre girişi henüz yoktur. [Tasarım referansları ve kararları](docs/research/DESIGN_REFERENCES.md) repoda saklanır.
+
 Önce [AGENTS.md](AGENTS.md), [ürün talimatı](docs/PRODUCT_REQUIREMENTS.md), [yol haritası](docs/planning/ROADMAP.md) ve [güncel ilerleme](docs/planning/PROGRESS.md) okunmalı. Kodlanmış özellik ve doğrulanmış özellik ayrı izlenir. [Codex test devri](docs/planning/TEST_HANDOFF.md) toplu regresyon ve kullanıcı arayüz kontrollerinin bekleyen listesidir.
 
 [Kaynak dizini](docs/research/SOURCE_INDEX.md) ve [REA incelemesi](docs/research/REA.md) araştırma bulguları, sınırlar ve saklanan upstream kaynak dosyalarını içerir. REA CLI/MCP bu çalışma diliminde çalıştırılmadı; kaynak incelemesi yapıldı.

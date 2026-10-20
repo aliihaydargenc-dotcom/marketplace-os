@@ -12,6 +12,8 @@
 
 - Mevcut Next.js / PostgreSQL projesi üzerinden devam et. Statik prototiple değiştirme.
 - Her iş için kısa plan yaz: sorun, sınır, bağımlılık, kabul şartı, gerekli kontrol. Ardından uygula; planlama döngüsünde durma.
+- 21 Ekim sonraki kullanıcı yönlendirmesi: her teslim diliminde tek görev tamamla. Ardından kullanıcıya açacağı ekranı ve 2–3 somut kontrolü söyle; geri bildirim gelmeden sonraki geliştirme görevine geçme. Aynı görevde gereken düzeltme, dokümantasyon ve yayın bunun parçasıdır.
+- Tasarım değişikliğinden önce ilgili açık kaynak repo/dosyalarını ve lisans sınırlarını incele; gözlem/karar/kaynak SHA kayıtlarını araştırma dizinine ekle. Demo olması sıradan veya işlevsiz UI teslimini haklı çıkarmaz. Demo Merkezi tanıtım/rol seçimi, çalışma ekranı günlük operasyon içindir; gerçek kullanıcı kimliği eklenmeden gerçek login varmış gibi gösterme.
 - `ROADMAP.md` görev kimliklerini commit ve ilerleme notlarında kullan. Durumlar: BACKLOG, IN_PROGRESS, IMPLEMENTED, VERIFIED, BLOCKED. Yazılmış kodu doğrulanmış özellik diye işaretleme.
 - Kullanıcının 21 Ekim yönlendirmesi: geliştirmeye ağırlık ver; arayüz/geçiş denemelerini kullanıcı yapacak, kapsamlı regresyon Codex'te sonra yapılacak. Büyük test döngülerini her değişiklikte tekrarlama. Kod değişikliklerinde typecheck/lint ve uygun derleme, iş kuralı değişikliğinde ilgili hedefli test yeterlidir. Çalıştırılmayan testleri devir listesinde açık bırak.
 - Stok, yetki, finans veya migration değişiyorsa ilgili bütünlük sorununu çözmeden sonraki özelliğe geçme. Bu kontrolü kullanıcıya devretme.

@@ -23,6 +23,20 @@ PARTIAL / REFERENCE_ONLY tabloda kapsam açıklamasıdır; görev akışı ROADM
 
 ## 21 Ekim çalışma dilimi
 
+### UI-01 — Son kullanıcı yönlendirmesi
+
+Bu turdaki tek geliştirme işi Demo Merkezi / çalışma ekranı ayrımıdır. UI-01 IMPLEMENTED; kullanıcı geçiş kabulü bekliyor. Sonraki göreve geri bildirimden sonra geçilecek. Kaynaklar: [tasarım araştırması](../research/DESIGN_REFERENCES.md), [dosya SHA kayıtları](../research/design-sources.json).
+
+- `/`: yeni Demo Merkezi; role göre araç açıklaması ve izinli başlangıç ekranı; açık oturuma devam.
+- `/workspace?section=...`: server session kontrolünden sonra günlük çalışma; role uygun ve allowlist içindeki başlangıç. Oturumsuz istek root'a döner.
+- Çalışma ekranı → Demo Merkezi → aynı bölüme devam; rol değişimi mevcut alanı kullanır. Reset veya yeni veri modeli eklenmedi.
+- `workspace.tsx` içinden eski giriş paneli ve login state çıkarılıp ayrı bileşene taşındı. Bölüm erişim eşlemesi tek `domain/navigation.ts` dosyasına alındı; API/işlem yetkileri mevcut sunucu kurallarıdır.
+- `currentActor` mevcut session çözümlemesini sayfalara açan salt okuma helper'ıdır; session süre/rol/hash/cookie/DB mutasyon davranışı değiştirilmedi.
+- Gerçek kullanıcı hesabı/şifre girişi hâlâ SYS-01; yeni çalışma ekranı üretim auth iddiası değildir.
+- FX-01 kaydedildi: TL varsayılan, EUR/RUB geçişi, günlük kaynaklı kur ve geçmiş/güncel değerleme ayrımı. Bu turda uygulanmadı.
+
+UI-01: TypeScript, lint (sıfır uyarı), format ve production build PASS. Hedefli URL/rol testleri 2/2 PASS. Production build hem root hem `/workspace` rotasını içeriyor. DB entegrasyon/E2E bu dilimde çalıştırılmadı; mevcut E2E login helper'ı yeni giriş etiketine/rol ana ekranına uyarlandı. Kullanıcının gerçek kullanım kabulü bekliyor. Yeni yayın READY/smoke sonucu ayrıca izlenir; build PASS canlı iş akışı PASS demek değildir.
+
 | ID | Durum | Yapılan / kalan |
 | --- | --- | --- |
 | PLAN-01 | IMPLEMENTED | AGENTS, ürün talimatı, yol haritası, ilerleme ve test devir kayıtları; README bağlantıları |

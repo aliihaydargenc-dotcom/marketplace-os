@@ -10,6 +10,18 @@ Her görev: sorun, dosya sınırı, bağımlılık, kabul, doğrulama, kalan ris
 
 ## Aktif geliştirme dilimi — Aşama 2
 
+### UI-01 — Demo Merkezi / çalışma ekranı ayrımı
+
+Kullanıcının son yönlendirmesiyle bu turdaki tek görev. OPS-01 sonrasında tasarım ve kullanım ayrımını gözden geçirebilmesi için önceliklendirildi; OPS-02 ve diğer işler aynı turda başlatılmaz.
+
+- Sorun: tanıtım/rol seçimi ve günlük çalışma aynı root ekranında birleşiyor; kullanıcı iki deneyim arasındaki farkı göremiyor.
+- Kaynak: Tabler giriş/condensed layout, Medusa public layout/shell/login dosyaları; SHA ve gözlem `../research/DESIGN_REFERENCES.md` içinde. Bileşen veya varlık kopyalanmaz.
+- Sınır: `/` Demo Merkezi, `/workspace?section=...` günlük çalışma. Mevcut demo session/RBAC korunur; gerçek kullanıcı auth, DB migration ve yeni finans kuralı yok.
+- Kabul: seçilen role uygun başlangıç; açık oturuma devam; aynı workspace'te rol değişimi; merkeze dönünce reset olmaması; oturumsuz `/workspace` root'a döner; yetkisiz/bozuk section URL güvenli varsayılana iner; çalışma ekranından merkeze geri dönüş ve önceki bölüme devam.
+- Tasarım: ayrı public/workspace kabuğu, lacivert/mavi/nötr palet, tanıtımın sadece merkezde kalması, kompakt görev listesi, açık birincil eylem, gerçek kullanıcı girişinin eksik olduğunun açık ifadesi.
+- Kontrol: typecheck/lint/format/build, URL/rol çözümleme kontrolleri. Kullanıcı geçiş kabulü ve kapsamlı E2E ayrı açık tutulur.
+- Teslim kuralı: bu görevden sonra kullanıcıya hangi ekranı kontrol edeceğini söyle ve bekle.
+
 ### OPS-01 — Hazırlama masası
 
 - Sorun: tek sipariş panelinden listeye dönmek depo personelinin seri çalışmasını zorlaştırıyor.
@@ -24,6 +36,7 @@ Her görev: sorun, dosya sınırı, bağımlılık, kabul, doğrulama, kalan ris
 | ID | Aşama | İş ve somut kabul | Bağımlılık |
 | --- | --- | --- | --- |
 | OPS-02 | 2 | Kalıcı kaydedilmiş filtre/görünüm; durum/model/tarih/SKU filtreleri yeniden açılışta korunur; seçili kayıt sayısı ve işlem uygunluğu açık; workspace sınırı korunur | OPS-01 UI geri bildirimi |
+| FX-01 | 3 | Varsayılan TL raporlama, TL/EUR/RUB görünümü, resmi/uygun kaynakla günlük kur ve tarih/saat; özgün para birimi korunur; geçmiş işlem kuru ve güncel değerleme ayrı; eksik/güncel olmayan kurda açık uyarı, sessiz uydurma dönüşüm yok | UI-01 kontrolü sonrası finans diliminde ele alınacak; kaynak/tatil günü/yuvarlama kararı ve mutabakat kontrolleri gerekir |
 | ARCH-01 | 1–3 | `execute.ts` içindeki sipariş/envanter/fatura/finans uygulama servislerini ayır; transaction yöneticisi tek sınır; mevcut bütünlük senaryoları aynı sonucu verir | İzole DB ile hedefli regresyon |
 | CAT-01 | 2 | Ürün/SKU/varyant/barkod oluşturma-düzenleme; tekillik, aktiflik ve geçmiş sipariş fotoğraflarını koruma; stok miktarı ürün kartından yazılamaz | Veri modeli kararı + migration/rol kontrolü |
 | INV-01 | 2 | Referanslı mal kabul ve sayım belgesi; taslak/onay/delta; tekrar onay tek ledger; gerekçe ve kaynak siparişten izlenir | ARCH-01, hedefli DB testleri |

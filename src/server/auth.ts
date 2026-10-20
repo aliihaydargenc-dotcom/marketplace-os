@@ -25,8 +25,11 @@ export async function resolveSession(token?: string): Promise<Actor | null> {
       }
     : null;
 }
+export async function currentActor() {
+  return resolveSession((await cookies()).get(COOKIE)?.value);
+}
 export async function actor() {
-  const session = await resolveSession((await cookies()).get(COOKIE)?.value);
+  const session = await currentActor();
   if (!session) throw new DomainError("Demo oturumu açın", 401);
   return session;
 }

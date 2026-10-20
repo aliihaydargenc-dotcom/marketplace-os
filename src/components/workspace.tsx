@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState, useRef, useCallback } from "react";
+import Link from "next/link";
 import {
   LayoutDashboard,
   ShoppingBag,
@@ -49,14 +50,10 @@ import { financialSummary, profitability } from "@/domain/finance/calculations";
 import { DataTable } from "./data-table";
 import { lineContributions } from "@/domain/finance/allocation";
 import { PackingWorkbench } from "./packing-workbench";
-type Section =
-  | "dashboard"
-  | "orders"
-  | "packing"
-  | "inventory"
-  | "invoices"
-  | "finance"
-  | "settings";
+import {
+  canOpenSection,
+  type WorkspaceSection as Section,
+} from "@/domain/navigation";
 const nav = [
   { id: "dashboard", name: "Operasyon Merkezi", icon: LayoutDashboard },
   { id: "orders", name: "Siparişler", icon: ShoppingBag },
@@ -105,14 +102,17 @@ async function api<T>(url: string, options?: RequestInit): Promise<T> {
   if (!response.ok) throw new Error(data.error ?? "İşlem başarısız");
   return data;
 }
-export function Workspace() {
+export function Workspace({
+  initialSection = "dashboard",
+}: {
+  initialSection?: Section;
+}) {
   const [data, setData] = useState<WorkspaceSnapshot | null>(null),
-    [section, setSection] = useState<Section>("dashboard"),
+    [section, setSection] = useState<Section>(initialSection),
     [loading, setLoading] = useState(true),
     [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
-    [notice, setNotice] = useState(""),
-    [loginRole, setLoginRole] = useState<Role>("ADMIN");
+    [notice, setNotice] = useState("");
   const [search, setSearch] = useState(""),
     [status, setStatus] = useState("ALL"),
     [fulfillment, setFulfillment] = useState("ALL"),
@@ -184,21 +184,6 @@ export function Workspace() {
   }, [orderId, productId, creating]);
   const allowed = (action: Action) =>
     data && (permissions[action] as readonly Role[]).includes(data.actor.role);
-  async function login(role: Role) {
-    setBusy(true);
-    setError("");
-    try {
-      await api("/api/session", {
-        method: "POST",
-        body: JSON.stringify({ role }),
-      });
-      await load();
-    } catch (e) {
-      setError((e as Error).message);
-    } finally {
-      setBusy(false);
-    }
-  }
   async function run(command: Command, quiet = false) {
     if (!data) return;
     setBusy(true);
@@ -230,6 +215,7 @@ export function Workspace() {
   }
   function navigate(next: Section) {
     setSection(next);
+    window.history.replaceState(null, "", `/workspace?section=${next}`);
     setSearch("");
     setSelection({});
     setStatus("ALL");
@@ -274,71 +260,16 @@ export function Workspace() {
     );
   if (!data)
     return (
-      <main className="login">
-        <section className="login-story">
-          <div className="brand">
-            <span className="brand-mark">M</span>marketplace<span>OS</span>
-          </div>
-          <div>
-            <p className="eyebrow">PAZAR TİCARET / OZON GLOBAL</p>
-            <h1>
-              Operasyonun
-              <br />
-              tek çalışma alanı.
-            </h1>
-            <p>
-              Siparişten sevkiyata, depodan finansal sonuca.
-              <br />
-              Her hareketin izini aynı yerden sürün.
-            </p>
-            <div className="login-flow">
-              Sipariş <ChevronRight /> Depo <ChevronRight /> Sevkiyat{" "}
-              <ChevronRight /> Finans
-            </div>
-          </div>
-          <small>FBS iş akışı · PostgreSQL · Türkçe arayüz</small>
-        </section>
-        <section className="login-form">
-          <span className="pill">İZOLE DEMO</span>
-          <h2>Çalışma alanınızı açın</h2>
-          <p>
-            72 ürün ve 260 ilişkili sipariş ile başlayın. Kayıtlarınız diğer
-            ziyaretçilerden ayrılır ve sunucuda saklanır.
-          </p>
-          <label>
-            Demo rolü
-            <select
-              value={loginRole}
-              onChange={(e) => setLoginRole(e.target.value as Role)}
-            >
-              {Object.entries(roleLabels).map(([k, v]) => (
-                <option key={k} value={k}>
-                  {v}
-                </option>
-              ))}
-            </select>
-          </label>
-          <button
-            className="primary"
-            disabled={busy}
-            onClick={() => void login(loginRole)}
-          >
-            {busy ? "Demo hazırlanıyor…" : "Demoya giriş yap"}
-            <ArrowUpRight size={17} />
-          </button>
-          {error && (
-            <p role="alert" className="error">
-              {error}
-            </p>
-          )}
-          <div className="login-note">
-            <ShieldCheck size={22} />
-            <p>
-              Yalnızca kurgusal veri. Ozon ve Paraşüt bağlı değil. Gerçek
-              e-Fatura gönderilmez. Rol seçimi demo incelemesi içindir.
-            </p>
-          </div>
-        </section>
+      <main className="workspace-unavailable">
+        <div className="brand-mark">M</div>
+        <h1>Çalışma alanı açılamadı</h1>
+        <p role={error ? "alert" : undefined}>
+          {error ||
+            "Oturumunuz sona ermiş olabilir. Demo Merkezi’nden yeniden giriş yapın."}
+        </p>
+        <Link className="button primary" href="/">
+          Demo Merkezi’ne dön
+        </Link>
       </main>
     );
   const orders = data.orders.filter(
@@ -582,12 +513,7 @@ export function Workspace() {
         <p className="nav-label">ÇALIŞMA ALANI</p>
         <nav>
           {nav
-            .filter((n) =>
-              data.actor.role === "ADMIN" || data.actor.role === "WAREHOUSE"
-                ? data.actor.role === "ADMIN" ||
-                  !["finance", "invoices", "settings"].includes(n.id)
-                : !["settings", "packing"].includes(n.id),
-            )
+            .filter((n) => canOpenSection(data.actor.role, n.id))
             .map((n) => (
               <button
                 key={n.id}
@@ -618,9 +544,12 @@ export function Workspace() {
             <button
               aria-label="Çıkış yap"
               onClick={() => {
-                void api("/api/session", { method: "DELETE" }).then(() =>
-                  setData(null),
-                );
+                void api("/api/session", { method: "DELETE" })
+                  .then(() =>
+                    // eslint-disable-next-line @next/next/no-location-assign-relative-destination -- Ended sessions must discard the complete workspace client state.
+                    window.location.assign("/"),
+                  )
+                  .catch((e: Error) => setError(e.message));
               }}
             >
               <LogOut size={17} />
@@ -637,7 +566,14 @@ export function Workspace() {
             <strong>{nav.find((n) => n.id === section)?.name}</strong>
           </div>
           <div>
-            <span className="demo-tag">DEMO</span>
+            <Link
+              className="demo-center-link"
+              href={`/?returnTo=${section}`}
+              prefetch={false}
+            >
+              <LayoutDashboard size={15} /> Demo Merkezi
+            </Link>
+            <span className="demo-tag">DEMO VERİSİ</span>
             <span className="top-date">
               {new Date().toLocaleDateString("tr-TR", {
                 day: "numeric",

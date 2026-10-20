@@ -44,6 +44,8 @@ Siparişten taslak, liste/detay, yazdırılabilir PDF taslağı, belge durumlar�
 
 Brüt satış, iptal/iade, net satış, komisyon, lojistik, ürün alış maliyeti, ürün/sipariş katkısı, en çok satanlar, satış hızı, stok devri, tarih karşılaştırması, Excel/PDF. TRY/RUB ayrı tutulur. Kur tarihi/değeri izlenir. Eksik maliyette kesin kâr sunulmaz. Formüller ve veri kaynakları belgelenir; raporlar kaynak kayıtlarla mutabıktır.
 
+21 Ekim kullanıcı ek gereksinimi (FX-01, henüz uygulanmadı): ana raporlama TL olacak; TL/EUR/RUB görünümü seçilebilir olacak. Günlük kur alınacak, kaynağı ve güncellenme zamanı gösterilecek. Kaynak sipariş para birimi korunacak; geçmiş tarihli kurla rapor ve güncel kurla değerleme farklı anlamlar olarak ele alınacak. Kaynak/gün kuralı ve yuvarlama geliştirme öncesi belgelenip doğrulanacak.
+
 ### Sistem Yönetimi
 
 Yönetici, depo personeli ve muhasebe rolleri sunucuda uygulanır. Mağaza ayarları, işlem geçmişi, kullanıcı yönetimi ve güvenli demo sıfırlama bulunur. Demo rol seçimi üretim kimlik doğrulaması olarak sunulamaz.
@@ -65,6 +67,8 @@ Ozon Adapter: sipariş/ürün/stok/fiyat/finans/durum. Paraşüt Adapter: satı�
 ## 6. Masaüstü deneyimi
 
 1440×900 / 1920×1080, profesyonel sol menü, yoğun tablolar, sabit başlık, arama/gelişmiş filtre, sütun seçimi/sıralama, toplu işlem çubuğu, klavye kısayolları, barkod okuyucu girişi, hızlı yan panel, belirgin durum, az tıklama. Mobil uyum korunur. Beyaz/koyu lacivert/mavi/nötr renkler; mor AI görünümü, gereksiz gradyan, aşırı yuvarlak ve boşlukla şişirilmiş kartlar yok.
+
+21 Ekim ek yönlendirme: her geliştirme diliminde bir iş bitirilip kullanıcıya belirli ekran/kontrol adımları sunulacak. Tasarım için açık kaynak repo araştırması ve kaynak/karar kaydı tutulacak. Demo giriş/tanıtım ekranı ile günlük çalışma ekranı ayrılacak; aynı demo kayıtları üzerinden kullanım farkı görülebilecek. Gerçek hesap girişi yapılmadan varmış gibi sunulmayacak.
 
 ## 7. Otomatik kabul senaryoları
 

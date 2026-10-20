@@ -12,7 +12,18 @@
 
 DB testleri kendi UUID alanlarını oluşturup temizler; üretim/live workspace üzerinde toplu reset veya regresyon çalıştırma. Migration/test setup eksikse sonucu BLOCKED yaz.
 
-## OPS-01 yeni kabul senaryoları
+## UI-01 — Demo Merkezi ve çalışma ekranı
+
+- [ ] Oturumsuz `/` Demo Merkezi açar; rol ve başlangıç ekranı seçilebilir. İlk giriş tek demo alanı oluşturur; çift tık iki istek göndermez.
+- [ ] Yönetici Operasyon Merkezi, depo Hazırlama Masası, muhasebe Fatura Merkezi ile başlar. Role göre başlangıç seçenekleri ve görev açıklamaları değişir.
+- [ ] Oturumsuz `/workspace` root'a yönlenir. `section=finance` depo rolünde hazırlamaya, `section=settings` muhasebede faturaya düşer. Gerçek veri/komut yetkileri sunucuda ayrıca korunur.
+- [ ] Çalışma ekranında farklı bölüme git → Demo Merkezi → mevcut oturuma devam: aynı alan ve önceki bölüm geri gelir. Ürün/sipariş sayısı/reset generation değişmez.
+- [ ] Demo Merkezi'nde rol değiştir: workspace aynı kalır, rol izinleri güncellenir. Aktif oturumda merkeze dönmek tek başına POST veya seed yapmaz.
+- [ ] Çıkış session'ı kapatır ve root'a döner; yeni giriş yeni alan davranışını korur. Hata durumları görünürdür.
+- [ ] 1440×900 / 1920×1080 ve 390px: giriş eylemi, rol seçimi, dört iş adımı ve geri dönüş okunur; ana sayfa yatay taşmaz. Kullanıcının tasarım/akış kontrolü bekliyor.
+- [ ] E2E login helper yeni root rol etiketini ve role göre başlangıç başlığını kullanır; eski FBS zinciri korunur. Bu turdaki helper güncellemesi E2E koşuldu demek değildir.
+
+## OPS-01 — Önceki hazırlama masası kabulü
 
 - [ ] Yönetici/depo Hazırlama Masası'nı görür; muhasebe görmez. Muhasebe doğrudan mutasyon isteği 403 alır.
 - [ ] ALL yalnız NEW/RESERVED/PACKING/READY FBS gösterir; FBO/iptal/sevk/iade görünmez. En eski tarih + ID sırası sabittir.

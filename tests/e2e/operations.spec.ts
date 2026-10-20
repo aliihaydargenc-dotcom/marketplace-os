@@ -1,10 +1,20 @@
 import { test, expect } from "@playwright/test";
 async function login(page: import("@playwright/test").Page, role = "ADMIN") {
   await page.goto("/");
-  await page.getByRole("combobox").selectOption(role);
+  await page
+    .getByRole("combobox", { name: "Demo rolü", exact: true })
+    .selectOption(role);
   await page.getByRole("button", { name: "Demoya giriş yap" }).click();
   await expect(
-    page.getByRole("heading", { name: "Operasyon Merkezi", exact: true }),
+    page.getByRole("heading", {
+      name:
+        role === "WAREHOUSE"
+          ? "Hazırlama Masası"
+          : role === "ACCOUNTANT"
+            ? "Fatura Merkezi"
+            : "Operasyon Merkezi",
+      exact: true,
+    }),
   ).toBeVisible();
 }
 test("desktop FBS: create → reserve → barcode → ship → invoice → finance → reports → return", async ({
