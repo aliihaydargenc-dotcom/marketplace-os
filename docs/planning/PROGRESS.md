@@ -36,7 +36,7 @@ Kullanıcının “Devam” talimatıyla yalnız OPS-02 uygulandı. Durum IMPLEM
 
 Doğrulama: typecheck/lint (0 uyarı)/format/build PASS. `tests/order-views.test.ts` 4/4 ve `tests/order-views.db.test.ts` 4/4 PASS; toplam 19.02s. DB testleri `dev-ops02-validation` (`br-royal-fog-bael0zdv`) dalında kendi UUID alanlarını oluşturup temizledi. Canlı demo DB'sinde bu testler çalıştırılmadı; bağlantı bilgisi dosyaya/repoya yazılmadı. Test compute'u iş bitiminde suspend isteğiyle durduruldu; dal sonraki Codex kontrolü için korunuyor. Yeni endpoint/saved-view UI için kapsamlı E2E henüz koşulmadı.
 
-CI tanımına yeni DB testi ayrı komut ve açık flag ile eklendi. Uzak GitHub Actions sonucunun başarılı olduğu iddia edilmiyor. Yayın/kısa canlı gözlem ayrıca izlenir.
+CI tanımına yeni DB testi ayrı komut ve açık flag ile eklendi. Uzak GitHub Actions sonucunun başarılı olduğu iddia edilmiyor. Kod commit `1b5c1aa` Vercel production üzerinde READY. Kayıtlı FBS / Sevke hazır görünümü tam yenileme sonrası filtre ve sıralamasıyla korundu; 20 seçim için aday sayıları gözlendi, stok komutu gönderilmedi. [Canlı kapsam ve ekran kanıtı](../research/OPS02_SMOKE.md). Kullanıcı kabulü hâlâ bekliyor.
 
 ### UI-01 — Önceki teslim
 
