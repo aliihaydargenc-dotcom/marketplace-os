@@ -1,3 +1,7 @@
-# Marketplace OS
+# Marketplace OS — Core
 
-Desktop-first Ozon Global operasyon platformu. Geliştirme sürümü; yalnızca kurgusal demo verisi. Gerçek API bağlantısı ve e-Fatura gönderimi yoktur.
+Transaction tabanlı FBS domain, PostgreSQL veri modeli ve izole demo çekirdeği.
+
+npm ci; DATABASE_URL yapılandırın; npm run db:migrate; npm test; npm run build.
+
+Araştırma: docs/REVERSE_ENGINEERING.md. Arayüz ve HTTP operasyonları sonraki commit'tedir.
