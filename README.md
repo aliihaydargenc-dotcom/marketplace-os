@@ -6,10 +6,17 @@ Ozon Global üzerinde satış yapan bir işletme için masaüstü öncelikli, T�
 
 Gerçek Ozon/Paraşüt bağlantısı ve e-Fatura gönderimi yoktur. FBO yalnızca açıkça işaretli referans görünümüdür. API anahtarı gerekmez. Belgeler **DEMO / TASLAK** niteliğindedir.
 
+## Geliştirmeye devam
+
+Önce [AGENTS.md](AGENTS.md), [ürün talimatı](docs/PRODUCT_REQUIREMENTS.md), [yol haritası](docs/planning/ROADMAP.md) ve [güncel ilerleme](docs/planning/PROGRESS.md) okunmalı. Kodlanmış özellik ve doğrulanmış özellik ayrı izlenir. [Codex test devri](docs/planning/TEST_HANDOFF.md) toplu regresyon ve kullanıcı arayüz kontrollerinin bekleyen listesidir.
+
+[Kaynak dizini](docs/research/SOURCE_INDEX.md) ve [REA incelemesi](docs/research/REA.md) araştırma bulguları, sınırlar ve saklanan upstream kaynak dosyalarını içerir. REA CLI/MCP bu çalışma diliminde çalıştırılmadı; kaynak incelemesi yapıldı.
+
 ## Çalışan modüller
 
 - Operasyon Merkezi: DB kayıtlarından göstergeler, tarih/para birimi filtreleri, günlük satış ve işlem kuyruğu.
 - Siparişler: çok satır, SKU/alıcı araması, durum/model/tarih filtreleri, sıralama, sayfalama, sütun seçimi, toplu rezervasyon/sevkiyat, detay paneli ve geçmiş.
+- Hazırlama Masası (OPS-01): yönetici/depo için FBS kuyruğu, stok engeli ve eksik adetler, sipariş/SKU/barkod araması, inline ürün-adet tablosu, Enter ile barkod, manuel rezervasyon ve sevk sonrası sıradakine geçiş. Tüm tarihleri kapsar; yeni ekranın tarayıcı/fiziksel scanner kabulü test devir listesinde bekliyor.
 - Stok & Depo: fiziksel/rezerve/kullanılabilir/karantina bakiyeleri, kritik eşik, maliyet kartı güncelleme, gerekçeli sayım farkı, hareket defteri ve iade QC.
 - Fatura Merkezi: siparişe bağlı unique taslak, hata/iptal/yeniden açma, yazdırma ve tarayıcıdan PDF kaydı.
 - Finans: TRY/RUB ayrı kayıtlar, tarihli kur fotoğrafı, giderler, eksik maliyet uyarısı, sipariş/ürün katkısı, satış hızı, ledger tabanlı stok devri, dönem karşılaştırması, Excel ve PDF raporu.
@@ -65,3 +72,4 @@ Production ve preview için ayrı veritabanı/branch önerilir. Bu demo tek demo
 ## Kapsam dışında kalanlar
 
 Gerçek Ozon/Paraşüt/kargo, FBO operasyonu, gerçek kullanıcı daveti/şifre/MFA, kısmi sevkiyat ve kısmi iade, çoklu mağaza/depo tahsisi, genel muhasebe/vergi, fiyat eşitleme, kapsamlı otomasyon ve canlı finansal mutabakat. Ek kullanıcı kayıtları düzenlenebilir ancak demo girişi üç yerleşik hesaba açıktır. Maliyet fotoğrafı önceki siparişlerde sonradan değişmez; bilinmeyen maliyetin düzeltme/mutabakat işlemi henüz yoktur.
+

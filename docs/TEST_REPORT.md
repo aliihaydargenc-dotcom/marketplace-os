@@ -1,5 +1,11 @@
 # Doğrulama raporu
 
+## 21 Ekim 2026 — OPS-01 ek kontrolü
+
+Hazırlama masası ve repo planlama kayıtları eklendi. Typecheck, lint, format kontrolü ve production build PASS. `npx vitest run tests/packing.test.ts`: **3/3 PASS**, FBS/durum uygunluğu, sıra, rezervasyon/stok engeli, kuyruk ayrımı ve arama. Yeni UI için browser/DB E2E ve fiziksel scanner testi bu turda çalıştırılmadı. Sonraki Codex/kullanıcı kabul listesi: [TEST_HANDOFF.md](planning/TEST_HANDOFF.md). Bu sonuçlar aşağıdaki önceki çalışma sonuçlarını güncel sürümde tekrar doğrulamaz. Vercel yeni commit için ayrı izlenmelidir.
+
+---
+
 Tarih: 20 Ekim 2026, Europe/Istanbul. Yalnız kurgusal demo verisi kullanıldı.
 
 ## Yerel sonuçlar
@@ -61,3 +67,4 @@ Veritabanı paketinin son başarılı çalışması 143.21 saniye sürdü. Topla
 ## Üretim sınırları
 
 FBS yerel demo akışı doğrulanmıştır. Gerçek Ozon/Paraşüt, FBO operasyonu, elektronik belge/vergi uygunluğu, kargo taşıyıcısı takibi, üretim kullanıcı kimliği ve gerçek cihaz testi yapılmış değildir. Detaylar ARCHITECTURE.md ve REVERSE_ENGINEERING.md içindedir.
+

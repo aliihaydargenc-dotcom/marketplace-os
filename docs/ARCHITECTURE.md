@@ -1,5 +1,7 @@
 # Mimari
 
+21 Ekim OPS-01: `src/components/packing-workbench.tsx` ayrı hazırlama ekranı; `src/domain/orders/packing.ts` FBS kuyruk/stok engeli read modeli. Yazma için mevcut `/api/command` → `execute` transaction sınırı kullanılır. Yeni migration, finans kuralı veya istemciden stok yazımı yoktur. `workspace.tsx` ve `execute.ts` ayrıştırması hâlâ açık mimari iştir; dizin ayrımı tamamlanmış servis modülerliği olarak sunulmaz. Kuyruk sayfalama/filtreleme mevcut snapshot üzerinde istemcidedir; yüksek hacim için sunucu sorguları ayrıca tasarlanmalıdır.
+
 Next.js App Router, React, TypeScript, PostgreSQL, Drizzle SQL katmanı, TanStack Table, Recharts, Tailwind/CSS. Modüler monolit; domain modülleri `src/domain`, veritabanı/oturum ve uygulama servisi `src/server`, HTTP sınırı `src/app/api`.
 
 ## Sınırlar
@@ -46,3 +48,4 @@ Sevkiyat transaction'ı: miktar/rezervasyon kontrolü → stok çıkışı → r
 Gerçek kullanıcı kimliği/şifre yenileme/MFA, alan sahipliği ve kullanıcı daveti, hız limiti ve bot koruması, kalıcı audit arşivi, otomatik süre dolan workspace temizliği, yedek/geri yükleme tatbikatı, en az yetkili DB rollerine ayrım, ayrı preview/test veritabanı, canlı entegrasyon ve outbox/job worker, gerçek kargo olayları, elektronik belge vergi/uyumluluk doğrulaması. Bunlar bu demo için yapılmış gibi gösterilmez.
 
 Genel muhasebe defteri, kısmi sevkiyat/iade, çoklu depo tahsisi, değişken komisyon mutabakatı, fiyat yönetimi ve kapsamlı otomasyon motoru bu sürümde bulunmaz. Bu sınırlar arayüzdeki FBS demo davranışını değiştirmez.
+

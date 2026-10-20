@@ -1,0 +1,44 @@
+{
+  "repository": "https://github.com/morluto/rea",
+  "observedPackageVersion": "6.7.0",
+  "repositoryTreeObserved": "0bc2b42001f684beffcf47b70e507443b1a5d320",
+  "note": "Files fetched from main separately; blob SHAs identify exact content. Tree is a separately observed snapshot, not a claimed shared commit pin.",
+  "files": [
+    {
+      "source_url": "https://github.com/morluto/rea/blob/main/README.md",
+      "source_path": "README.md",
+      "blob_sha": "a4da4bb8184998aace2812de66e5a077789e7a3e",
+      "local_path": "docs/research/references/rea/README.md",
+      "read_at": "2026-10-21",
+      "scope": "Upstream source snapshot; not execution evidence",
+      "license": "MIT; see LICENSE"
+    },
+    {
+      "source_url": "https://github.com/morluto/rea/blob/main/LICENSE",
+      "source_path": "LICENSE",
+      "blob_sha": "2d476d24fa5a9ae2ab35e5fd121494049eb2ee5d",
+      "local_path": "docs/research/references/rea/LICENSE",
+      "read_at": "2026-10-21",
+      "scope": "Upstream source snapshot; not execution evidence",
+      "license": "MIT; see LICENSE"
+    },
+    {
+      "source_url": "https://github.com/morluto/rea/blob/main/.agents/skills/reverse-engineer-anything/references/evidence-workflows.md",
+      "source_path": ".agents/skills/reverse-engineer-anything/references/evidence-workflows.md",
+      "blob_sha": "b266299dce57df1b1b8dac8ee123f3489540939b",
+      "local_path": "docs/research/references/rea/evidence-workflows.md",
+      "read_at": "2026-10-21",
+      "scope": "Upstream source snapshot; not execution evidence",
+      "license": "MIT; see LICENSE"
+    },
+    {
+      "source_url": "https://github.com/morluto/rea/blob/main/docs/javascript-application-workflows.md",
+      "source_path": "docs/javascript-application-workflows.md",
+      "blob_sha": "50ebc287b82ad28437af9e99b9494ce0a04efda8",
+      "local_path": "docs/research/references/rea/javascript-application-workflows.md",
+      "read_at": "2026-10-21",
+      "scope": "Upstream source snapshot; not execution evidence",
+      "license": "MIT; see LICENSE"
+    }
+  ]
+}

@@ -1,5 +1,7 @@
 # Araştırma ve ürün kararları
 
+21 Ekim 2026 ek kaydı: [REA kaynak incelemesi](research/REA.md), [kaynak dizini](research/SOURCE_INDEX.md) ve [kaynak dosyası manifesti](research/references/rea/manifest.json). Aşağıdaki 20 Ekim araştırması bu ekle yeniden doğrulanmış sayılmaz. REA kaynakları okunmuş ve MIT lisansıyla saklanmıştır; araç çalıştırılması veya rakip runtime incelemesi iddia edilmez. Ürün talimatı ve sonraki işler [planlama dizinindedir](planning/ROADMAP.md).
+
 İnceleme: 20 Ekim 2026. Yöntem: kamuya açık resmi dokümanlar, açık kaynak veri yapıları ve ürün yardım sayfaları. Kod kopyalanmadı; tüm uygulama TypeScript ile özgün yazıldı. Kapalı uygulamalarda oturum açma/kimlik doğrulama aşılmadı.
 
 ## ERPNext: işlem ilişkileri
@@ -71,3 +73,4 @@ Karar: `OzonAdapter` ve `ParasutAdapter` portları domain'den ayrıdır. Demo ad
 ## Özgün kapsam
 
 Tek işletme/tek mağaza/ana depo ve iade karantinası. `workspace_id` ve `store_id` sınırları çoklu mağaza için temel oluşturur; çoklu mağaza operasyonu henüz etkin değildir. Yerel FBS durumları Ozon'un gerçek status değerleri olarak sunulmaz. Sevkiyat kodları DEMO öneklidir, gerçek kargo etiketi değildir.
+
