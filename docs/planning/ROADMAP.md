@@ -14,11 +14,11 @@ Her görev: sorun, dosya sınırı, bağımlılık, kabul, doğrulama, kalan ris
 
 | Sıra | Görev | Durum / bitiş koşulu |
 | --- | --- | --- |
-| 1 | INV-01 | BACKLOG — referanslı mal kabul/sayım taslağı, onayı, delta ve tek ledger; rezervasyon, karantina ve yetki bütünlüğü |
-| 2 | INT-01 | BACKLOG — demo sağlayıcılar gerçek uygulama kapısından kullanılır; mock sağlayıcı geçişi domain/UI değişmeden kanıtlanır; canlı API yok |
-| 3 | FIN-01 | BACKLOG — hareket tarihi/kohort ayrımı, detay-rapor izlenebilirliği, geçmişi koruyan eksik maliyet düzeltme kuralı ve mutabakat |
-| 4 | DOC-01 | BACKLOG — fatura hata kuyruğu/toplu taslak, gerekçeli durumlar, belge geçmişi ve unique sipariş ilişkisi |
-| 5 | QA-01 teknik bölüm | BACKLOG — ürün talimatındaki 11 kabul senaryosu ve yeni görev kabulleri; eksikler kapanır, gerçek CI engeli kanıtlanır; kullanıcı kabulü yapılmış sayılmaz |
+| 1 | INV-01 | IMPLEMENTED; hedefli DB 7/7 PASS — referanslı mal kabul/sayım taslağı, onayı, delta ve tek ledger; rezervasyon, karantina ve yetki bütünlüğü |
+| 2 | INT-01 | IMPLEMENTED; sağlayıcı/DB kabulü PASS — demo sağlayıcılar gerçek uygulama kapısından kullanılır; mock sağlayıcı geçişi domain/UI değişmeden kanıtlanır; canlı API yok |
+| 3 | FIN-01 | IMPLEMENTED; dönem/maliyet DB kabulü PASS — hareket tarihi/kohort ayrımı, detay-rapor izlenebilirliği, geçmişi koruyan eksik maliyet düzeltme kuralı ve mutabakat |
+| 4 | DOC-01 | IMPLEMENTED; belge geçmişi DB kabulü PASS, toplu UI kullanıcı kabulü bekliyor — fatura hata kuyruğu/toplu taslak, gerekçeli durumlar, belge geçmişi ve unique sipariş ilişkisi |
+| 5 | QA-01 teknik bölüm | Yerel teknik VERIFIED: 15 dosya/70 test + typecheck/lint/format/build PASS; uzak CI kök nedeni BLOCKED/UNVERIFIED, manuel UI kabulü bekliyor |
 | 6 | UX-01 | BACKLOG / ertelendi — bütün mevcut ve yeni ekranlar aynı tasarım sistemiyle; seçilen 2. yön üst gezinme/geniş çalışma alanı referansı; görsel yön seçimi kullanıcı kabulü değildir |
 | 7 | Kullanıcı kabulü | BEKLİYOR — bütünleşik tasarım, geçişler ve günlük iş akışı kullanıcı tarafından denenir; bulgular düzeltilir |
 | 8 | REL-01 | BACKLOG — teknik kontrolü tamamlanan teslim paketinin tek yayını ve commit/READY kanıtı; test için gereken erişilebilir aday sürüm toplu yayın politikasıyla sağlanır |
@@ -28,6 +28,8 @@ SYS-01 gerçek kullanıcı login/davet ve canlı entegrasyonlar sonraki üretim 
 ### Demo işlevsel bitiş kapısı
 
 INV-01 / INT-01 / FIN-01 / DOC-01 kodlanmış, ilgili teknik bütünlük kontrolleri geçmiş ve ürün talimatındaki 11 senaryo için commit/ortam/sonuç kaydı bulunmuş olmalı. Önceki OPS-01 / OPS-02 / FX-01 / CAT-01 / INV-02 / ARCH-01 kanıtları ve açık eksikleri TEST_HANDOFF üzerinden uzlaştırılır. Çalıştırılmamış senaryo VERIFIED olamaz. UI/geçiş kullanıcı kabulü sona bırakılır; stok/finans/yetki hatası çözülmeden sonraki özelliğe geçilmez.
+
+21 Ekim bu paketle dört geliştirme kodlandı; 15 dosya/70 test ve derleme geçti. Test kanıtları PROGRESS/TEST_REPORT içinde, geniş UI/kullanıcı kabulü tamamlanmış sayılmaz. Sıradaki ürün işi UX-01; uzak CI tanılamasının erişim engeli ayrı açık kalır. GitHub Quality artık yalnız elle başlatılır; mevcut uzak CI hatasının kök nedeni kanıtlanamadı.
 
 Aşağıdaki “önceki geliştirme dilimi” bölümleri tarihsel kayıttır. İçlerindeki görev sonrası bekleme ve tasarım sırası ifadeleri geçerli son sırayı değiştirmez.
 

@@ -57,7 +57,7 @@ Domain testleri gerçek PostgreSQL transaction'ları üzerinde iki ayrı test wo
 
 Playwright normalde yerel Chromium kullanır. Kısıtlı ortam için `BUNDLED_CHROMIUM=1 npm run test:e2e` seçeneği ve npm üzerinden gelen headless Chromium paketi bulunur. `BASE_URL` verilirse yerel web sunucusu başlatılmaz. Masaüstü senaryosu 1440×900 ve 1920×1080 ekranlarını, ayrıca 390px taşma kontrolünü içerir.
 
-`.github/workflows/quality.yml` bağımsız PostgreSQL servisinde typecheck/lint/format/test/build/E2E çalıştırır. GitHub Actions sonucunun doğrulanması ayrıca [test raporunda](docs/TEST_REPORT.md) belirtilir.
+`.github/workflows/quality.yml` yalnız elle başlatılır (`workflow_dispatch`); otomatik başarısız run e-postalarını tetikleyen push/PR çalıştırmaları kullanıcı isteğiyle durduruldu. Kontroller kaldırılmadı: bağımsız PostgreSQL servisinde typecheck/lint/format/test/build/E2E çalıştırır. GitHub Actions sonucunun doğrulanması ayrıca [test raporunda](docs/TEST_REPORT.md) belirtilir.
 
 ## Vercel
 
@@ -69,7 +69,7 @@ Production ve preview için ayrı veritabanı/branch önerilir. Bu demo tek demo
 
 ## Uygulama servisleri
 
-ARCH-01 ile sipariş, stok, iade/QC, fatura, finans ve sistem mutasyonları ayrı [uygulama servislerine](src/server/services/README.md) taşındı. Tek komut kapısı yetki, workspace kilidi, demo sürümü, idempotency ve audit sınırını korur; servisler aynı transaction bağlantısını paylaşır. Mal kabul/sayım belgesi hâlâ INV-01 kapsamındadır.
+ARCH-01 ile sipariş, stok, iade/QC, fatura, finans ve sistem mutasyonları ayrı [uygulama servislerine](src/server/services/README.md) taşındı. Tek komut kapısı yetki, workspace kilidi, demo sürümü, idempotency ve audit sınırını korur; servisler aynı transaction bağlantısını paylaşır. INV-01 ile referanslı mal kabul/sayım belgeleri ayrı serviste uygulanır.
 
 ## Dokümantasyon
 
@@ -80,7 +80,7 @@ ARCH-01 ile sipariş, stok, iade/QC, fatura, finans ve sistem mutasyonları ayr�
 
 ## Kapsam dışında kalanlar
 
-Gerçek Ozon/Paraşüt/kargo, FBO operasyonu, gerçek kullanıcı daveti/şifre/MFA, kısmi sevkiyat ve kısmi iade, çoklu mağaza/depo tahsisi, genel muhasebe/vergi, fiyat eşitleme, kapsamlı otomasyon ve canlı finansal mutabakat. Ek kullanıcı kayıtları düzenlenebilir ancak demo girişi üç yerleşik hesaba açıktır. Maliyet fotoğrafı önceki siparişlerde sonradan değişmez; bilinmeyen maliyetin düzeltme/mutabakat işlemi henüz yoktur.
+Gerçek Ozon/Paraşüt/kargo, FBO operasyonu, gerçek kullanıcı daveti/şifre/MFA, kısmi sevkiyat ve kısmi iade, çoklu mağaza/depo tahsisi, genel muhasebe/vergi, fiyat eşitleme, kapsamlı otomasyon ve canlı finansal mutabakat. Ek kullanıcı kayıtları düzenlenebilir ancak demo girişi üç yerleşik hesaba açıktır. Maliyet fotoğrafı önceki siparişlerde sonradan değişmez; eksik maliyet için ayrı, değiştirilemez tamamlama kaydı vardır; resmi muhasebe mutabakatı kapsam dışıdır.
 
 
 FX-01: kaynak RUB/TRY tutar korunur; altında varsayılan TL veya seçilen Euro/Ruble karşılığı. TCMB döviz alış son bülten tarihi ve kontrol saati görünür; alınmayan/bozuk/eski kurda karşılık gösterilmez. Bu güncel yaklaşık değerlemedir; kayıtlı demo işlem kuru ve Excel/PDF özgün tutarları değişmez. [Kaynak/yuvarlama/sınırlar](docs/research/FX01_RESEARCH.md). Ozon gerçek satış bağlantısı henüz eklenmedi.
@@ -88,3 +88,22 @@ FX-01: kaynak RUB/TRY tutar korunur; altında varsayılan TL veya seçilen Euro/
 CAT-01: Stok & Depo'da yeni SKU, kullanılmamış kimlik düzenleme, fiyat/maliyet/eşik/aktiflik ve kaynak kaydı. Kullanılmış ürün kimliği kilitli; pasif ürün yeni siparişe alınmaz. Yeni demo 78 SKU / 263 sipariş; altı açık Ozon ürün referansı ve üç kurgusal FBS siparişi dahil. Eski alanda “Ozon örnek paketini ekle” ile reset gerektirmeden eklenir. Paket stok/fiyat/maliyet/barkod/siparişleri DEMO'dur. Önce `0003_catalog.sql` migration. [Kaynak ve kapsam](docs/research/CAT01_DESIGN.md).
 
 INV-02: Yönetici/depo için ayrı İade & Kalite Kontrol masası. Durum kuyrukları, SKU/barkod/gerekçe araması, referanslı karantina, tam sipariş kabul/ret onayı, finans etkisi ve hareket geçmişi. Kısmi QC yok; mevcut sunucu iş kuralları korunur. [Tasarım ve sınırlar](docs/research/INV02_DESIGN.md).
+
+
+## İşlevsel tamamlama paketi — INV-01 / INT-01 / FIN-01 / DOC-01
+
+Mevcut menü ve sayfa düzeni korunur; kapsamlı tasarım dönüşümü bu pakette yoktur. Canlıya almadan önce `0004`–`0007` migration dosyaları uygulanmalıdır. Bu paket yalnız izole test dalında migrate edildi; GitHub'a kaydetmek canlıda bulunduğu anlamına gelmez.
+
+- Stok & Depo: çok satırlı mal kabul/sayım taslağı, kaynak referansı, isteğe bağlı FBS siparişi, düzenleme/onay/iptal. Taslak stok değiştirmez; onay tek ledger referansı üretir; sayım güncel fiziksel ve rezerve stoğu doğrular. [Plan](docs/planning/INV01_PLAN.md).
+- Demo sağlayıcılar: snapshot okumaları Ozon demo portundan; sevkiyat ve taslak fatura uygulama servislerindeki sağlayıcılardan geçer. Sipariş detayında dış gönderim yapılmadığını gösteren kayıtlar bulunur. Canlı sağlayıcı bu sürümde reddedilir; gelecekte gerçek ağ adaptörü transaction içine eklenmemeli, ayrı teslim/outbox tasarımı gerekir.
+- Finans: sipariş kohortu veya hareket tarihi (UTC) seçimi; aynı mod Excel/PDF'e taşınır. Eksik birim maliyet yalnız yönetici/muhasebe tarafından ayrı referansla tamamlanır; özgün sipariş satırı değiştirilmez. Tüm satırlar tamamlanınca güncel tarihli COGS; kabul edilmiş iadede aynı anda COGS_REVERSAL. [Kurallar](docs/FINANCE.md).
+- Fatura Merkezi: belge bekleyen/hata/taslak/iptal kuyrukları, hata araması, seçili en çok 50 uygun siparişe tekil taslak; sipariş bazlı sonuçlar, ilk hata/belirsizlikte durma. Durum geçmişi neden/aktör/zamanla saklanır. e-Fatura gönderilmez.
+
+İzole DB hedefli kontroller:
+
+```bash
+INVENTORY_DB_TEST=1 node --env-file=.env.local node_modules/vitest/vitest.mjs run tests/inventory-documents.db.test.ts
+OPERATIONS_DB_TEST=1 node --env-file=.env.local node_modules/vitest/vitest.mjs run tests/operations-completion.db.test.ts
+```
+
+Bu bayraklar verilmezse ilgili DB dosyaları atlanır; testin bulunması geçmiş olduğu anlamına gelmez. Sonuçlar TEST_REPORT / PROGRESS içindedir. UI/geçiş ve günlük kullanım kabulü kullanıcıya aittir; teknik bütünlük geliştiricinin sorumluluğudur.

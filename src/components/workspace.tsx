@@ -40,19 +40,22 @@ import type {
   Order,
   Product,
   Role,
-  Invoice,
   Ledger,
   User,
 } from "@/domain/types";
 import { statusLabels, roleLabels } from "@/domain/types";
 import { permissions, type Action } from "@/domain/permissions";
 import type { Command } from "@/domain/orders/commands";
-import { financialSummary, profitability } from "@/domain/finance/calculations";
+import { profitability } from "@/domain/finance/calculations";
 import { DataTable } from "./data-table";
 import { lineContributions } from "@/domain/finance/allocation";
 import { PackingWorkbench } from "./packing-workbench";
 import { OrdersView } from "./orders-view";
 import { ReturnsWorkbench } from "./returns-workbench";
+import { InvoiceWorkbench } from "./invoice-workbench";
+import { CostCorrections } from "./cost-corrections";
+import { reportData, type FinancialDateMode } from "@/domain/finance/reporting";
+import { InventoryDocuments } from "./inventory-documents";
 import { CatalogTools, ProductEditor, ProductSource } from "./catalog-tools";
 import {
   CurrencyDisplayProvider,
@@ -131,6 +134,7 @@ function WorkspaceBody({
       new Date(Date.now() - 29 * 86400000).toISOString().slice(0, 10),
     ),
     [to, setTo] = useState(today);
+  const [financeMode, setFinanceMode] = useState<FinancialDateMode>("COHORT");
   const [orderId, setOrderId] = useState<string | null>(null),
     [productId, setProductId] = useState<string | null>(null),
     [creating, setCreating] = useState(false),
@@ -249,14 +253,19 @@ function WorkspaceBody({
         </Link>
       </main>
     );
-  const orders = data.orders.filter(
-    (o) => o.created_at.slice(0, 10) >= from && o.created_at.slice(0, 10) <= to,
-  );
-  const ids = new Set(
-      orders.filter((o) => o.currency === currency).map((o) => o.id),
-    ),
-    entries = data.financial.filter((e) => ids.has(e.order_id)),
-    summary = financialSummary(entries, currency);
+  const dateMode = section === "finance" ? financeMode : "COHORT";
+  const period = reportData(data, currency, from, to, dateMode);
+  const orders =
+    section === "finance"
+      ? period.orders
+      : data.orders.filter(
+          (o) =>
+            o.created_at.slice(0, 10) >= from &&
+            o.created_at.slice(0, 10) <= to,
+        );
+  const ids = new Set(period.orders.map((o) => o.id)),
+    entries = period.entries,
+    summary = period.summary;
   const span = Math.max(
       1,
       Math.floor(
@@ -269,26 +278,14 @@ function WorkspaceBody({
     previousFrom = new Date(new Date(from).getTime() - span * 86400000)
       .toISOString()
       .slice(0, 10);
-  const previousIds = new Set(
-      data.orders
-        .filter(
-          (o) =>
-            o.currency === currency &&
-            o.created_at.slice(0, 10) >= previousFrom &&
-            o.created_at.slice(0, 10) <= previousTo,
-        )
-        .map((o) => o.id),
-    ),
-    previousSummary = financialSummary(
-      data.financial.filter((f) => previousIds.has(f.order_id)),
-      currency,
-    );
-  const incomplete = orders.filter(
-    (o) =>
-      ids.has(o.id) &&
-      ["SHIPPED", "RETURN_PENDING", "RETURNED"].includes(o.status) &&
-      !profitability(o, entries).complete,
-  ).length;
+  const previousSummary = reportData(
+    data,
+    currency,
+    previousFrom,
+    previousTo,
+    dateMode,
+  ).summary;
+  const incomplete = period.incomplete;
   const low = data.products.filter((p) => p.available <= p.threshold);
   const products = data.products.filter(
     (p) =>
@@ -446,9 +443,11 @@ function WorkspaceBody({
             .filter(
               (e) =>
                 e.kind === "SALE" &&
-                data.orders
-                  .find((o) => o.id === e.order_id)
-                  ?.created_at.slice(0, 10) === day,
+                (dateMode === "MOVEMENT"
+                  ? e.created_at.slice(0, 10)
+                  : data.orders
+                      .find((o) => o.id === e.order_id)
+                      ?.created_at.slice(0, 10)) === day,
             )
             .reduce((s, e) => s + e.amount, 0) / 100,
       };
@@ -599,7 +598,7 @@ function WorkspaceBody({
                 allowed("REPORT") && (
                   <a
                     className="button"
-                    href={`/api/export?format=xlsx&currency=${currency}&from=${from}&to=${to}`}
+                    href={`/api/export?format=xlsx&currency=${currency}&from=${from}&to=${to}&mode=${dateMode}`}
                   >
                     Excel raporu ↗
                   </a>
@@ -998,111 +997,45 @@ function WorkspaceBody({
                 onOpen={(p) => setProductId(p.id)}
                 label="Stok ve depo"
               />
-            </>
-          )}
-          {section === "invoices" && (
-            <>
-              <div className="inventory-summary">
-                <span>
-                  <b>{data.invoices.length}</b> Taslak belge
-                </span>
-                <span>
-                  <b>
-                    {
-                      data.orders.filter(
-                        (o) => o.status === "SHIPPED" && !o.invoice_id,
-                      ).length
-                    }
-                  </b>{" "}
-                  Belge bekleyen
-                </span>
-                <span>Paraşüt: bağlı değil</span>
-              </div>
-              <div className="filterbar">
-                <div className="search-field">
-                  <Search size={17} />
-                  <input
-                    aria-label="Fatura ara"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Belge veya sipariş ara…"
-                  />
-                </div>
-                <select
-                  aria-label="Belge durumu"
-                  value={status}
-                  onChange={(e) => setStatus(e.target.value)}
-                >
-                  <option value="ALL">Tüm durumlar</option>
-                  <option value="DRAFT">Taslak</option>
-                  <option value="ERROR">Hata</option>
-                  <option value="CANCELLED">İptal</option>
-                </select>
-              </div>
-              <DataTable
-                data={data.invoices.filter(
-                  (i) =>
-                    (status === "ALL" || i.status === status) &&
-                    (
-                      i.id +
-                      " " +
-                      data.orders.find((o) => o.id === i.order_id)?.number
-                    )
-                      .toLowerCase()
-                      .includes(search.toLowerCase()),
-                )}
-                columns={
-                  [
-                    {
-                      accessorKey: "id",
-                      header: "Belge",
-                      cell: ({ row }) => (
-                        <div>
-                          <strong>{row.original.id.slice(0, 16)}</strong>
-                          <small>DEMO / TASLAK</small>
-                        </div>
-                      ),
-                    },
-                    {
-                      id: "order",
-                      header: "Sipariş",
-                      accessorFn: (i) =>
-                        data.orders.find((o) => o.id === i.order_id)?.number,
-                    },
-                    {
-                      accessorKey: "status",
-                      header: "Durum",
-                      cell: ({ getValue }) => (
-                        <Badge status={getValue<string>()} />
-                      ),
-                    },
-                    {
-                      accessorKey: "created_at",
-                      header: "Oluşturma",
-                      cell: ({ getValue }) => date(getValue<string>()),
-                    },
-                    {
-                      id: "print",
-                      header: "Belgeyi aç",
-                      cell: ({ row }) => (
-                        <a
-                          className="text-link"
-                          target="_blank"
-                          href={`/invoice/${row.original.id}`}
-                        >
-                          Yazdır / PDF ↗
-                        </a>
-                      ),
-                    },
-                  ] satisfies ColumnDef<Invoice>[]
-                }
-                onOpen={(i) => setOrderId(i.order_id)}
-                label="Fatura taslakları"
+              <InventoryDocuments
+                key={data.workspace.generation}
+                data={data}
+                busy={busy}
+                run={run}
               />
             </>
           )}
+          {section === "invoices" && (
+            <InvoiceWorkbench
+              key={data.workspace.generation}
+              data={data}
+              busy={busy}
+              run={run}
+              reload={load}
+              onOpen={setOrderId}
+            />
+          )}
           {section === "finance" && (
             <>
+              <div className="filterbar">
+                <label>
+                  Finans tarih modu
+                  <select
+                    value={financeMode}
+                    onChange={(e) =>
+                      setFinanceMode(e.target.value as FinancialDateMode)
+                    }
+                  >
+                    <option value="COHORT">Sipariş tarihi kohortu</option>
+                    <option value="MOVEMENT">Finans hareket tarihi</option>
+                  </select>
+                </label>
+                <span className="muted">
+                  UTC takvim günü · Kohort: seçili tarihte açılan siparişlerin
+                  tüm hareketleri. Hareket: yalnız seçili tarihteki finans
+                  kayıtları.
+                </span>
+              </div>
               <div className="metrics">
                 {[
                   { label: "Brüt satış", value: summary.gross },
@@ -1123,7 +1056,9 @@ function WorkspaceBody({
                     <small>
                       {incomplete && m.label.startsWith("Katkı")
                         ? "Kesin kâr değildir; eksik maliyet içerir"
-                        : "Seçili sipariş kohortuna bağlı kayıtlar"}
+                        : dateMode === "MOVEMENT"
+                          ? "Seçili dönemin finans hareketleri"
+                          : "Seçili sipariş kohortuna bağlı kayıtlar"}
                     </small>
                   </article>
                 ))}
@@ -1144,7 +1079,7 @@ function WorkspaceBody({
                 </span>
                 <a
                   className="button"
-                  href={`/api/export?format=pdf&currency=${currency}&from=${from}&to=${to}`}
+                  href={`/api/export?format=pdf&currency=${currency}&from=${from}&to=${to}&mode=${dateMode}`}
                 >
                   PDF raporu ↗
                 </a>
@@ -1246,8 +1181,28 @@ function WorkspaceBody({
                 onOpen={(o) => setOrderId(o.id)}
                 label="Finans mutabakatı"
               />
+              <section className="panel">
+                <h3>Seçili finans hareketleri</h3>
+                <div className="reference-list">
+                  {entries.map((e) => (
+                    <div key={e.id}>
+                      <button
+                        className="text-link"
+                        onClick={() => setOrderId(e.order_id)}
+                      >
+                        {data.orders.find((o) => o.id === e.order_id)?.number ??
+                          e.order_id}
+                      </button>
+                      <span>
+                        {date(e.created_at)} · {e.kind} · {e.id}
+                      </span>
+                      <b>{displayMoney(e.amount, e.currency)}</b>
+                    </div>
+                  ))}
+                </div>
+              </section>
               <ProductAnalytics
-                data={data}
+                data={{ ...data, financial: entries }}
                 orders={orders.filter((o) => ids.has(o.id))}
                 currency={currency}
                 days={Math.max(1, trend.length)}
@@ -1833,6 +1788,24 @@ function WorkspaceBody({
                     </p>
                   </>
                 )}
+                {allowed("CORRECT_MISSING_COST") && (
+                  <CostCorrections
+                    key={order.id}
+                    order={order}
+                    products={data.products}
+                    busy={busy}
+                    run={run}
+                  />
+                )}
+                <h3>Demo sağlayıcı kayıtları</h3>
+                {(data.integrationEvents ?? [])
+                  .filter((e) => e.order_id === order.id)
+                  .map((e) => (
+                    <p key={e.id}>
+                      {date(e.created_at)} · {e.provider} · {e.operation} ·
+                      Dışarı gönderilmedi
+                    </p>
+                  ))}
                 <h3>Stok ve finans bağlantıları</h3>
                 <div className="reference-list">
                   {data.ledger
@@ -1856,11 +1829,26 @@ function WorkspaceBody({
                     .filter((f) => f.order_id === order.id)
                     .map((f) => (
                       <div key={f.id}>
-                        <span>{f.kind}</span>
+                        <span>
+                          {date(f.created_at)} · {f.kind} · {f.id}
+                        </span>
                         <strong>{displayMoney(f.amount, f.currency)}</strong>
                       </div>
                     ))}
                 </div>
+                {data.actor.role !== "WAREHOUSE" && order.invoice_id && (
+                  <details>
+                    <summary>Belge durum geçmişi</summary>
+                    {(data.invoiceEvents ?? [])
+                      .filter((e) => e.order_id === order.id)
+                      .map((e) => (
+                        <p key={e.id}>
+                          {date(e.created_at)} · {e.from_status ?? "Yeni"} →{" "}
+                          {e.to_status} · {e.reason} · {e.actor}
+                        </p>
+                      ))}
+                  </details>
+                )}
                 <h3>İşlem geçmişi</h3>
                 <div className="timeline">
                   {data.audit
@@ -2025,9 +2013,22 @@ function ProductAnalytics({
       const fulfilled = linked.filter((x) =>
         ["SHIPPED", "RETURN_PENDING", "RETURNED"].includes(x.o.status),
       );
-      const units = fulfilled
-        .filter((x) => x.o.status === "SHIPPED")
-        .reduce((s, { l }) => s + l.quantity, 0);
+      const units = fulfilled.reduce(
+        (s, { o, l }) =>
+          s +
+          l.quantity *
+            ((data.financial.some(
+              (e) => e.order_id === o.id && e.kind === "SALE",
+            )
+              ? 1
+              : 0) -
+              (data.financial.some(
+                (e) => e.order_id === o.id && e.kind === "REFUND",
+              )
+                ? 1
+                : 0)),
+        0,
+      );
       const values = fulfilled.reduce(
         (acc, { o }) => {
           const row = lineContributions(o, data.financial).find(

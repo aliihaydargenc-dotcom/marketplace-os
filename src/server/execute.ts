@@ -1,3 +1,10 @@
+import { applyCostCorrection } from "./services/cost-corrections";
+import {
+  demoProviders,
+  requireDemo,
+  type IntegrationProviders,
+} from "./services/integrations";
+import { applyInventoryDocument } from "./services/inventory-documents";
 import { createHash, randomUUID } from "node:crypto";
 import { rows, sql, transaction, type Tx } from "./db";
 import type { Actor } from "@/domain/types";
@@ -15,9 +22,11 @@ export async function execute(
   input: Command,
   key: string,
   generation: number,
+  providers: IntegrationProviders = demoProviders(),
 ) {
   const command = commandSchema.parse(input);
   authorize(actor.role, command.action);
+  requireDemo(providers);
   const fingerprint = createHash("sha256")
     .update(JSON.stringify(command))
     .digest("hex");
@@ -48,7 +57,12 @@ export async function execute(
         throw new DomainError("İşlem anahtarı farklı istekle kullanılmış");
       return receipt.result;
     }
-    const reference = await apply(tx, { ...actor, role: user.role }, command);
+    const reference = await apply(
+      tx,
+      { ...actor, role: user.role },
+      command,
+      providers,
+    );
     const result = { reference };
     await tx.execute(
       sql`INSERT INTO command_receipts VALUES(${w}::uuid,${key},${fingerprint},${JSON.stringify(result)}::jsonb)`,
@@ -59,7 +73,12 @@ export async function execute(
     return result;
   });
 }
-async function apply(tx: Tx, a: Actor, c: Command): Promise<string> {
+async function apply(
+  tx: Tx,
+  a: Actor,
+  c: Command,
+  providers: IntegrationProviders,
+): Promise<string> {
   switch (c.action) {
     case "CREATE_PRODUCT":
     case "UPDATE_CATALOG":
@@ -70,13 +89,20 @@ async function apply(tx: Tx, a: Actor, c: Command): Promise<string> {
     case "SCAN":
     case "SHIP":
     case "CANCEL":
-      return applyOrder(tx, a, c);
+      return applyOrder(tx, a, c, providers);
+    case "CREATE_INVENTORY_DOCUMENT":
+    case "UPDATE_INVENTORY_DOCUMENT":
+    case "CONFIRM_INVENTORY_DOCUMENT":
+    case "CANCEL_INVENTORY_DOCUMENT":
+      return applyInventoryDocument(tx, a, c);
     case "ADJUST":
     case "PRODUCT":
       return applyInventory(tx, a, c);
     case "RETURN":
     case "QC":
       return applyReturn(tx, a, c);
+    case "CORRECT_MISSING_COST":
+      return applyCostCorrection(tx, a, c);
     case "INVOICE":
     case "INVOICE_STATUS":
       return applyInvoice(
@@ -84,6 +110,7 @@ async function apply(tx: Tx, a: Actor, c: Command): Promise<string> {
         a,
         c,
         await loadFbsOrder(tx, a.workspaceId, c.orderId),
+        providers,
       );
     case "SETTINGS":
     case "USER":

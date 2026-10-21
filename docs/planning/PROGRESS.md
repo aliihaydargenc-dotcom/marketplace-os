@@ -167,3 +167,24 @@ Mevcut düzen işlevsel geliştirmeler tamamlanana kadar korunacak. UX-01 tasar�
 Sıra: INV-01 → INT-01 → FIN-01 → DOC-01 → teknik QA-01 → UX-01 → kullanıcı kabulü/eksik düzeltmeleri → nihai toplu teslim. Gerçek üretim kimliği ve canlı entegrasyonlar demo bitiş kapısına gizlice eklenmez. Güncel ayrıntılar ROADMAP içinde.
 
 Bu dilimde AGENTS, ürün talimatı, ROADMAP, PROGRESS ve TEST_HANDOFF tutarlı hale getirildi. Uygulama kodu, ekran düzeni, DB, migration ve vercel.json değişmedi. Yeni özellik uygulanmadı; mevcut testlerin yeniden geçtiği iddia edilmez. Dokümantasyon değişikliği için deploy yapılmaz. Son belgelenmiş canlı d0f13f0; bu turda canlı yeniden doğrulanmadı.
+
+
+### INV-01 / INT-01 / FIN-01 / DOC-01 — İşlevsel tamamlama paketi
+
+21 Ekim son kullanıcı talimatıyla mevcut ana düzen korunarak dört kalan demo geliştirmesi uygulandı. Yeni bileşenler mevcut bölümlere bağlandı; kapsamlı UX-01 dönüşümü, üst gezinme veya animasyon denemesi yapılmadı.
+
+- INV-01: 0004, ayrı document servis/şema/bileşeni; mal kabul/sayım taslağı, kaynak referansı/isteğe bağlı FBS siparişi, çok satır, sürümlü güncelleme, açık onay ve gerekçeli iptal. Taslak stok değiştirmez; sayım fiziksel tabanı ve rezerve alt sınırını kontrol eder; onay tek ledger referansıdır. İlk testte workspace silme FK sırası hatası görüldü; yeni sahiplik FK'leri deferred yapıldı, izole migration tekrar uygulandı. Son hedefli koşu temizleme dahil 7/7 PASS (281.22s toplam; test 228.46s).
+- INT-01: snapshot okumaları demo Ozon portundan, SHIP syncStatus ve yeni taslak salesInvoice çağrısı gerçek uygulama sınırından geçer. Sunucu sağlayıcı enjeksiyonu; canlı mod reddi; sent=false/mode=demo kayıtları. Dış ağ yazması yok, gerçek entegrasyon açılmadı. Sağlayıcı hatası tüm yerel transaction'ı geri alır. Canlı ağ için ayrıca outbox gerekir.
+- FIN-01: ortak COHORT/MOVEMENT read modeli; UI, önceki dönem ve Excel/PDF aynı modda; hareket ID/tarih/sipariş bağlantıları. Eksik birim maliyet ayrı, değiştirilemez kayıtla tamamlanır; orijinal sipariş satırı korunur. Tüm satırlar tamamlanınca COGS; kabul edilmiş iadede aynı transaction COGS_REVERSAL. Depo rolüne yeni maliyetler/history gönderilmez.
+- DOC-01: belge bekleyen/hata/taslak/iptal kuyruğu, arama, seçili en çok 50 uygun siparişe tekil taslak, sonuç listesi ve ilk hata/belirsizlikte durma. Belge durum değişiklikleri neden/aktör/zamanla ayrı geçmişe yazılır; iade iptali de dahil. Eski seed için geçmiş uydurulmaz.
+
+0004–0007 yalnız izole `dev-ops02-validation` dalında uygulandı. Canlı migration, reset veya deploy yapılmadı. Node 24 typecheck/lint (0 uyarı)/format/build PASS. Saf finans/raporlama/sağlayıcı kontrolü 8/8 PASS. Yeni üç aşamanın 6 DB kabulü PASS (112.405s test); mevcut 16 domain kabulü PASS (290.158s). Toplu sonuç: **15 dosya / 70 test PASS**, 644.96s; bayraklı katalog, kişisel görünüm, stok belgesi ve işlevsel tamamlama DB dosyaları dahil. Atlanan test yok. UI/geçiş, fiziksel scanner, Excel/PDF dosyalarının manuel açılması ve kullanıcı kabulü bekliyor.
+
+### Bildirim nedeni ve değişikliği
+
+Kullanıcının e-posta istemediği kaydedildi; gelişmeler konuşmadan bildirilir. Gmail salt okunur aramada marketplace-os Quality başarısızlık mailleri, en son 12880fd commit'i için de doğrulandı. GitHub run 39575718102 / job 119140611559: adımlar boş, runner_id=0; log isteği 404 BlobNotFound. Kök neden bunlardan kesin çıkarılamaz; CI düzeldi denmez. Quality otomatik push/PR yerine yalnız workflow_dispatch ile elle başlatılacak şekilde değiştirildi; kalite adımları korunup yeni DB dosyaları eklendi. Kullanıcı istemeden uzak run/retry başlatılmadı. Bu repo dışındaki mailler ve hesap genelindeki bildirim ayarları değiştirilmedi. E-posta gönderilmedi, otomasyon oluşturulmadı.
+
+
+### Bu paketin kapanış durumu
+
+INV-01 / INT-01 / FIN-01 / DOC-01 kodlandı; ilgili sunucu/DB/saf hesap kabulleri ve mevcut regresyonlar geçti. QA-01 yerel teknik bölümü PASS; uzak GitHub CI kök nedeni BLOCKED/UNVERIFIED (run adımları yok, log 404), yeni remote run kullanıcı e-posta talebi nedeniyle başlatılmadı. Geniş UI/geçiş, scanner ve kullanıcı kabulü son tasarım aşaması sonrasında açık kalır. UX-01 henüz uygulanmadı; sıradaki ürün çalışmasıdır. Yeni production yayını yapılmadı. Mevcut canlı d0f13f0 önceki kayıt olup bu tur yeniden ölçülmedi.

@@ -1,3 +1,4 @@
+import type { InventoryDocument } from "./inventory/documents";
 export type Role = "ADMIN" | "WAREHOUSE" | "ACCOUNTANT";
 export type OrderStatus =
   | "NEW"
@@ -46,6 +47,7 @@ export interface OrderLine {
   unit_cost_try: number | null;
 }
 export interface Order {
+  cost_corrections?: Record<string, number>;
   id: string;
   number: string;
   customer: string;
@@ -124,7 +126,28 @@ export interface WorkspaceSnapshot {
   orders: Order[];
   ledger: Ledger[];
   financial: FinancialEntry[];
+  invoiceEvents?: {
+    id: string;
+    invoice_id: string;
+    order_id: string;
+    from_status: Invoice["status"] | null;
+    to_status: Invoice["status"];
+    reason: string;
+    actor: string;
+    created_at: string;
+  }[];
   invoices: Invoice[];
+  integrationEvents?: {
+    id: string;
+    order_id: string;
+    provider: string;
+    operation: string;
+    reference: string;
+    mode: "demo";
+    sent: false;
+    created_at: string;
+  }[];
+  inventoryDocuments?: InventoryDocument[];
   returns: ReturnRecord[];
   audit: AuditEvent[];
   users: User[];

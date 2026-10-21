@@ -1,5 +1,9 @@
 import type { Order, FinancialEntry } from "../types";
-import { costInOrderCurrency, financialSummary } from "./calculations";
+import {
+  costInOrderCurrency,
+  financialSummary,
+  effectiveUnitCost,
+} from "./calculations";
 /** Exact minor-unit allocation; deterministic largest remainders preserve totals. */
 export function allocate(amount: number, weights: number[]): number[] {
   const total = weights.reduce((s, w) => s + w, 0);
@@ -34,14 +38,17 @@ export function lineContributions(order: Order, entries: FinancialEntry[]) {
     refunds = allocate(summary.refunds, weights),
     commission = allocate(summary.commission, weights),
     logistics = allocate(summary.logistics, weights);
-  const complete = order.lines.every((l) => l.unit_cost_try !== null),
-    hasCost = own.some((e) => e.kind === "COGS"),
-    reversed = own.some((e) => e.kind === "COGS_REVERSAL");
+  const complete = order.lines.every(
+      (l) => effectiveUnitCost(order, l) !== null,
+    ),
+    costWeights = order.lines.map(
+      (l) =>
+        l.quantity *
+        costInOrderCurrency(effectiveUnitCost(order, l) ?? 0, order),
+    );
+  const costs = allocate(summary.cost, costWeights);
   return order.lines.map((l, i) => {
-    const cost =
-      complete && hasCost && !reversed
-        ? l.quantity * costInOrderCurrency(l.unit_cost_try!, order)
-        : 0;
+    const cost = costs[i];
     return {
       productId: l.product_id,
       net: sales[i] - refunds[i],

@@ -1,4 +1,9 @@
-import type { FinancialEntry, Order } from "../types";
+import type { FinancialEntry, Order, OrderLine } from "../types";
+export function effectiveUnitCost(order: Order, line: OrderLine) {
+  return (
+    line.unit_cost_try ?? order.cost_corrections?.[line.product_id] ?? null
+  );
+}
 export function costInOrderCurrency(
   costTry: number,
   order: Pick<Order, "currency" | "fx_rate">,
@@ -35,7 +40,9 @@ export function financialSummary(
   };
 }
 export function profitability(order: Order, entries: FinancialEntry[]) {
-  const complete = order.lines.every((l) => l.unit_cost_try !== null);
+  const complete = order.lines.every(
+    (l) => effectiveUnitCost(order, l) !== null,
+  );
   const values = financialSummary(
     entries.filter((e) => e.order_id === order.id),
     order.currency,

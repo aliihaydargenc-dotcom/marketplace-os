@@ -8,8 +8,11 @@ Her servis çağıranın aynı `Tx` bağlantısını kullanır; kendi pool/datab
 | --- | --- |
 | orders.ts | Sipariş oluşturma, rezervasyon, barkod, sevkiyat ve iptal |
 | inventory.ts | Referanslı ledger hareketi, gerekçeli stok düzeltme, eski maliyet/eşik kartı komutu |
+| inventory-documents.ts | Referanslı mal kabul/sayım taslağı, güncelleme, atomik onay/iptal ve okuma modeli |
 | returns.ts | Karantinaya iade ve tam sipariş QC kararı |
-| invoices.ts | Unique demo taslağı ve belge durumları |
+| invoices.ts | Unique demo taslağı, gerekçeli durum geçmişi ve iade iptali |
+| integrations.ts | Sunucu demo sağlayıcı portları, demo modu/receipt kontrolü ve gönderilmedi kaydı |
+| cost-corrections.ts | Orijinal satırı koruyan eksik maliyet tamamlama ve güncel COGS/ters kayıt |
 | finance.ts | Sevkiyat finans kayıtları ve kabul edilen iadenin maliyet geri alımı |
 | system.ts | Mağaza ayarı, kullanıcı kaydı ve workspace reset |
 | order-context.ts | Workspace kapsamlı FBS okuma ve durum yazma |

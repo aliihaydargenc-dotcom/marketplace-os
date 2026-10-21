@@ -1,3 +1,5 @@
+import { readIntegrationSource, demoProviders } from "./services/integrations";
+import { inventoryDocuments } from "./services/inventory-documents";
 import { database, sql, rows, type Conn } from "./db";
 import type {
   Actor,
@@ -15,6 +17,7 @@ import type {
 export async function snapshot(
   actor: Actor,
   conn: Conn = database(),
+  providerFactory: typeof demoProviders = demoProviders,
 ): Promise<WorkspaceSnapshot> {
   const w = actor.workspaceId;
   // One repeatable-read transaction is used by the HTTP endpoint to avoid mixing generations.
@@ -38,6 +41,19 @@ export async function snapshot(
     o.lines = lines.filter((l) => l.order_id === o.id);
     o.total = o.lines.reduce((s, l) => s + l.quantity * l.unit_price, 0);
   });
+  const corrections =
+    actor.role === "WAREHOUSE"
+      ? []
+      : await rows<{ order_id: string; product_id: string; cost_try: number }>(
+          conn,
+          sql`SELECT order_id,product_id,cost_try FROM order_cost_corrections WHERE workspace_id=${w}::uuid`,
+        );
+  for (const o of orders)
+    o.cost_corrections = Object.fromEntries(
+      corrections
+        .filter((c) => c.order_id === o.id)
+        .map((c) => [c.product_id, c.cost_try]),
+    );
   const ledger = await rows<Ledger>(
     conn,
     sql`SELECT id,product_id,warehouse_id,quantity,kind,reference,reason,actor,created_at FROM stock_ledger WHERE workspace_id=${w}::uuid ORDER BY created_at DESC`,
@@ -70,15 +86,38 @@ export async function snapshot(
     products.forEach((p) => (p.cost_try = null));
     orders.forEach((o) => o.lines.forEach((l) => (l.unit_cost_try = null)));
   }
+  const projected = await readIntegrationSource(
+    {
+      orders,
+      products,
+      financial: actor.role === "WAREHOUSE" ? [] : financial,
+    },
+    providerFactory,
+  );
+  const integrationEvents = await rows<
+    NonNullable<WorkspaceSnapshot["integrationEvents"]>[number]
+  >(
+    conn,
+    sql`SELECT id,order_id,provider,operation,reference,mode,sent,created_at FROM integration_events WHERE workspace_id=${w}::uuid AND (${actor.role} <> 'WAREHOUSE' OR provider='OZON') ORDER BY created_at DESC`,
+  );
   return JSON.parse(
     JSON.stringify({
       workspace,
       actor,
-      products,
-      orders,
+      products: projected.products,
+      orders: projected.orders,
+      integrationEvents,
       ledger,
+      invoiceEvents:
+        actor.role === "WAREHOUSE"
+          ? []
+          : await rows(
+              conn,
+              sql`SELECT id,invoice_id,order_id,from_status,to_status,reason,actor,created_at FROM invoice_events WHERE workspace_id=${w}::uuid ORDER BY created_at DESC`,
+            ),
       invoices: actor.role === "WAREHOUSE" ? [] : invoices,
-      financial: actor.role === "WAREHOUSE" ? [] : financial,
+      financial: actor.role === "WAREHOUSE" ? [] : projected.financial,
+      inventoryDocuments: await inventoryDocuments(conn, w),
       returns,
       audit:
         actor.role === "WAREHOUSE"
@@ -92,6 +131,10 @@ export async function snapshot(
                 "RETURN",
                 "QC",
                 "ADJUST",
+                "CREATE_INVENTORY_DOCUMENT",
+                "UPDATE_INVENTORY_DOCUMENT",
+                "CONFIRM_INVENTORY_DOCUMENT",
+                "CANCEL_INVENTORY_DOCUMENT",
               ].includes(e.action),
             )
           : audit,

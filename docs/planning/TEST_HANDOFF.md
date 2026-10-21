@@ -117,3 +117,14 @@ Sonuç tablosu: commit SHA / ortam / komut veya manuel adım / PASS-FAIL-BLOCKED
 - [ ] Kullanıcı: Hazırlama Masası'nda rezervasyon → barkod → sevkiyat; aynı siparişin stok hareketi, fatura ve finansını kontrol et.
 - [ ] Kullanıcı: İade & Kalite Kontrol üzerinden bir demo iade kararı; karantina/satılabilir ayrımını kontrol et.
 - [ ] Kapsamlı tarayıcı E2E / uzak CI; bu sunucu ayrımı yerel build'in browser kabulü olduğu anlamına gelmez.
+
+
+## İşlevsel tamamlama paketi — kullanıcı kabulü hâlâ bekliyor
+
+- [ ] Stok & Depo: çok satırlı mal kabul/sayım taslağı, düzeltme, açık onay, iptal ve kaynak sipariş/ledger/audit bağlantıları. Klavye ve dar ekranda satır alanları.
+- [ ] Fatura Merkezi: belge bekleyen/hata/taslak/iptal kuyrukları; seçim, en çok 50 taslak ve sipariş bazlı sonuç; ilk hatadan sonra kalanların durması. İade sonrası yeniden açma engeli, gerekçeli geçmiş, PDF bağlantısı.
+- [ ] Finans: COHORT/MOVEMENT aynı tarih/para biriminde farklı ve açıklanabilir sonuç; Excel/PDF mod ve tutar mutabakatı. Hareketten sipariş detayına geçiş.
+- [ ] Eksik maliyet: tamamlamada özgün satır değişmez; kısmi tamamlama hâlâ eksik gösterir; son satır COGS üretir; QC kabulü varsa ters kayıt vardır. Depo rolünde maliyet görünmez.
+- [ ] Sipariş detayındaki demo sağlayıcı kayıtları “dışarı gönderilmedi” olarak görünür. Gerçek Ozon/Paraşüt veya e-Fatura bağlantısı iddia edilmez.
+
+Geliştirici hedefli dosyaları: inventory-documents.db.test.ts, operations-completion.db.test.ts, reporting-periods.test.ts, integrations.test.ts. Bayraklar README'de. Toplu test ve derleme sonucu PROGRESS/TEST_REPORT içinde kaydedilir. Kullanıcı kabulü işlevsel paket ve kapsamlı tasarım sonrasında yapılır; bu kutular şimdi kullanıcıdan test bekleme şartı değildir.

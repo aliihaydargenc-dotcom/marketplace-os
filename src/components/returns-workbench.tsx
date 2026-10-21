@@ -1,4 +1,5 @@
 "use client";
+import { effectiveUnitCost } from "@/domain/finance/calculations";
 import { useRef, useState } from "react";
 import { Search, RotateCcw } from "lucide-react";
 import type { WorkspaceSnapshot } from "@/domain/types";
@@ -466,7 +467,7 @@ function ReturnStation({
               </span>
             </div>
             <small>
-              {order.lines.some((l) => l.unit_cost_try === null)
+              {order.lines.some((l) => effectiveUnitCost(order, l) === null)
                 ? "Eksik ürün maliyeti var; maliyet etkisi tam hesaplanamaz."
                 : "Tutarlar kayıtlı işlem para biriminde; küçük karşılıklar güncel TCMB değerlemesidir."}
             </small>

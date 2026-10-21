@@ -35,17 +35,21 @@ export async function GET(request: Request) {
     const url = new URL(request.url);
     const q = z
       .object({
+        mode: z.enum(["COHORT", "MOVEMENT"]).default("COHORT"),
         format: z.enum(["xlsx", "pdf"]),
         currency: z.enum(["RUB", "TRY"]),
         from: z.iso.date(),
         to: z.iso.date(),
+      })
+      .refine((q) => q.from <= q.to, {
+        message: "Başlangıç tarihi bitişten sonra olamaz",
       })
       .parse(Object.fromEntries(url.searchParams));
     const s = await database().transaction((tx) => snapshot(a, tx), {
         isolationLevel: "repeatable read",
         accessMode: "read only",
       }),
-      r = reportData(s, q.currency, q.from, q.to);
+      r = reportData(s, q.currency, q.from, q.to, q.mode);
     const headers = {
       "Cache-Control": "private, no-store",
       "Content-Disposition": `attachment; filename="marketplace-report.${q.format}"`,
@@ -100,6 +104,7 @@ export async function GET(request: Request) {
       summary.addRows([
         ["DEMO / TASLAK"],
         ["Dönem", q.from, q.to],
+        ["Tarih modu", q.mode, "UTC takvim günü"],
         ["Para birimi", q.currency],
         ...Object.entries(r.summary).map(([k, v]) => [k, v / 100]),
         ["Eksik maliyetli sipariş", r.incomplete],
@@ -109,9 +114,23 @@ export async function GET(request: Request) {
         ],
       ]);
       const ledger = book.addWorksheet("Finans hareketleri");
-      ledger.addRow(["İşlem ID", "Sipariş ID", "Tür", "Tutar", "Para birimi"]);
+      ledger.addRow([
+        "İşlem ID",
+        "Sipariş ID",
+        "Tür",
+        "Tutar",
+        "Para birimi",
+        "İşlem tarihi",
+      ]);
       r.entries.forEach((e) =>
-        ledger.addRow([e.id, e.order_id, e.kind, e.amount / 100, e.currency]),
+        ledger.addRow([
+          e.id,
+          e.order_id,
+          e.kind,
+          e.amount / 100,
+          e.currency,
+          e.created_at,
+        ]),
       );
       const productSheet = book.addWorksheet("Ürün katkısı");
       productSheet.addRow([
@@ -169,7 +188,9 @@ export async function GET(request: Request) {
       y -= size + 10;
     };
     line("MARKETPLACE OS - DEMO / TASLAK", 18);
-    line(`Siparis kohortu: ${q.from} / ${q.to} - ${q.currency}`);
+    line(
+      `${q.mode === "COHORT" ? "Siparis kohortu" : "Finans hareket tarihi"}: ${q.from} / ${q.to} - ${q.currency} (UTC)`,
+    );
     Object.entries(r.summary).forEach(([k, v]) =>
       line(`${k}: ${(v / 100).toFixed(2)} ${q.currency}`),
     );

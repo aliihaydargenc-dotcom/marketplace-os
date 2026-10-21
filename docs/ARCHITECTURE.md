@@ -61,3 +61,14 @@ Gerçek kullanıcı kimliği/şifre yenileme/MFA, alan sahipliği ve kullanıcı
 
 Genel muhasebe defteri, kısmi sevkiyat/iade, çoklu depo tahsisi, değişken komisyon mutabakatı, fiyat yönetimi ve kapsamlı otomasyon motoru bu sürümde bulunmaz. Bu sınırlar arayüzdeki FBS demo davranışını değiştirmez.
 
+
+
+## 21 Ekim işlevsel tamamlama
+
+INV-01: inventory_documents / inventory_document_lines; ana depoya referanslı çok satırlı taslak/onay/iptal; aynı execute transaction kapısı. Sayım tabanı fiziksel stokla tutarlı olmalı; yeni rezervasyon güncel alt sınırı belirler. Workspace silme grafiği için sahiplik FK'leri deferred, reset çocuk tabloları önce siler.
+
+INT-01: sunucuya özel `IntegrationProviders` execute/snapshot sınırında enjekte edilir; istemci sağlayıcı seçemez. Varsayılan demo sağlayıcıları dış ağa yazmaz. Snapshot Ozon demo okuma portunu; sevkiyat syncStatus ve fatura taslağı salesInvoice portlarını kullanır. `integration_events` sent=false/mode=demo kısıtlıdır. Servis çağrısı/receipt/history/audit hatasında yerel stok/sipariş/finans/fatura birlikte rollback olur. Gerçek dış servis geri alınamaz; canlı entegrasyon için ayrıca outbox ve yeniden deneme tasarımı gerekir. Demo port bağlantısı gerçek Ozon/Paraşüt entegrasyonu olarak sunulmaz.
+
+FIN-01: orijinal maliyet fotoğrafından ayrı order_cost_corrections; özgün satır salt okunur. Tekil COGS ve kabul edilmiş iadede COGS_REVERSAL aynı transaction. Pure domain reporting COHORT/MOVEMENT davranışını ekran ve export için ortaklaştırır.
+
+DOC-01: invoice_events değişimden önceki/sonraki durum, neden, aktör ve zamanı tutar; iade kaynaklı iptal de buna dahildir. Önceki seed faturaları için geçmiş uydurulmaz. Toplu taslak, her sipariş için mevcut yetkili/idempotent komutu ayrı transaction'da çalıştırır; bir siparişte hata diğerinin kaydını bozmaz, ilk hatadan sonrakiler başlatılmaz.

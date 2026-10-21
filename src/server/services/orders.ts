@@ -1,3 +1,4 @@
+import { recordIntegration, type IntegrationProviders } from "./integrations";
 import { randomUUID } from "node:crypto";
 import { rows, sql, type Tx } from "../db";
 import type { Actor } from "@/domain/types";
@@ -15,6 +16,7 @@ export async function applyOrder(
     Command,
     { action: "CREATE_ORDER" | "RESERVE" | "SCAN" | "SHIP" | "CANCEL" }
   >,
+  providers: IntegrationProviders,
 ): Promise<string> {
   const w = a.workspaceId;
   if (c.action === "CREATE_ORDER") {
@@ -118,12 +120,26 @@ export async function applyOrder(
     await tx.execute(
       sql`UPDATE orders SET status='SHIPPED',shipped_at=now() WHERE workspace_id=${w}::uuid AND id=${o.id}`,
     );
+    await recordIntegration(
+      tx,
+      w,
+      o.id,
+      "OZON",
+      "DEMO_SHIPPED",
+      o.id,
+      await providers.ozon.syncStatus({
+        externalOrderId: o.id,
+        externalStatus: "DEMO_SHIPPED",
+        idempotencyKey: o.id,
+      }),
+    );
     await recordShipmentFinance(tx, a, o);
     const [settings] = await rows<{ settings: { autoDraft: boolean } }>(
       tx,
       sql`SELECT settings FROM workspaces WHERE id=${w}::uuid`,
     );
-    if (settings.settings.autoDraft) await draft(tx, w, o.id);
+    if (settings.settings.autoDraft)
+      await draft(tx, w, o.id, providers, a.userId);
   }
   if (c.action === "CANCEL") {
     if (o.status === "CANCELLED") return o.id;

@@ -1,3 +1,4 @@
+import { changeInvoiceStatus } from "./invoices";
 import { rows, sql, type Tx } from "../db";
 import type { Actor } from "@/domain/types";
 import { DomainError } from "@/domain/permissions";
@@ -38,8 +39,13 @@ export async function applyReturn(
       "REFUND",
       -o.lines.reduce((s, l) => s + l.quantity * l.unit_price, 0),
     );
-    await tx.execute(
-      sql`UPDATE invoices SET status='CANCELLED' WHERE workspace_id=${w}::uuid AND order_id=${o.id}`,
+    await changeInvoiceStatus(
+      tx,
+      a,
+      o.id,
+      "CANCELLED",
+      `İade: ${c.reason}`,
+      true,
     );
     await update("RETURN_PENDING");
   }

@@ -1,0 +1,24 @@
+.inventory-documents .document-lines {
+  overflow-x: auto;
+  max-width: 100%;
+}
+.inventory-documents .document-lines table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.inventory-documents .document-lines th,
+.inventory-documents .document-lines td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid var(--border, #e2e8f0);
+}
+.inventory-documents fieldset {
+  min-width: 0;
+}
+.inventory-documents .filterbar {
+  flex-wrap: wrap;
+}
+.inventory-documents select,
+.inventory-documents input {
+  max-width: 100%;
+}

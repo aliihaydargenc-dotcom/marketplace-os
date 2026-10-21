@@ -1,8 +1,8 @@
 name: Quality
 on:
-  push:
-    branches: [main]
-  pull_request:
+  # Automatic runs paused at the user's request: repeated failed-run emails.
+  # Local quality checks remain required; remote checks can be started explicitly.
+  workflow_dispatch:
 permissions:
   contents: read
 jobs:
@@ -44,6 +44,12 @@ jobs:
       - run: npx vitest run tests/catalog.db.test.ts
         env:
           CATALOG_DB_TEST: '1'
+      - run: npx vitest run tests/inventory-documents.db.test.ts
+        env:
+          INVENTORY_DB_TEST: '1'
+      - run: npx vitest run tests/operations-completion.db.test.ts
+        env:
+          OPERATIONS_DB_TEST: '1'
       - run: npm run build
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e

@@ -113,3 +113,20 @@ INV-02 yayın ek kaydı: `545b690` production READY. Yönetici oturumunda durum 
 
 
 ARCH-01 — 21 Ekim 2026: execute komut kapısı korunarak sipariş/stok/iade/fatura/finans/sistem servisleri ayrıldı. İzole `dev-ops02-validation` dalında domain + katalog PostgreSQL regresyonu **23/23 PASS**, toplam **342.32s**. Yeni geç aşama finans hatası senaryosu stok/rezervasyon/sevkiyat/finans/fatura/receipt/audit rollback ve aynı anahtarla düzeltme sonrası tek sevkiyatı doğrular. Typecheck/lint (0 uyarı)/format/build PASS. Test workspace'leri temizlendi; canlı DB'de test/reset/migration yapılmadı. Kapsamlı tarayıcı E2E ve uzak CI bu sonuç kapsamında değildir.
+
+
+## INV-01 / INT-01 / FIN-01 / DOC-01 — 21 Ekim işlevsel tamamlama
+
+Ortam: Node 24.19.0; Neon PostgreSQL 18, yalnız izole dev-ops02-validation (br-royal-fog-bael0zdv). Yeni migration 0004–0007 bu dalda uygulandı; canlı DB ve canlı sürüm değiştirilmedi. Yeni testler UUID workspace'lerinde çalışır ve kendi kayıtlarını temizler.
+
+- `npm run typecheck`, `npm run lint`, `npm run format:check`, `npm run build`: PASS, lint 0 uyarı. Yeni stok/fatura/maliyet bileşenleri React kontrol listesiyle kod üzerinden gözden geçirildi; tarayıcı kabulü sayılmaz.
+- inventory-documents.db.test.ts son hedefli koşu: 7/7 PASS, 281.22s toplam. İlk koşudaki cascade FK temizleme hatası düzeltilip tekrar migrate edildi; eski başarısız koşu PASS diye sayılmadı.
+- finance + reporting-periods + integrations saf paket: 8/8 PASS, 7.28s. Dönem ayrımı, reversal-only ürün mutabakatı, özgün maliyet fotoğrafı ve değiştirilebilir demo portu.
+- operations-completion.db.test.ts: 6/6 PASS, 112.405s test. Sağlayıcı çağrısı/tekil fatura/geçmiş, sağlayıcı hatasında atomik rollback, sahte dış gönderim reddi, maliyet idempotency/yetki/redaksiyon, kabul edilmiş iade sonrası maliyetin ters kaydı, kısmi maliyet tamamlama, yeni tabloların workspace reset/izolasyonu.
+- Mevcut domain.test.ts: 16/16 PASS, 290.158s test. Stok, rezervasyon, sevkiyat, iptal/iade/QC, yarış, yetki, izolasyon ve eski nesil/reset korunur.
+
+Toplu koşu komutu: `CATALOG_DB_TEST=1 ORDER_VIEWS_DB_TEST=1 INVENTORY_DB_TEST=1 OPERATIONS_DB_TEST=1 node --env-file=.env.local node_modules/vitest/vitest.mjs run --testTimeout=120000 --hookTimeout=120000`. Toplu sonuç: **15 dosya / 70 test PASS**, 644.96s toplam (612.26s test). Bayraklı dört ek DB dosyası da çalıştı; atlanan test yok. Kaynak başlangıcı 12880fd; bu raporla aynı teslim commitindeki uygulama kaynakları kontrol edildi. Bu zaman sınırı yalnız uzak test ortamı komutundadır; uygulama timeout'u değiştirilmedi.
+
+Gmail salt okunur gözleminde Quality başarısızlık mailleri doğrulandı. Son uzak run 39575718102 adım çalıştırmamış, log 404; kök neden bilinmiyor. Workflow YAML parse edilerek yalnız workflow_dispatch ve bütün kalite/yeni DB adımları korunduğu kontrol edildi. Uzak CI PASS denmez; tekrar run veya e-posta üreten otomasyon başlatılmadı.
+
+Kapsam dışı/henüz doğrulanmayan: yeni tarayıcı E2E, gerçek scanner, bütünleşik tasarım ve kullanıcının manuel kabulü, Excel/PDF dosyasının elle açılıp gözden geçirilmesi, Vercel READY/yeni canlı smoke. Yeni kod GitHub'da saklansa da yayında değildir.

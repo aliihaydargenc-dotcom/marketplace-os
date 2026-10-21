@@ -1,3 +1,9 @@
+import {
+  createInventoryDocumentSchema,
+  updateInventoryDocumentSchema,
+  confirmInventoryDocumentSchema,
+  cancelInventoryDocumentSchema,
+} from "@/domain/inventory/documents";
 import { z } from "zod";
 import {
   createProductSchema,
@@ -10,6 +16,10 @@ export const commandSchema = z.discriminatedUnion("action", [
   createProductSchema,
   updateProductSchema,
   importOzonDemoSchema,
+  createInventoryDocumentSchema,
+  updateInventoryDocumentSchema,
+  confirmInventoryDocumentSchema,
+  cancelInventoryDocumentSchema,
   z.object({
     action: z.literal("CREATE_ORDER"),
     customer: z.string().trim().min(2).max(100),
@@ -39,6 +49,15 @@ export const commandSchema = z.discriminatedUnion("action", [
     accept: z.boolean(),
     reason,
   }),
+  z
+    .object({
+      action: z.literal("CORRECT_MISSING_COST"),
+      orderId: id,
+      productId: id,
+      costTry: z.number().int().min(0).max(10000000),
+      reason,
+    })
+    .strict(),
   z.object({ action: z.literal("INVOICE"), orderId: id }),
   z.object({
     action: z.literal("INVOICE_STATUS"),

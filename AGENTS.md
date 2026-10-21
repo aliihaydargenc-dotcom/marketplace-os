@@ -41,3 +41,7 @@ DB testleri ve migration için uygulamaya özel ayrı PostgreSQL gerekir. Üreti
 - Normal hedef günde en fazla bir planlı toplu yayın; kullanıcının açık ek yayın isteği veya canlıyı bozan acil düzeltme istisnadır. Bu bir çalışma politikasıdır, Vercel hesabı limitini değiştirmez veya zamanlanmış otomasyon oluşturmaz. Diğer projelerin kullanımını kontrol etmeden toplam hesap kotasının çözüldüğünü iddia etme.
 - Manuel yayın öncesi son canlı commit ile aday SHA'yı ve aynı SHA için mevcut deploy olup olmadığını kontrol et. Günlük limite takılınca otomatik/tekrarlı retry, başka proje açma veya belgeler için yeni deploy denemesi yapma; kodu GitHub'da koru ve engeli bildir.
 - Her teslimde yerel doğrulama, GitHub durumu ve canlı sürümü ayrı söyle. Yayınlanmamış değişiklikler için kullanıcıyı eski canlı ekranda yeni özelliği denemeye gönderme. Yeni canlı kanıtı sonraki çalışma commit'ine kat; salt kanıt yazımı için yeniden yayın çıkarma.
+
+## 21 Ekim — E-posta ve GitHub kontrolü
+
+Kullanıcı tekrarlayan e-posta istemiyor. Geliştirme raporlarını bu konuşmada ver; e-posta gönderme veya bildirimli otomasyon oluşturma. Gmail salt okunur aramada marketplace-os Quality başarısız run mailleri doğrulandı. Quality workflow otomatik push/PR yerine workflow_dispatch ile yalnız açıkça başlatılır; kullanıcı istemedikçe remote run/retry başlatma. Yerel teknik kontroller zorunlu olmaya devam eder. Hesap genelindeki veya diğer projelerin e-posta ayarlarının değiştiğini iddia etme.
