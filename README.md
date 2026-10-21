@@ -2,6 +2,8 @@
 
 [Canlı demoyu aç](https://marketplace-os-amber.vercel.app/) · [Doğrulama raporu](docs/TEST_REPORT.md)
 
+21 Ekim UX03 yerel QA: düzeltmeli adayda 104/104 test ve 12/12 Chromium E2E başarılı; yeni `0009` migration gerekir. [Merge bulguları ve açık sınırlar](docs/qa/UX03_MERGE_20261021.md). Bu sonuç yeni production yayını değildir.
+
 Ozon Global üzerinde satış yapan bir işletme için masaüstü öncelikli, Türkçe operasyon platformu. **Çalışan FBS demo**: sipariş → rezervasyon → barkod doğrulama → sevkiyat → stok çıkışı → fatura taslağı → finans → Excel/PDF rapor.
 
 Gerçek Ozon/Paraşüt bağlantısı ve e-Fatura gönderimi yoktur. FBO yalnızca açıkça işaretli referans görünümüdür. API anahtarı gerekmez. Belgeler **DEMO / TASLAK** niteliğindedir.

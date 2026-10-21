@@ -1,5 +1,7 @@
 # Codex toplu test devri
 
+**21 Ekim güncel Codex sonucu:** yerel düzeltmeli UX03 adayında tüm DB bayrakları açık **104/104 test (0 skipped)**, production build üzerinde Chromium **12/12 (0 retry)** ve typecheck/lint/format/build PASS. Yeni `tests/concurrency.db.test.ts` için `CONCURRENCY_DB_TEST=1`, `tests/migrations.db.test.ts` için `MIGRATION_DB_TEST=1` gerekir; ikinci paket disposable DB oluşturabilmek için CREATEDB yetkisi ister. Migration 0009 dahil uygulanmalı. [Kapsam, başarısızlıklar ve düzeltmeler](../qa/UX03_MERGE_20261021.md). Aşağıdaki kutuların tamamı bu koşuda kapanmış sayılmaz: fiziksel scanner, 30/1000+ ölçek ve kullanıcı manuel kabulü açık kalır. Main/push/deploy yapılmadı; bağımlılık audit bulguları açık.
+
 21 Ekim 2026. Kullanıcı arayüz/geçiş deneyimini elle kontrol edecek. Aşağıdaki liste **bekleyen kabul işleri**dir; geçmiş test iddiası değildir. Eski sonuçlar `../TEST_REPORT.md` içinde tarihli saklanır.
 
 ## Geçerli test sorumluluğu ve zamanlama

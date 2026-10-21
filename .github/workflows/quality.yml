@@ -50,6 +50,12 @@ jobs:
       - run: npx vitest run tests/operations-completion.db.test.ts
         env:
           OPERATIONS_DB_TEST: '1'
+      - run: npx vitest run tests/concurrency.db.test.ts
+        env:
+          CONCURRENCY_DB_TEST: '1'
+      - run: npx vitest run tests/migrations.db.test.ts
+        env:
+          MIGRATION_DB_TEST: '1'
       - run: npm run build
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e

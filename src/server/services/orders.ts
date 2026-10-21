@@ -134,7 +134,9 @@ export async function applyOrder(
     await tx.execute(
       sql`UPDATE orders SET status='SHIPPED',shipped_at=now() WHERE workspace_id=${w}::uuid AND id=${o.id}`,
     );
-    await tx.execute(sql`DELETE FROM packing_claims WHERE workspace_id=${w}::uuid AND order_id=${o.id}`);
+    await tx.execute(
+      sql`DELETE FROM packing_claims WHERE workspace_id=${w}::uuid AND order_id=${o.id}`,
+    );
     await recordIntegration(
       tx,
       w,
@@ -166,7 +168,9 @@ export async function applyOrder(
       sql`UPDATE reservations SET active=false WHERE workspace_id=${w}::uuid AND order_id=${o.id}`,
     );
     await update("CANCELLED");
-    await tx.execute(sql`DELETE FROM packing_claims WHERE workspace_id=${w}::uuid AND order_id=${o.id}`);
+    await tx.execute(
+      sql`DELETE FROM packing_claims WHERE workspace_id=${w}::uuid AND order_id=${o.id}`,
+    );
   }
   return o.id;
 }

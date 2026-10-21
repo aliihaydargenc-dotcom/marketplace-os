@@ -2,7 +2,8 @@ import { Pool, neonConfig } from "@neondatabase/serverless";
 import WebSocket from "ws";
 import { Pool as PostgresPool } from "pg";
 import { HttpsProxyAgent } from "https-proxy-agent";
-import { drizzle } from "drizzle-orm/neon-serverless";
+import { drizzle as neonDrizzle } from "drizzle-orm/neon-serverless";
+import { drizzle as postgresDrizzle } from "drizzle-orm/node-postgres";
 import { sql } from "drizzle-orm";
 // Only the development host requires an outbound proxy. Vercel uses direct WSS.
 neonConfig.webSocketConstructor = process.env.HTTPS_PROXY
@@ -14,7 +15,9 @@ neonConfig.webSocketConstructor = process.env.HTTPS_PROXY
       }
     }
   : WebSocket;
-const globalDb = globalThis as unknown as { marketplacePool?: Pool };
+const globalDb = globalThis as unknown as {
+  marketplacePool?: Pool | PostgresPool;
+};
 export function pool() {
   if (!process.env.DATABASE_URL)
     throw new Error("DATABASE_URL yapılandırılmamış");
@@ -29,12 +32,17 @@ export function pool() {
       process.env.DATABASE_URL,
     ).hostname.endsWith(".neon.tech")
       ? new Pool(config)
-      : (new PostgresPool(config) as unknown as Pool);
+      : new PostgresPool(config);
   }
   return globalDb.marketplacePool;
 }
 export function database() {
-  return drizzle(pool());
+  const client = pool();
+  // Each Drizzle driver recognizes its own Pool class to acquire one client
+  // for BEGIN, row locks, mutations and COMMIT. A cast cannot bridge drivers.
+  return client instanceof PostgresPool
+    ? postgresDrizzle(client)
+    : neonDrizzle(client);
 }
 export type Db = ReturnType<typeof database>;
 export type Tx = Parameters<Parameters<Db["transaction"]>[0]>[0];

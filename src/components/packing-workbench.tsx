@@ -260,8 +260,11 @@ function PackingStation({
         }),
         keepalive: action === "RELEASE",
       });
-      const result = (await response.json()) as PackingLeaseState & { error?: string };
-      if (!response.ok) throw new Error(result.error ?? "Terminal işlemi başarısız");
+      const result = (await response.json()) as PackingLeaseState & {
+        error?: string;
+      };
+      if (!response.ok)
+        throw new Error(result.error ?? "Terminal işlemi başarısız");
       ownsLease.current = result.mine;
       setLease(result);
       return result;
@@ -273,7 +276,9 @@ function PackingStation({
     terminalId.current = crypto.randomUUID();
     ownsLease.current = false;
     void requestLease("STATUS").catch((error: unknown) =>
-      setLeaseError(error instanceof Error ? error.message : "Terminal okunamadı"),
+      setLeaseError(
+        error instanceof Error ? error.message : "Terminal okunamadı",
+      ),
     );
     const heartbeat = window.setInterval(() => {
       if (!ownsLease.current) return;
@@ -281,7 +286,9 @@ function PackingStation({
         ownsLease.current = false;
         setLease(null);
         setLeaseError(
-          (error instanceof Error ? error.message : "Terminal bağlantısı kesildi") +
+          (error instanceof Error
+            ? error.message
+            : "Terminal bağlantısı kesildi") +
             " Siparişi yenileyip tekrar üstlenin.",
         );
       });
@@ -311,7 +318,9 @@ function PackingStation({
     try {
       await requestLease(action);
     } catch (error) {
-      setLeaseError(error instanceof Error ? error.message : "Sahiplik değiştirilemedi");
+      setLeaseError(
+        error instanceof Error ? error.message : "Sahiplik değiştirilemedi",
+      );
       try {
         await requestLease("STATUS");
       } catch {
@@ -519,12 +528,20 @@ function PackingStation({
         </div>
         <div className="packing-lease-buttons">
           {hasLease ? (
-            <button type="button" disabled={locked} onClick={() => void changeLease("RELEASE")}>
+            <button
+              type="button"
+              disabled={locked}
+              onClick={() => void changeLease("RELEASE")}
+            >
               Bırak
             </button>
           ) : (
             <>
-              <button type="button" disabled={locked} onClick={() => void changeLease("CLAIM")}>
+              <button
+                type="button"
+                disabled={locked}
+                onClick={() => void changeLease("CLAIM")}
+              >
                 Siparişi üstlen
               </button>
               {data.actor.role === "ADMIN" && lease?.operatorName && (
@@ -538,12 +555,20 @@ function PackingStation({
               )}
             </>
           )}
-          <button type="button" disabled={locked} onClick={() => void changeLease("STATUS")}>
+          <button
+            type="button"
+            disabled={locked}
+            onClick={() => void changeLease("STATUS")}
+          >
             Durumu yenile
           </button>
         </div>
       </div>
-      {leaseError && <p className="error" role="alert">{leaseError}</p>}
+      {leaseError && (
+        <p className="error" role="alert">
+          {leaseError}
+        </p>
+      )}
       <div className="packing-progress">
         <span>
           {statusLabels[order.status]}
@@ -682,7 +707,12 @@ function PackingStation({
             disabled={locked || !hasLease || shortages.length > 0}
             onClick={() =>
               void perform(
-                () => onCommand({ action: "RESERVE", orderId: order.id, terminalId: terminalId.current }),
+                () =>
+                  onCommand({
+                    action: "RESERVE",
+                    orderId: order.id,
+                    terminalId: terminalId.current,
+                  }),
                 "Stok rezerve edildi. Barkod okutabilirsiniz.",
               )
             }
@@ -695,7 +725,12 @@ function PackingStation({
             type="button"
             className="primary"
             disabled={locked || !hasLease}
-            onClick={() => void perform(() => onShip(terminalId.current), "Sevkiyat kaydedildi.")}
+            onClick={() =>
+              void perform(
+                () => onShip(terminalId.current),
+                "Sevkiyat kaydedildi.",
+              )
+            }
           >
             <Truck size={17} /> Sevk et ve sıradakine geç
           </button>

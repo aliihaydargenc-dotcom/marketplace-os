@@ -3,7 +3,8 @@ import { DomainError, authorize } from "@/domain/permissions";
 import type { Actor, Role } from "@/domain/types";
 import { rows, sql, transaction, type Tx } from "../db";
 
-export type PackingLeaseAction = "STATUS" | "CLAIM" | "RENEW" | "RELEASE" | "TAKE_OVER";
+export type PackingLeaseAction =
+  "STATUS" | "CLAIM" | "RENEW" | "RELEASE" | "TAKE_OVER";
 export type PackingLeaseState = {
   mine: boolean;
   operatorName: string | null;
@@ -48,7 +49,10 @@ export async function assertPackingLease(
 ) {
   const lease = await activeLease(tx, workspaceId, orderId);
   if (lease && lease.terminal_id !== terminalId)
-    throw new DomainError("Sipariş başka bir hazırlama terminalinde. Durumu yenileyin.", 409);
+    throw new DomainError(
+      "Sipariş başka bir hazırlama terminalinde. Durumu yenileyin.",
+      409,
+    );
 }
 
 export async function packingLease(
@@ -86,16 +90,16 @@ export async function packingLease(
         await tx.execute(
           sql`DELETE FROM packing_claims WHERE workspace_id=${w}::uuid AND order_id=${orderId} AND terminal_id=${terminalId}::uuid`,
         );
-      return view(
-        await activeLease(tx, w, orderId),
-        terminalId,
-      );
+      return view(await activeLease(tx, w, orderId), terminalId);
     }
     if (!["NEW", "RESERVED", "PACKING", "READY"].includes(order.status))
       throw new DomainError("Tamamlanmış sipariş sahiplenilemez", 409);
     if (action === "RENEW") {
       if (!current || current.terminal_id !== terminalId)
-        throw new DomainError("Hazırlama sahipliği sona erdi; yeniden üstlenin", 409);
+        throw new DomainError(
+          "Hazırlama sahipliği sona erdi; yeniden üstlenin",
+          409,
+        );
       await tx.execute(
         sql`UPDATE packing_claims SET expires_at=now()+interval '120 seconds'
             WHERE workspace_id=${w}::uuid AND order_id=${orderId} AND terminal_id=${terminalId}::uuid`,
@@ -104,7 +108,10 @@ export async function packingLease(
       if (action === "TAKE_OVER" && user.role !== "ADMIN")
         throw new DomainError("Devralma yalnız yöneticiye açıktır", 403);
       if (action === "CLAIM" && current && current.terminal_id !== terminalId)
-        throw new DomainError("Sipariş başka bir terminal tarafından hazırlanıyor", 409);
+        throw new DomainError(
+          "Sipariş başka bir terminal tarafından hazırlanıyor",
+          409,
+        );
       await tx.execute(
         sql`INSERT INTO packing_claims(workspace_id,order_id,terminal_id,user_id,expires_at)
             VALUES(${w}::uuid,${orderId},${terminalId}::uuid,${actor.userId},now()+interval '120 seconds')

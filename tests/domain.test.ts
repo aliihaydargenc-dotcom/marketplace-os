@@ -86,31 +86,60 @@ afterAll(async () => {
 describe("PostgreSQL domain invariants", () => {
   it("enforces terminal ownership, supervisor takeover and release under workspace lock", async () => {
     const id = await create("p2", 2);
-    const first = randomUUID(), second = randomUUID();
+    const first = randomUUID(),
+      second = randomUUID();
     await expect(
       packingLease(accountant, id, first, "CLAIM", 1),
     ).rejects.toThrow("yetkiniz");
     await expect(
       packingLease({ ...warehouse, workspaceId: other }, id, first, "CLAIM", 1),
     ).rejects.toThrow("bulunamadı");
-    expect((await packingLease(warehouse, id, first, "CLAIM", 1)).mine).toBe(true);
-    await expect(packingLease(warehouse, id, second, "CLAIM", 1)).rejects.toThrow("başka");
-    await expect(packingLease(warehouse, id, second, "TAKE_OVER", 1)).rejects.toThrow("yönetici");
-    await expect(run({ action: "RESERVE", orderId: id }, warehouse)).rejects.toThrow("terminalinde");
+    expect((await packingLease(warehouse, id, first, "CLAIM", 1)).mine).toBe(
+      true,
+    );
+    await expect(
+      packingLease(warehouse, id, second, "CLAIM", 1),
+    ).rejects.toThrow("başka");
+    await expect(
+      packingLease(warehouse, id, second, "TAKE_OVER", 1),
+    ).rejects.toThrow("yönetici");
+    await expect(
+      run({ action: "RESERVE", orderId: id }, warehouse),
+    ).rejects.toThrow("terminalinde");
     await run({ action: "RESERVE", orderId: id, terminalId: first }, warehouse);
     const code = (await product("p2")).barcode;
-    await expect(run({ action: "SCAN", orderId: id, barcode: code, terminalId: second }, warehouse))
-      .rejects.toThrow("terminalinde");
+    await expect(
+      run(
+        { action: "SCAN", orderId: id, barcode: code, terminalId: second },
+        warehouse,
+      ),
+    ).rejects.toThrow("terminalinde");
     expect((await current(id)).lines[0].packed).toBe(0);
-    expect((await packingLease(admin, id, second, "TAKE_OVER", 1)).mine).toBe(true);
-    await expect(run({ action: "SCAN", orderId: id, barcode: code, terminalId: first }, warehouse))
-      .rejects.toThrow("terminalinde");
-    await run({ action: "SCAN", orderId: id, barcode: code, terminalId: second }, admin);
+    expect((await packingLease(admin, id, second, "TAKE_OVER", 1)).mine).toBe(
+      true,
+    );
+    await expect(
+      run(
+        { action: "SCAN", orderId: id, barcode: code, terminalId: first },
+        warehouse,
+      ),
+    ).rejects.toThrow("terminalinde");
+    await run(
+      { action: "SCAN", orderId: id, barcode: code, terminalId: second },
+      admin,
+    );
     await packingLease(admin, id, second, "RELEASE", 1);
-    expect((await packingLease(warehouse, id, first, "CLAIM", 1)).mine).toBe(true);
-    await run({ action: "SCAN", orderId: id, barcode: code, terminalId: first }, warehouse);
+    expect((await packingLease(warehouse, id, first, "CLAIM", 1)).mine).toBe(
+      true,
+    );
+    await run(
+      { action: "SCAN", orderId: id, barcode: code, terminalId: first },
+      warehouse,
+    );
     await run({ action: "SHIP", orderId: id, terminalId: first }, warehouse);
-    expect((await packingLease(warehouse, id, first, "STATUS", 1)).mine).toBe(false);
+    expect((await packingLease(warehouse, id, first, "STATUS", 1)).mine).toBe(
+      false,
+    );
   });
 
   it("rejects stale two-tab barcode scans under the workspace transaction lock", async () => {
@@ -149,7 +178,8 @@ describe("PostgreSQL domain invariants", () => {
   });
 
   it("demo seed has 78 products, 263 orders and no negative availability", async () => {
-    const s = await snapshot(admin);
+    // Other cases create orders in w; inspect the untouched seeded workspace.
+    const s = await snapshot({ ...admin, workspaceId: other });
     expect(s.products).toHaveLength(78);
     expect(s.orders).toHaveLength(263);
     expect(s.products.every((p) => p.available >= 0 && p.quarantine >= 0)).toBe(

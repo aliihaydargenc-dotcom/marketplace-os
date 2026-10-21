@@ -1,5 +1,9 @@
 # Durum ve ilerleme kaydı
 
+## QA-01 / UX03 — güncel yerel doğrulama (21 Ekim)
+
+GitHub `feature/ux03-order-360=d48f751`, main `796dd1d`: 10 commit ileri / 0 geri. Yerel düzeltmeli aday: 104/104 Vitest, 12/12 Chromium E2E, typecheck/lint/format/production build PASS. TCP için doğru Drizzle sürücüsü, `0009` claim FK düzeltmesi ve seed test izolasyonu eklendi. Migration temiz kurulum, mevcut veriyle yükseltme, tekrar ve aktif claim cascade PASS; tüm DB bayrakları açık, 0 skipped. UX03-2 ve UX03-3'ün raporda belirtilen teknik otomatik kapsamı VERIFIED; fiziksel scanner, 30/1000+ kayıt ölçeği ve kullanıcı kabulü VERIFIED değildir. [Ayrıntılı QA raporu](../qa/UX03_MERGE_20261021.md). Audit bulguları açık olduğundan koşulsuz merge onayı verilmedi; main/production değişmedi. Düzeltmeler yereldir; push/deploy yapılmadı.
+
 **Geçerli son karar:** demo işlevlerini mevcut düzeni koruyarak tamamla → teknik toplu kontrol → kapsamlı tasarım → kullanıcının manuel kabulü. Önceki UX-01 tasarım kapısı ve görev sonrası kullanıcı bekleme kuralları iptal; tarihsel kayıtlar aşağıda korunur. Yeni özellik bu karar kaydıyla tamamlanmış sayılmaz.
 
 21 Ekim 2026. Başlangıç denetimi: `84e5de9275e794e157d75ae8bc96debc2199f838`. Bu belge eski raporu değiştirmez; kod, önceki kanıt ve yeni doğrulama ayrıdır.

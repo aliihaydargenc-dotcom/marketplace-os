@@ -1,5 +1,7 @@
 # Geliştirme planı
 
+**21 Ekim QA-01 güncel ek:** yerel düzeltmeli UX03 adayında 104/104 Vitest + 12/12 Chromium E2E + typecheck/lint/format/build PASS. TCP transaction ve claim cascade düzeltmeleri ile `0009` gerekir. Aşağıdaki IMPLEMENTED/UNVERIFIED notlarının otomatik teknik bölümü [merge öncesi raporla](../qa/UX03_MERGE_20261021.md) güncellenmiştir. Fiziksel scanner, ölçek, kullanıcı kabulü ve audit bulguları açık; main merge/push/production yayını yapılmadı.
+
 Güncelleme: 21 Ekim 2026. Planlama, yeni bir uygulama modu veya tamamlandı beyanı değildir; repo içinde sürdürülen iş sırasıdır. Kapsam: `../PRODUCT_REQUIREMENTS.md`. Durumlar `PROGRESS.md` içinde takip edilir.
 
 ## Tamamlanma kuralı
