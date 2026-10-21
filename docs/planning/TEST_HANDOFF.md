@@ -141,3 +141,14 @@ Geliştirici yerel UI ve teknik kontrolleri PROGRESS ve design-qa.md içinde. Ku
 - [ ] Güncel kur erişimi olan yayın ortamında ≈ tutar seçimi ve kaynak/tarih ayrıntısı; önizlemede kur yoksa sessiz demo kuruna düşülmemesi.
 
 Bu kutular son kullanıcı tarafından işaretlenmedi. Yeni production linki ancak ayrı READY/smoke kanıtıyla verilir.
+
+
+## UX03-2 — Sipariş 360° doğrulama devri
+
+- [ ] Aynı aday SHA üzerinde npm ci, typecheck, lint, format:check ve build; başarısızsa main'e alma.
+- [ ] tests/order-360.test.ts beş senaryo: stok/rezervasyon, barkod/sevk, DEMO fatura hatası/maliyet, depo görünümü, FBO referansı/kronoloji.
+- [ ] İzole PostgreSQL üzerinde ilgili tam domain/DB regresyonu; mevcut stok ve finans bütünlüğü bozulmamalı.
+- [ ] Chromium: Siparişler'den 360 süreç, ürün/işlem/finans/kayıt geçişleri, filtre/ilk 10/tümü, Escape ve modal odak; 1440×900, 1920×1080, 390px dar görünüm.
+- [ ] Depo rolünde finans ve belge zinciri yok; muhasebe stok/sevk mutation yetkisi sunucuda; FBO hazırlama ve sevk edilemez.
+- [ ] 30 karma sipariş ve en az üç blokaj; 1000+ kayıt liste/detay performansı; iki eşzamanlı operatör ve fiziksel barkod okuyucu (UX03-3 kapsamında).
+- [ ] GitHub aday SHA / Vercel aday SHA / production SHA ayrı doğrulanır; yeni yayın ancak tek kontrollü paketle.

@@ -139,3 +139,14 @@ Görev ID / sorun / kapsam dışı / değişecek dosyalar / veri-yetki etkisi / 
 ## UX-02 — Demo rehberi ve açıklama sadeleştirme
 
 Ek kabul: İlk girişte karartmalı kontrol odaklı kısa tur; tekrarlamayan tarayıcı tercihi; Geç/İleri/Geri/Bitir, Escape, yeniden açma, responsive ve klavye kontrolü. Ana sayfada metin yığını yerine doğrudan işlem. Finans formülleri ve canlı entegrasyon yokluğu gizlenmez; gerektiğinde açılan alanda tutulur. Kullanıcı kabulü ve son kod için toplu test olmadan VERIFIED/production READY değil.
+
+
+## UX03 — Operasyon Deneyimi Analizi: güncel iş sırası
+
+UX03-1 Operasyon Merkezi / Aksiyon Merkezi: 796dd1d; gerçek snapshot bazlı görev kuyruğu. Önceki teknik rapor: 87/87 Vitest, 8/8 Chromium E2E, typecheck/lint/format/build PASS. Bu sonuç sonraki commitlere otomatik aktarılmaz.
+
+UX03-2 Sipariş 360°: feature/ux03-order-360 dalında IMPLEMENTED / UNVERIFIED. Sipariş penceresi, süreç durumu ve bağlı kayıt zincirini birleştirir. Beş hedefli test yazıldı fakat çalıştırılmadı. Finans/stok migration ve mutasyon yok. Karar: UX03_ORDER360_20261021.md.
+
+UX03-3 Hazırlama İstasyonu 2.0: BACKLOG. Barkod terminali odak sürekliliği, seri adet işleme, gerçek scanner doğrulaması, tamamlanınca sıradaki siparişe geçiş, aynı siparişin iki operatör tarafından açılması; atomik atama/claim ayrı server/DB testi ister.
+
+UX03-4 Kabul ve ölçek: BACKLOG. 30 karma sipariş / en az 3 sorunlu kayıt, 2 operatör çakışması, 1.000+ kayıt, 1440/1920 ekran, gerçek barkod okuyucu, depo/muhasebe rol sınırı ve tam FBS transaction regresyonu. Typecheck, lint, format, build ve test kanıtı olmadan main merge / Vercel READY iddiası yok.

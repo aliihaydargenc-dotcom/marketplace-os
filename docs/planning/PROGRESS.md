@@ -233,3 +233,10 @@ Pazar verisi dashboard'da KPI kartlarından sonra yerleştirildi; mevcut operasy
 ### 21 Ekim — Teknik QA tamamlandı / kullanıcı kabulü bekliyor
 
 İzole PostgreSQL 18 üzerinde 0001–0007 migration ve 80/80 tam test paketi PASS. Native Playwright Chromium ile 6/6 E2E PASS. TypeScript, ESLint, Prettier ve Next.js üretim derlemesi PASS. Kaynak düzeltme commit `eb9ae025`. Geçici (30 dakika oturum süresi) Vercel Sandbox demo: `https://sb-4kislw650242.vercel.run/`, bağlantı HTTP 200; production ve ana Neon DB değişmedi. Kullanıcı incelemesi bekleniyor, kalıcı sürüm/production deploy henüz yapılmadı. Kabulde saptanan geçiş, tasarım veya iş akışı bulguları bu teknik başarıdan ayrı kaydedilecek.
+
+
+### UX03-2 — Sipariş 360° çalışma dalı (21 Ekim)
+
+Durum: IMPLEMENTED / UNVERIFIED, dal feature/ux03-order-360 (main'e alınmadı). Mevcut sipariş penceresine süreç şeridi, role göre kayıt/görev uyarıları, bölüm içi odak geçişleri ve filtrelenebilir kronolojik stok/finans/belge/iade/denetim/demo sağlayıcı zinciri eklendi. Birbirini tekrarlayan eski işlem listeleri kaldırıldı. FBO işlem düğmesi gizlendi; canlı Ozon/Paraşüt veya e-Fatura yok. SQL, servis komutları ve yetki kuralları değiştirilmedi.
+
+tests/order-360.test.ts içinde beş hedefli test YAZILDI, ÇALIŞTIRILMADI. Projenin tam bağımlılıklarıyla yerel checkout kurulamadığından typecheck/lint/format/build/DB/E2E sonucu verilmez. GitHub commit ve diff doğrulandı. Otomatik deploy kapalı; yeni production yayını yok. Zorunlu tekrar kontroller ROADMAP/TEST_HANDOFF içindedir.
