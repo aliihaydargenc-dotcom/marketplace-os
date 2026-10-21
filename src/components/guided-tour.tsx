@@ -6,10 +6,14 @@ import { placeTour, type GuideStep } from "@/domain/onboarding";
 import "./guided-tour.css";
 
 type Bounds = { left: number; right: number; top: number; bottom: number };
+
 const keyFor = (id: string) => "marketplace-os:tour:" + id;
 
 export function GuidedTour({
-  id, steps, ready = true, replay = 0,
+  id,
+  steps,
+  ready = true,
+  replay = 0,
 }: {
   id: string;
   steps: readonly GuideStep[];
@@ -54,16 +58,19 @@ export function GuidedTour({
   }, [id, ready, replay]);
 
   const step = index === null ? null : steps[index];
+
   useEffect(() => {
     if (!step || index === null || !ready) return;
     const target = document.querySelector<HTMLElement>(step.target);
     if (!target) {
       const frame = requestAnimationFrame(() => {
         if (index === steps.length - 1) finish();
-        else setIndex((current) => current === null ? null : current + 1);
+        else
+          setIndex((current) => (current === null ? null : current + 1));
       });
       return () => cancelAnimationFrame(frame);
     }
+
     let frame = 0;
     const measure = () => {
       cancelAnimationFrame(frame);
@@ -75,7 +82,10 @@ export function GuidedTour({
           top: Math.max(0, box.top - 6),
           bottom: Math.min(window.innerHeight, box.bottom + 6),
         });
-        setViewport({ width: window.innerWidth, height: window.innerHeight });
+        setViewport({
+          width: window.innerWidth,
+          height: window.innerHeight,
+        });
       });
     };
     const initial = target.getBoundingClientRect();
@@ -100,7 +110,9 @@ export function GuidedTour({
   useEffect(() => {
     if (index === null || !hasBounds) return;
     const frame = requestAnimationFrame(() => {
-      card.current?.querySelector<HTMLButtonElement>("[data-tour-next]")?.focus({ preventScroll: true });
+      card.current
+        ?.querySelector<HTMLButtonElement>("[data-tour-next]")
+        ?.focus({ preventScroll: true });
     });
     return () => cancelAnimationFrame(frame);
   }, [index, hasBounds]);
@@ -114,7 +126,11 @@ export function GuidedTour({
         finish();
       }
       if (event.key !== "Tab" || !card.current) return;
-      const buttons = Array.from(card.current.querySelectorAll<HTMLButtonElement>("button:not(:disabled)"));
+      const buttons = Array.from(
+        card.current.querySelectorAll<HTMLButtonElement>(
+          "button:not(:disabled)",
+        ),
+      );
       if (!buttons.length) return;
       const first = buttons[0];
       const last = buttons[buttons.length - 1];
@@ -134,8 +150,11 @@ export function GuidedTour({
   }, [index, ready, finish]);
 
   if (!step || !bounds || !ready) return null;
-  const x = bounds.left, y = bounds.top;
-  const width = Math.max(0, bounds.right - x), height = Math.max(0, bounds.bottom - y);
+
+  const x = bounds.left;
+  const y = bounds.top;
+  const width = Math.max(0, bounds.right - x);
+  const height = Math.max(0, bounds.bottom - y);
   const position = placeTour(bounds, viewport.width, viewport.height);
   const maxCardHeight =
     position.placement === "above"
@@ -146,38 +165,109 @@ export function GuidedTour({
     if (last) finish();
     else {
       setBounds(null);
-      setIndex((current) => current === null ? null : current + 1);
+      setIndex((current) => (current === null ? null : current + 1));
     }
   };
+  const retreat = () => {
+    setBounds(null);
+    setIndex((current) => (current === null ? null : current - 1));
+  };
+
   return (
     <div className="onboarding-root" data-testid="onboarding-tour">
-      <div className="onboarding-shade" style={{ left: 0, top: 0, width: "100%", height: y }} />
-      <div className="onboarding-shade" style={{ left: 0, top: y, width: x, height }} />
-      <div className="onboarding-shade" style={{ left: bounds.right, top: y, width: Math.max(0, viewport.width - bounds.right), height }} />
-      <div className="onboarding-shade" style={{ left: 0, top: bounds.bottom, width: "100%", height: Math.max(0, viewport.height - bounds.bottom) }} />
-      <div className="onboarding-highlight" aria-hidden="true" style={{ left: x, top: y, width, height }} />
+      <div
+        className="onboarding-shade"
+        style={{ left: 0, top: 0, width: "100%", height: y }}
+      />
+      <div
+        className="onboarding-shade"
+        style={{ left: 0, top: y, width: x, height }}
+      />
+      <div
+        className="onboarding-shade"
+        style={{
+          left: bounds.right,
+          top: y,
+          width: Math.max(0, viewport.width - bounds.right),
+          height,
+        }}
+      />
+      <div
+        className="onboarding-shade"
+        style={{
+          left: 0,
+          top: bounds.bottom,
+          width: "100%",
+          height: Math.max(0, viewport.height - bounds.bottom),
+        }}
+      />
+      <div
+        className="onboarding-highlight"
+        aria-hidden="true"
+        style={{ left: x, top: y, width, height }}
+      />
       <div
         className="onboarding-pointer"
         aria-hidden="true"
         style={{
-          left: Math.min(Math.max(16, x + Math.min(width / 2, 28)), Math.max(16, viewport.width - 30)),
-          top: position.placement === "below" ? bounds.bottom + 2 : bounds.top - 30,
+          left: Math.min(
+            Math.max(16, x + Math.min(width / 2, 28)),
+            Math.max(16, viewport.width - 30),
+          ),
+          top:
+            position.placement === "below"
+              ? bounds.bottom + 2
+              : bounds.top - 30,
         }}
       >
-        {position.placement === "below" ? <ArrowUp size={24} /> : <ArrowDown size={24} />}
+        {position.placement === "below" ? (
+          <ArrowUp size={24} />
+        ) : (
+          <ArrowDown size={24} />
+        )}
       </div>
-      <div className="onboarding-card" ref={card} role="dialog" aria-label="Kısa kullanım rehberi" aria-describedby="tour-description" style={{ left: position.left, top: position.top, maxHeight: maxCardHeight }}>
+      <div
+        className="onboarding-card"
+        ref={card}
+        role="dialog"
+        aria-label="Kısa kullanım rehberi"
+        aria-describedby="tour-description"
+        style={{
+          left: position.left,
+          top: position.top,
+          maxHeight: maxCardHeight,
+        }}
+      >
         <div className="onboarding-head">
-          <span>{index + 1} / {steps.length}</span>
-          <button type="button" onClick={finish} aria-label="Rehberi kapat"><X size={16} /></button>
+          <span>
+            {index + 1} / {steps.length}
+          </span>
+          <button
+            type="button"
+            onClick={finish}
+            aria-label="Rehberi kapat"
+          >
+            <X size={16} />
+          </button>
         </div>
         <h2>{step.title}</h2>
         <p id="tour-description">{step.description}</p>
         <div className="onboarding-actions">
-          <button type="button" onClick={finish}>Geç</button>
+          <button type="button" onClick={finish}>
+            Geç
+          </button>
           <div>
-            {index > 0 && <button type="button" onClick={() => { setBounds(null); setIndex((current) => current === null ? null : current - 1); }}><ArrowLeft size={15} /> Geri</button>}
-            <button type="button" data-tour-next className="onboarding-next" onClick={advance}>
+            {index > 0 && (
+              <button type="button" onClick={retreat}>
+                <ArrowLeft size={15} /> Geri
+              </button>
+            )}
+            <button
+              type="button"
+              data-tour-next
+              className="onboarding-next"
+              onClick={advance}
+            >
               {last ? "Bitir" : "İleri"} <ArrowRight size={15} />
             </button>
           </div>

@@ -77,7 +77,10 @@ export function DemoCenter({
           marketplace<strong>OS</strong>
         </Link>
         <div className="entry-header-actions">
-          <button type="button" onClick={() => setGuideReplay((value) => value + 1)}>
+          <button
+            type="button"
+            onClick={() => setGuideReplay((value) => value + 1)}
+          >
             <CircleHelp size={16} />
             Rehber
           </button>
