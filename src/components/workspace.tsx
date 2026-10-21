@@ -1795,15 +1795,6 @@ function WorkspaceBody({
                     run={run}
                   />
                 )}
-                <h3>Demo sağlayıcı kayıtları</h3>
-                {(data.integrationEvents ?? [])
-                  .filter((e) => e.order_id === order.id)
-                  .map((e) => (
-                    <p key={e.id}>
-                      {date(e.created_at)} · {e.provider} · {e.operation} ·
-                      Dışarı gönderilmedi
-                    </p>
-                  ))}
                 <h3 id="order360-trace" tabIndex={-1}>Bağlı kayıtlar ve işlem geçmişi</h3>
                 <Order360Trace order={order} data={data} />
               </div>
