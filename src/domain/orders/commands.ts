@@ -38,15 +38,16 @@ export const commandSchema = z.discriminatedUnion("action", [
       .min(1)
       .max(30),
   }),
-  z.object({ action: z.literal("RESERVE"), orderId: id }),
+  z.object({ action: z.literal("RESERVE"), orderId: id, terminalId: z.uuid().optional() }),
   z.object({
     action: z.literal("SCAN"),
     orderId: id,
     barcode: id,
     // Optional so existing clients continue to work. New packing terminal detects stale tabs.
     expectedPackedTotal: z.number().int().min(0).max(30000).optional(),
+    terminalId: z.uuid().optional(),
   }),
-  z.object({ action: z.literal("SHIP"), orderId: id }),
+  z.object({ action: z.literal("SHIP"), orderId: id, terminalId: z.uuid().optional() }),
   z.object({ action: z.literal("CANCEL"), orderId: id, reason }),
   z.object({ action: z.literal("RETURN"), orderId: id, reason }),
   z.object({
