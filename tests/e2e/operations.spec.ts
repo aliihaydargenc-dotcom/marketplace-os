@@ -1,10 +1,20 @@
 import { test, expect } from "@playwright/test";
 async function login(page: import("@playwright/test").Page, role = "ADMIN") {
+  // Other tests explicitly verify first-use guidance; do not let it obstruct
+  // the separate, destructive FBS and isolation regression scenarios.
+  await page.addInitScript(() => {
+    try {
+      localStorage.setItem("marketplace-os:tour:entry-v1", "done");
+      localStorage.setItem("marketplace-os:tour:workspace-v1", "done");
+    } catch {
+      // Private browsing may reject local storage.
+    }
+  });
   await page.goto("/");
   await page
     .getByRole("combobox", { name: "Demo rolü", exact: true })
     .selectOption(role);
-  await page.getByRole("button", { name: "Demoya giriş yap" }).click();
+  await page.locator("#demo-enter").click();
   await expect(
     page.getByRole("heading", {
       name:
@@ -71,11 +81,13 @@ test("desktop FBS: create → reserve → barcode → ship → invoice → finan
   await invoice.close();
   await dialog.getByRole("button", { name: "Detayı kapat" }).click();
   await page
-    .getByRole("button", { name: "Finans & Analitik", exact: true })
+    .getByRole("navigation", { name: "Çalışma alanları" })
+    .getByRole("button", { name: "Finans", exact: true })
     .click();
   await expect(
     page.getByRole("heading", { name: "Sipariş bazında mutabakat" }),
   ).toBeVisible();
+  await expect(page.getByText(number, { exact: true }).first()).toBeVisible();
   const downloadPromise = page.waitForEvent("download");
   await page.getByRole("link", { name: "Excel raporu" }).click();
   const download = await downloadPromise;
@@ -87,7 +99,13 @@ test("desktop FBS: create → reserve → barcode → ship → invoice → finan
   expect((await response.body()).subarray(0, 4).toString()).toBe("%PDF");
   await page.getByRole("button", { name: /^Siparişler/ }).click();
   await page.getByLabel("Sipariş ara").fill(number);
-  await page.getByRole("button", { name: number, exact: true }).click();
+  await page
+    .getByRole("button", { name: `${number} ürünlerini göster` })
+    .click();
+  await page
+    .getByRole("region", { name: `${number} ürünleri` })
+    .getByRole("button", { name: "Detayı aç" })
+    .click();
   await dialog
     .getByLabel("İşlem gerekçesi", { exact: true })
     .fill("E2E iade kontrolü");
@@ -124,7 +142,9 @@ test("server permissions, session isolation and scoped reset through browser", a
 }) => {
   await login(page, "WAREHOUSE");
   await expect(
-    page.getByRole("button", { name: "Finans & Analitik", exact: true }),
+    page
+      .getByRole("navigation", { name: "Çalışma alanları" })
+      .getByRole("button", { name: "Finans", exact: true }),
   ).toHaveCount(0);
   const denied = await page.request.get(
     "/api/export?format=xlsx&currency=RUB&from=2026-01-01&to=2027-01-01",
@@ -136,6 +156,7 @@ test("server permissions, session isolation and scoped reset through browser", a
   await login(other);
   const b = await (await other.request.get("/api/workspace")).json();
   expect(a.workspace.id).not.toBe(b.workspace.id);
+  await other.getByLabel("Çalışma alanı menüsü").click();
   await other
     .getByRole("button", { name: "Sistem Yönetimi", exact: true })
     .click();
