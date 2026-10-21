@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import type { Product, WorkspaceSnapshot } from "@/domain/types";
+import { findOzonObservation } from "@/domain/catalog/ozon-market-snapshot";
 import type { Command } from "@/domain/orders/commands";
 import "./catalog-tools.css";
 type Run = (command: Command) => Promise<{ reference: string } | undefined>;
@@ -217,7 +218,7 @@ export function CatalogTools({
       <div className="catalog-tools-row">
         <div>
           <p>
-            {count} Ozon referanslı örnek ürün ·{" "}
+            {count} Ozon referanslı SKU ·{" "}
             {data.products.filter((p) => p.active === false).length} pasif SKU
           </p>
         </div>
@@ -293,7 +294,23 @@ export function ProductSource({ product }: { product: Product }) {
       >
         Ozon ürün referansı ↗
       </a>
-      <span>Kontrol: {source.reviewedAt} · fiyat / stok / barkod DEMO</span>
+      <span>Kaynak kontrolü: {source.reviewedAt} · işlenen stok ve barkod örnektir</span>
+      {(() => {
+        const observed = findOzonObservation(source.externalId ?? "");
+        return observed?.otherBankPriceRub == null ? (
+          <span>Güncel fiyat doğrulanamadı</span>
+        ) : (
+          <strong>
+            21.10.2026 gözlemi:{" "}
+            {new Intl.NumberFormat("tr-TR", {
+              style: "currency",
+              currency: "RUB",
+              maximumFractionDigits: 0,
+            }).format(observed.otherBankPriceRub)}
+            {" "}· diğer bankalar
+          </strong>
+        );
+      })()}
     </details>
   );
 }

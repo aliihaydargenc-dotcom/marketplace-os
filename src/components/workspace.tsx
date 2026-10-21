@@ -58,6 +58,7 @@ import { CostCorrections } from "./cost-corrections";
 import { reportData, type FinancialDateMode } from "@/domain/finance/reporting";
 import { InventoryDocuments } from "./inventory-documents";
 import { CatalogTools, ProductEditor, ProductSource } from "./catalog-tools";
+import { OzonMarketPanel } from "./ozon-market-panel";
 import {
   CurrencyDisplayProvider,
   CurrencyDisplayControls,
@@ -656,6 +657,7 @@ function WorkspaceBody({
           )}
           {section === "dashboard" && (
             <>
+              <OzonMarketPanel compact onViewAll={() => navigate("inventory")} />
               <div className="metrics">
                 {[
                   {
@@ -890,6 +892,7 @@ function WorkspaceBody({
           )}
           {section === "inventory" && (
             <>
+              <OzonMarketPanel />
               <CatalogTools
                 data={data}
                 busy={busy}

@@ -107,3 +107,8 @@ OPERATIONS_DB_TEST=1 node --env-file=.env.local node_modules/vitest/vitest.mjs r
 ```
 
 Bu bayraklar verilmezse ilgili DB dosyaları atlanır; testin bulunması geçmiş olduğu anlamına gelmez. Sonuçlar TEST_REPORT / PROGRESS içindedir. UI/geçiş ve günlük kullanım kabulü kullanıcıya aittir; teknik bütünlük geliştiricinin sorumluluğudur.
+
+
+## Gerçek Ozon Pazar Verileri (21.10.2026)
+
+Operasyon Merkezi ve Stok & Depo'daki kaynaklı Ozon Pazar Verileri, Ozon ürün sayfalarından gözlenen **10 gerçek ürün**, 8 doğrulanabilir banka koşullu/diğer bankalar fiyatı ve 2 belirsiz fiyatı içerir. Liste gerçek kamu ilanlarının **tarihli anlık görüntüsüdür**, canlı API veya satıcı satış raporu değildir. Operasyonel sipariş, maliyet, stok ve finans simülasyonlarına aktarılmaz. Kaynak: [Ozon 21.10.2026 araştırması](docs/research/OZON_MARKET_20261021.md).

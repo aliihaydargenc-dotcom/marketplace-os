@@ -218,3 +218,8 @@ Mevcut işlem başlıkları ve durum/rol/finans kuralları korunarak Operasyon M
 ### UX-02C — Rehber taşma kontrolü (21 Ekim)
 
 Dar yüksekliklerde rehber kartı hedefe göre daha geniş boşluğun bulunduğu yöne alınır; kart kendi içinde kaydırılabilir yükseklik sınırına sahiptir. 320px testindeki yanlış sabit koordinat beklentisi düzeltildi ve daha büyük alt boşluk fallback senaryosu eklendi. Çalışma alanının bağlantı/demoya ilişkin açılır ayrıntıları artık yalnız Demo Merkezi rotasında yüklenebilen stil dosyasına bağımlı değil. Rehber saklıyken Escape işleyicisi arka plandaki pencereye müdahale etmez. Bu değişiklikler henüz canlı tarayıcı veya CI tarafından doğrulanmış sayılmaz.
+
+
+### OZON-REAL-01 — Kamu ürün/fiyat veri entegrasyonu (21 Ekim)
+
+10 gerçek Ozon ürün sayfası ID'si, 8 koşullu fiyat çifti ve 2 fiyatı doğrulanmamış ürün salt okunur pazar listesine kondu. Operasyon Merkezi'nde kısa liste, Stok & Depo'da tam arama/filtre ve kaynak bağlantısı var. Mevcut altı Ozon referanslı stok kartına eşleşen gözlem fiyatı eklenir. Bu tarihli kamu fiyatı **canlı satış değildir**. İç demo FBS siparişleri, stok ve maliyet kayıtları değişmedi. Yeni kaynak birim testleri yazıldı; tam test, typecheck, lint, build, E2E, izole DB ve kullanıcı kabulü bu adımla yapılmış sayılmaz.
