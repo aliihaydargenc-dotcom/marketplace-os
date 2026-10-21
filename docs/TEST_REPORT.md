@@ -140,3 +140,13 @@ Kapsam dışı/henüz doğrulanmayan: yeni tarayıcı E2E, gerçek scanner, büt
 - Canlıdan izole Neon kabul dalı: `acceptance-marketplace-20261021` (güncel geliştirme dalından kopyalandı). `npm run db:migrate` **PASS**, migration `0001`–`0007` çalıştı. Canlı `main` DB'sine migration veya reset yapılmadı.
 - İzole dalın `DATABASE_URL` bağlantısıyla `npm test`: **56 PASS**, **24 SKIP** (dört flag-gated DB suite). İlk DB'siz koşuda `DATABASE_URL yapılandırılmamış` hatası vardı; izole DB ile tekrar koşu PASS.
 - Playwright E2E ve 24 hedefli DB senaryosu **halen beklemede**. Bunlar geçmeden bütün ürün doğrulanmış sayılmaz. Vercel production güncellenmedi; kullanıcı kabulü bekliyor.
+
+
+### 21 Ekim 2026 — Tam izole QA kapısı / kullanıcı kabul bağlantısı
+
+- Uygulama kaynak ağacı: `eb9ae025` (rehber TypeScript, Ozon JSX, Prettier düzeltmeleri). Node.js 24.22.1 üzerinde typecheck **PASS**, ESLint **PASS**, Prettier **PASS**, Next.js production build **PASS**.
+- Vercel Sandbox içindeki **bağımsız PostgreSQL 18** sunucusunda boş `marketplace_acceptance` veritabanı oluşturuldu. `0001`–`0007` migration **PASS**. Bu localhost test DB'si production DB değildir.
+- Tüm DB test bayrakları açıkken `npm test`: **18 test dosyası, 80/80 PASS, 0 SKIP**. Sipariş, stok, rezervasyon, sevkiyat, belge, maliyet tamamlama, QC, roller, izolasyon ve yeni Ozon manifest kontrolleri dahil.
+- Playwright başlangıç denemelerinde bundled Chromium önce eksik `libnspr4.so`/`libnss3.so`, sonra tarayıcı kapanmasıyla test başlatamadı; eksik çalışma ortamı giderildi ve Playwright'ın kendi Chromium sürümü kuruldu. **Son gerçek Chromium tarayıcı koşusu 6/6 PASS** (ilk giriş rehberi, workspace turu, 390px mobil rehber, Ozon fiyat/kaynak paneli, FBS sipariş→rezervasyon→barkod→sevk→fatura→finans→rapor→iade/QC, rol izolasyonu/sıfırlama). E2E 17.9 saniyede tamamlandı.
+- Kullanıcı kabulü için **geçici Vercel Sandbox** bağlantısı: `https://sb-4kislw650242.vercel.run/`. Ayrı PostgreSQL 18 localhost ile çalışır, GET `/` HTTP 200 gözlendi. **Sandbox oturumu en fazla 30 dakika sürer, bu link kalıcı Vercel deployment değildir.** Oturum kapanırsa yeni/resume session gerekir. Buradaki URL'nin geçici doğası kullanıcıya özellikle belirtilir.
+- Vercel production projesi `d0f13f0` üzerinde korunur; yeni production deployment veya ana Neon şemasında değişiklik bu QA kapsamında yapılmadı. Son kullanıcı kabulü henüz **BEKLİYOR**.

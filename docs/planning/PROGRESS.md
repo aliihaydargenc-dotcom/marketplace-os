@@ -228,3 +228,8 @@ Dar yüksekliklerde rehber kartı hedefe göre daha geniş boşluğun bulunduğu
 ### OZON-REAL-01B — UX ve QA devri
 
 Pazar verisi dashboard'da KPI kartlarından sonra yerleştirildi; mevcut operasyon göstergelerinin önüne geçirilmedi. 10 ürün için arama/8 fiyat/2 belirsiz kayıt/ürün sayfa bağlantısı UI E2E testi eklendi. Gerçek ürün fiyatları, eski seeded satış raporundan ayrı gösteriliyor. CI/Playwright/DB testi yazılması bunların çalıştırıldığı anlamına gelmez. Kodun izole test ortamında çalıştırılması için Vercel Sandbox ile private GitHub deposunu shallow clone denemesi 400 git clone failed döndü; hiçbir Vercel dağıtımı yapılmadı, canlı DB değişmedi.
+
+
+### 21 Ekim — Teknik QA tamamlandı / kullanıcı kabulü bekliyor
+
+İzole PostgreSQL 18 üzerinde 0001–0007 migration ve 80/80 tam test paketi PASS. Native Playwright Chromium ile 6/6 E2E PASS. TypeScript, ESLint, Prettier ve Next.js üretim derlemesi PASS. Kaynak düzeltme commit `eb9ae025`. Geçici (30 dakika oturum süresi) Vercel Sandbox demo: `https://sb-4kislw650242.vercel.run/`, bağlantı HTTP 200; production ve ana Neon DB değişmedi. Kullanıcı incelemesi bekleniyor, kalıcı sürüm/production deploy henüz yapılmadı. Kabulde saptanan geçiş, tasarım veya iş akışı bulguları bu teknik başarıdan ayrı kaydedilecek.
