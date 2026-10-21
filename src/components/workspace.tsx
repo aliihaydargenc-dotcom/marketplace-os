@@ -59,6 +59,7 @@ import { reportData, type FinancialDateMode } from "@/domain/finance/reporting";
 import { InventoryDocuments } from "./inventory-documents";
 import { CatalogTools, ProductEditor, ProductSource } from "./catalog-tools";
 import { OzonMarketPanel } from "./ozon-market-panel";
+import { ActionCenter } from "./action-center";
 import {
   CurrencyDisplayProvider,
   CurrencyDisplayControls,
@@ -657,203 +658,238 @@ function WorkspaceBody({
           )}
           {section === "dashboard" && (
             <>
-              <div className="metrics">
-                {[
-                  {
-                    label: "Net satış",
-                    value:
-                      data.actor.role === "WAREHOUSE"
-                        ? "Yetkili görünümü"
-                        : displayMoney(summary.net, currency),
-                    sub: `${orders.filter((o) => ids.has(o.id)).length} sipariş · seçili dönem`,
-                    icon: ChartNoAxesCombined,
-                  },
-                  {
-                    label: "Hazırlama kuyruğu",
-                    value: queue.filter((o) =>
-                      ["RESERVED", "PACKING"].includes(o.status),
-                    ).length,
-                    sub: "Rezerve + hazırlanıyor · tüm dönem",
-                    icon: PackageCheck,
-                  },
-                  {
-                    label: "Sevke hazır",
-                    value: queue.filter((o) => o.status === "READY").length,
-                    sub: "Barkod doğrulaması tamamlandı",
-                    icon: Truck,
-                  },
-                  {
-                    label: "Kritik stok",
-                    value: low.length,
-                    sub: "Kullanılabilir stok ≤ kritik eşik",
-                    icon: AlertTriangle,
-                  },
-                ].map((m) => (
-                  <article className="metric" key={m.label}>
-                    <div>
-                      <span>{m.label}</span>
-                      <m.icon size={17} />
-                    </div>
-                    <strong>{m.value}</strong>
-                    <small>{m.sub}</small>
-                  </article>
-                ))}
-              </div>
-              <OzonMarketPanel
-                compact
-                onViewAll={() => navigate("inventory")}
+              <ActionCenter
+                data={data}
+                busy={busy}
+                onOpenOrder={openOrder}
+                onAction={(task) => {
+                  navigate(task.target);
+                  if (task.target === "packing" && task.orderId) {
+                    setPackingOrderId(task.orderId);
+                  }
+                  if (task.target === "inventory" && task.productId) {
+                    openProduct(task.productId);
+                  }
+                }}
               />
-              <div className="dashboard-grid">
-                <section className="panel sales-chart">
-                  <div className="panel-heading">
-                    <div>
-                      <h2>Satış görünümü</h2>
-                      <p>Sevk edilmiş siparişlerin brüt tutarı · {currency}</p>
-                    </div>
-                    <span className="subtle-pill">
-                      {from} / {to}
-                    </span>
+              <details className="dashboard-insights">
+                <summary>
+                  Analizleri, son siparişleri ve Ozon pazar verilerini göster
+                </summary>
+                <div className="dashboard-insights-content">
+                  <div className="metrics">
+                    {[
+                      {
+                        label: "Net satış",
+                        value:
+                          data.actor.role === "WAREHOUSE"
+                            ? "Yetkili görünümü"
+                            : displayMoney(summary.net, currency),
+                        sub: `${orders.filter((o) => ids.has(o.id)).length} sipariş · seçili dönem`,
+                        icon: ChartNoAxesCombined,
+                      },
+                      {
+                        label: "Hazırlama kuyruğu",
+                        value: queue.filter((o) =>
+                          ["RESERVED", "PACKING"].includes(o.status),
+                        ).length,
+                        sub: "Rezerve + hazırlanıyor · tüm dönem",
+                        icon: PackageCheck,
+                      },
+                      {
+                        label: "Sevke hazır",
+                        value: queue.filter((o) => o.status === "READY").length,
+                        sub: "Barkod doğrulaması tamamlandı",
+                        icon: Truck,
+                      },
+                      {
+                        label: "Kritik stok",
+                        value: low.length,
+                        sub: "Kullanılabilir stok ≤ kritik eşik",
+                        icon: AlertTriangle,
+                      },
+                    ].map((m) => (
+                      <article className="metric" key={m.label}>
+                        <div>
+                          <span>{m.label}</span>
+                          <m.icon size={17} />
+                        </div>
+                        <strong>{m.value}</strong>
+                        <small>{m.sub}</small>
+                      </article>
+                    ))}
                   </div>
-                  {data.actor.role === "WAREHOUSE" ? (
-                    <div className="empty">
-                      Finans görünümü için muhasebe veya yönetici rolü gerekir.
-                    </div>
-                  ) : (
-                    <div className="chart">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <AreaChart
-                          data={trend}
-                          margin={{ top: 15, right: 15, left: 5, bottom: 0 }}
-                        >
-                          <CartesianGrid
-                            strokeDasharray="3 4"
-                            vertical={false}
-                            stroke="#e8edf3"
-                          />
-                          <XAxis
-                            dataKey="day"
-                            tick={{ fontSize: 11 }}
-                            tickLine={false}
-                            axisLine={false}
-                            minTickGap={35}
-                          />
-                          <YAxis
-                            tick={{ fontSize: 11 }}
-                            tickLine={false}
-                            axisLine={false}
-                            width={60}
-                          />
-                          <Tooltip
-                            formatter={(v) => money(Number(v) * 100, currency)}
-                          />
-                          <Area
-                            type="monotone"
-                            dataKey="gross"
-                            name="Brüt satış"
-                            stroke="#2473db"
-                            fill="#e8f1fe"
-                            strokeWidth={2}
-                          />
-                        </AreaChart>
-                      </ResponsiveContainer>
-                    </div>
-                  )}
-                  <div className="chart-summary">
-                    <div>
-                      <span>Yeni sipariş</span>
-                      <strong>
-                        {orders.filter((o) => o.status === "NEW").length}
-                      </strong>
-                    </div>
-                    <div>
-                      <span>Sevk edildi</span>
-                      <strong>
-                        {orders.filter((o) => o.status === "SHIPPED").length}
-                      </strong>
-                    </div>
-                    <div>
-                      <span>Fatura bekliyor</span>
-                      <strong>
-                        {
-                          orders.filter(
-                            (o) => o.status === "SHIPPED" && !o.invoice_id,
-                          ).length
-                        }
-                      </strong>
-                    </div>
-                  </div>
-                </section>
-                <section className="panel health">
-                  <div className="panel-heading">
-                    <div>
-                      <h2>İşlem kuyruğu</h2>
-                      <p>Önceliklendirilmiş operasyon işleri</p>
-                    </div>
-                    <span className="count">{queue.length}</span>
-                  </div>
-                  {[
-                    {
-                      status: "NEW",
-                      label: "Rezervasyon bekleyen",
-                      description: "Stok kontrolü ve tahsis",
-                      icon: ShoppingBag,
-                    },
-                    {
-                      status: "READY",
-                      label: "Sevk edilmeye hazır",
-                      description: "Depo doğrulaması tamam",
-                      icon: Truck,
-                    },
-                    {
-                      status: "RETURN_PENDING",
-                      label: "İade kalite kontrol",
-                      description: "Karantinada bekleyen siparişler",
-                      icon: PackageCheck,
-                    },
-                  ].map((q) => (
-                    <button
-                      className="queue-item"
-                      key={q.status}
-                      onClick={() => {
-                        navigate("orders");
-                        setStatus(q.status);
-                      }}
-                    >
-                      <span className="queue-icon">
-                        <q.icon size={19} />
-                      </span>
-                      <div>
-                        <strong>{q.label}</strong>
-                        <small>{q.description}</small>
+                  <OzonMarketPanel
+                    compact
+                    onViewAll={() => navigate("inventory")}
+                  />
+                  <div className="dashboard-grid">
+                    <section className="panel sales-chart">
+                      <div className="panel-heading">
+                        <div>
+                          <h2>Satış görünümü</h2>
+                          <p>
+                            Sevk edilmiş siparişlerin brüt tutarı · {currency}
+                          </p>
+                        </div>
+                        <span className="subtle-pill">
+                          {from} / {to}
+                        </span>
                       </div>
-                      <b>
+                      {data.actor.role === "WAREHOUSE" ? (
+                        <div className="empty">
+                          Finans görünümü için muhasebe veya yönetici rolü
+                          gerekir.
+                        </div>
+                      ) : (
+                        <div className="chart">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart
+                              data={trend}
+                              margin={{
+                                top: 15,
+                                right: 15,
+                                left: 5,
+                                bottom: 0,
+                              }}
+                            >
+                              <CartesianGrid
+                                strokeDasharray="3 4"
+                                vertical={false}
+                                stroke="#e8edf3"
+                              />
+                              <XAxis
+                                dataKey="day"
+                                tick={{ fontSize: 11 }}
+                                tickLine={false}
+                                axisLine={false}
+                                minTickGap={35}
+                              />
+                              <YAxis
+                                tick={{ fontSize: 11 }}
+                                tickLine={false}
+                                axisLine={false}
+                                width={60}
+                              />
+                              <Tooltip
+                                formatter={(v) =>
+                                  money(Number(v) * 100, currency)
+                                }
+                              />
+                              <Area
+                                type="monotone"
+                                dataKey="gross"
+                                name="Brüt satış"
+                                stroke="#2473db"
+                                fill="#e8f1fe"
+                                strokeWidth={2}
+                              />
+                            </AreaChart>
+                          </ResponsiveContainer>
+                        </div>
+                      )}
+                      <div className="chart-summary">
+                        <div>
+                          <span>Yeni sipariş</span>
+                          <strong>
+                            {orders.filter((o) => o.status === "NEW").length}
+                          </strong>
+                        </div>
+                        <div>
+                          <span>Sevk edildi</span>
+                          <strong>
+                            {
+                              orders.filter((o) => o.status === "SHIPPED")
+                                .length
+                            }
+                          </strong>
+                        </div>
+                        <div>
+                          <span>Fatura bekliyor</span>
+                          <strong>
+                            {
+                              orders.filter(
+                                (o) => o.status === "SHIPPED" && !o.invoice_id,
+                              ).length
+                            }
+                          </strong>
+                        </div>
+                      </div>
+                    </section>
+                    <section className="panel health">
+                      <div className="panel-heading">
+                        <div>
+                          <h2>İşlem kuyruğu</h2>
+                          <p>Önceliklendirilmiş operasyon işleri</p>
+                        </div>
+                        <span className="count">{queue.length}</span>
+                      </div>
+                      {[
                         {
-                          data.orders.filter(
-                            (o) =>
-                              o.status === q.status && o.fulfillment === "FBS",
-                          ).length
-                        }
-                      </b>
-                      <ChevronRight size={15} />
+                          status: "NEW",
+                          label: "Rezervasyon bekleyen",
+                          description: "Stok kontrolü ve tahsis",
+                          icon: ShoppingBag,
+                        },
+                        {
+                          status: "READY",
+                          label: "Sevk edilmeye hazır",
+                          description: "Depo doğrulaması tamam",
+                          icon: Truck,
+                        },
+                        {
+                          status: "RETURN_PENDING",
+                          label: "İade kalite kontrol",
+                          description: "Karantinada bekleyen siparişler",
+                          icon: PackageCheck,
+                        },
+                      ].map((q) => (
+                        <button
+                          className="queue-item"
+                          key={q.status}
+                          onClick={() => {
+                            navigate("orders");
+                            setStatus(q.status);
+                          }}
+                        >
+                          <span className="queue-icon">
+                            <q.icon size={19} />
+                          </span>
+                          <div>
+                            <strong>{q.label}</strong>
+                            <small>{q.description}</small>
+                          </div>
+                          <b>
+                            {
+                              data.orders.filter(
+                                (o) =>
+                                  o.status === q.status &&
+                                  o.fulfillment === "FBS",
+                              ).length
+                            }
+                          </b>
+                          <ChevronRight size={15} />
+                        </button>
+                      ))}
+                    </section>
+                  </div>
+                  <div className="section-heading">
+                    <h2>Son siparişler</h2>
+                    <button
+                      className="text-link"
+                      onClick={() => navigate("orders")}
+                    >
+                      Tüm siparişler <ArrowUpRight size={14} />
                     </button>
-                  ))}
-                </section>
-              </div>
-              <div className="section-heading">
-                <h2>Son siparişler</h2>
-                <button
-                  className="text-link"
-                  onClick={() => navigate("orders")}
-                >
-                  Tüm siparişler <ArrowUpRight size={14} />
-                </button>
-              </div>
-              <DataTable
-                data={orders.slice(0, 8)}
-                columns={orderColumns}
-                onOpen={(o) => openOrder(o.id)}
-                label="Son siparişler"
-              />
+                  </div>
+                  <DataTable
+                    data={orders.slice(0, 8)}
+                    columns={orderColumns}
+                    onOpen={(o) => openOrder(o.id)}
+                    label="Son siparişler"
+                  />
+                </div>
+              </details>
             </>
           )}
           {section === "orders" && (

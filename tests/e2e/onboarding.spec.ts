@@ -97,6 +97,9 @@ test("Ozon real public offers keep provenance separate from seeded orders", asyn
   await expect(
     page.getByRole("heading", { name: "Operasyon Merkezi", exact: true }),
   ).toBeVisible();
+  await page
+    .getByText("Analizleri, son siparişleri ve Ozon pazar verilerini göster")
+    .click();
   const overview = page.getByRole("region", {
     name: "Gerçek Ozon ürün ve fiyat gözlemleri",
   });
