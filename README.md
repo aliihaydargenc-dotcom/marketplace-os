@@ -25,7 +25,7 @@ Gerçek Ozon/Paraşüt bağlantısı ve e-Fatura gönderimi yoktur. FBO yalnızc
 - Finans: TRY/RUB ayrı kayıtlar, tarihli kur fotoğrafı, giderler, eksik maliyet uyarısı, sipariş/ürün katkısı, satış hızı, ledger tabanlı stok devri, dönem karşılaştırması, Excel ve PDF raporu.
 - Sistem: sunucuda rol kontrolü, mağaza ayarı, otomatik demo taslağı, kullanıcı kayıt yönetimi, audit ve izole sıfırlama.
 
-72 kurgusal SKU/varyant ve 260 tutarlı sipariş sunucuda oluşturulur. Her tarayıcıya ayrı workspace verilir. Demo rol seçimi gerçek üretim kimlik doğrulaması değildir. Oturum HttpOnly cookie ile 7 gün saklanır; çıkış sonrası yeni giriş yeni demo alanı açar. Açık oturumda sayfa yenilendiğinde aynı kayıtlar korunur.
+78 demo SKU/varyant ve 263 tutarlı örnek sipariş sunucuda oluşturulur; altı ürünün kısa tanımında açık Ozon ürün referansı bulunur. Her tarayıcıya ayrı workspace verilir. Demo rol seçimi gerçek üretim kimlik doğrulaması değildir. Oturum HttpOnly cookie ile 7 gün saklanır; çıkış sonrası yeni giriş yeni demo alanı açar. Açık oturumda sayfa yenilendiğinde aynı kayıtlar korunur.
 
 ## Yerel kurulum
 
