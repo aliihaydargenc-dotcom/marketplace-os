@@ -76,3 +76,5 @@ Production ve preview için ayrı veritabanı/branch önerilir. Bu demo tek demo
 
 Gerçek Ozon/Paraşüt/kargo, FBO operasyonu, gerçek kullanıcı daveti/şifre/MFA, kısmi sevkiyat ve kısmi iade, çoklu mağaza/depo tahsisi, genel muhasebe/vergi, fiyat eşitleme, kapsamlı otomasyon ve canlı finansal mutabakat. Ek kullanıcı kayıtları düzenlenebilir ancak demo girişi üç yerleşik hesaba açıktır. Maliyet fotoğrafı önceki siparişlerde sonradan değişmez; bilinmeyen maliyetin düzeltme/mutabakat işlemi henüz yoktur.
 
+
+FX-01: kaynak RUB/TRY tutar korunur; altında varsayılan TL veya seçilen Euro/Ruble karşılığı. TCMB döviz alış son bülten tarihi ve kontrol saati görünür; alınmayan/bozuk/eski kurda karşılık gösterilmez. Bu güncel yaklaşık değerlemedir; kayıtlı demo işlem kuru ve Excel/PDF özgün tutarları değişmez. [Kaynak/yuvarlama/sınırlar](docs/research/FX01_RESEARCH.md). Ozon gerçek satış bağlantısı henüz eklenmedi.

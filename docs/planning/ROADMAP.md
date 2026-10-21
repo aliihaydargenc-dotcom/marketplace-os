@@ -8,7 +8,13 @@ BACKLOG → IN_PROGRESS → IMPLEMENTED → VERIFIED. BLOCKED: somut engel ve ye
 
 Her görev: sorun, dosya sınırı, bağımlılık, kabul, doğrulama, kalan risk. Kullanıcının manuel UI kontrolü ve sonraki Codex regresyonu ayrı kaydedilir. Kritik veri bütünlüğü hatası diğer işleri bloke eder. Aşağıdaki işler orijinal dört aşamanın eksiklerini tamamlar; yeni aşama adı altında kapsam saklanmaz.
 
-## Aktif geliştirme dilimi — Aşama 2
+## Aktif geliştirme dilimi — Aşama 3
+
+### FX-01 — Özgün tutar altında döviz karşılığı
+
+21 Ekim kullanıcı geri bildirimiyle bu turdaki tek görev. Önceki TL ana gösterim talebi revize edildi: RUB/TRY özgün tutar sabit, varsayılan küçük TL karşılığı; Euro/Ruble/kapalı seçimi. Kaynak TCMB son bülten döviz alış, tarih ve kontrol saati açık. Kaynak para filtresi dönüşümden ayrı adlandırılır. Domain dönüşüm, server fetch, session kontrollü API, ayrı React provider/control/amount bileşeni; migration/ledger/export mutasyonu yok. Kabul ve kaynak `../research/FX01_RESEARCH.md` içinde. Kontrol: hedefli kur testleri, typecheck/lint/format/build ve kısa yayın gözlemi; kapsamlı E2E sonraki Codex devrinde. Kullanıcı kontrolü sonrası bekle. Ozon mağaza/katalog verisi ayrı bir sonraki iş; tam bağlantı belirsiz.
+
+## Önceki geliştirme dilimleri — Aşama 2
 
 ### OPS-02 — Kişisel kayıtlı sipariş görünümleri
 
@@ -50,7 +56,7 @@ Her görev: sorun, dosya sınırı, bağımlılık, kabul, doğrulama, kalan ris
 | ID | Aşama | İş ve somut kabul | Bağımlılık |
 | --- | --- | --- | --- |
 | OPS-02 | 2 | Kalıcı kaydedilmiş filtre/görünüm; durum/model/tarih/SKU filtreleri yeniden açılışta korunur; seçili kayıt sayısı ve işlem uygunluğu açık; workspace sınırı korunur | OPS-01 UI geri bildirimi |
-| FX-01 | 3 | Varsayılan TL raporlama, TL/EUR/RUB görünümü, resmi/uygun kaynakla günlük kur ve tarih/saat; özgün para birimi korunur; geçmiş işlem kuru ve güncel değerleme ayrı; eksik/güncel olmayan kurda açık uyarı, sessiz uydurma dönüşüm yok | UI-01 kontrolü sonrası finans diliminde ele alınacak; kaynak/tatil günü/yuvarlama kararı ve mutabakat kontrolleri gerekir |
+| FX-01 | 3 | Son yönlendirmeye göre özgün tutar sabit, küçük TL/EUR/RUB karşılığı ve kapatma; TCMB son bülten ve tarih/saat; özgün para birimi korunur; geçmiş işlem kuru ve güncel değerleme ayrı; eksik/güncel olmayan kurda açık uyarı, sessiz uydurma dönüşüm yok | Bu teslimde görüntüleme dönüşümü; tarihsel çevrilmiş rapor çıktısı kapsam dışı |
 | ARCH-01 | 1–3 | `execute.ts` içindeki sipariş/envanter/fatura/finans uygulama servislerini ayır; transaction yöneticisi tek sınır; mevcut bütünlük senaryoları aynı sonucu verir | İzole DB ile hedefli regresyon |
 | CAT-01 | 2 | Ürün/SKU/varyant/barkod oluşturma-düzenleme; tekillik, aktiflik ve geçmiş sipariş fotoğraflarını koruma; stok miktarı ürün kartından yazılamaz | Veri modeli kararı + migration/rol kontrolü |
 | INV-01 | 2 | Referanslı mal kabul ve sayım belgesi; taslak/onay/delta; tekrar onay tek ledger; gerekçe ve kaynak siparişten izlenir | ARCH-01, hedefli DB testleri |

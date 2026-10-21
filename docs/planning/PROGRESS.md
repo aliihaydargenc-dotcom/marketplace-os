@@ -23,6 +23,19 @@ PARTIAL / REFERENCE_ONLY tabloda kapsam açıklamasıdır; görev akışı ROADM
 
 ## 21 Ekim çalışma dilimi
 
+### FX-01 — Güncel teslim: özgün tutar altında karşılık
+
+Kullanıcının para birimi geri bildirimiyle Aşama 3'te tek görev geliştirildi. Önceki “ana tutar TL” isteği bu görev için revize: kaynak RUB/TRY sabit; altında küçük ≈ TL (varsayılan), Euro/Ruble/kapalı seçimi. Kaynak kayıt filtresi dönüşümden ayrı adlandırıldı. Gösterim kontrolü yenilemede TL varsayılanına döner; sipariş görünümü veya mağaza ayarına yazılmaz.
+
+- TCMB resmi XML kaynağı doğrudan HTTP 200 ile okunabildi. Gözlenen bülten 20.10.2026; eski gün olduğu saklanmıyor. Kaynak/tarih/kontrol saati görünür, önceki tarihli bülten işaretli.
+- Ayrı domain dönüştürücü + server sabit kaynak fetch + session kontrollü API + React provider/control/amount. Tek uygulama isteği, görünürken 15 dakika/sekme dönüşü ve düğmeyle yeniden kontrol; no-store, zaman aşımı, istek sürümüyle eski yanıtın yeniyi ezmesi engelli.
+- Dönüşüm güvenli tamsayı / BigInt; Unit normalizasyonu, negatif tutarda simetrik yuvarlama; bozuk/eksik/ileri/eski kaynak reddi. Kur hatasında sahte değer yok; ana tutarlar okunur, karşılıklar gizlenir.
+- Ledger, sipariş tarihsel kuru/maliyeti, stok, fatura, export veya grafik ekseni değişmez. Finansın TRY/RUB kaynak toplamları birleşmez. Ekran karşılığı geçmiş gerçekleşmiş TL kârı değildir.
+- 5 hedefli test PASS (son koşu 300ms dosya süresi; testler 29ms): normalizasyon, meta, RUB/TRY/EUR çaprazı, yuvarlama, bozuk/eski/ileri kaynağı ve sabit URL fetch sınırı. Canlı HTTP 200 XML'inin gerçek parser ile kontrolü PASS: 100 RUB → 59,48 TL; bu sabit seed kuru değil, yalnız o bültenin kontrol sonucudur.
+- Kapsamlı DB/E2E tekrarlanmadı; DB mutasyonu/migration yok. Yayın/canlı ekran gözlemi ayrı kaydedilecek. Önceki yerel build cache'i bozuk persistence hatası verdi; yalnız üretilmiş .next dizini kenara taşındı ve temiz build geçti. Son kaynak için typecheck/lint (0 uyarı)/format/build PASS.
+- Ozon “Tastak” mağaza/ürün linki bilinmiyor. Resmi API sayfası okunabilir endpoint vermedi. Bu görevde gerçek satış çekilmedi, ürün sayfası satış kanıtı yapılmadı, API anahtarı istenmedi. [Kaynak ve kararlar](../research/FX01_RESEARCH.md).
+
+
 ### OPS-02 — Güncel teslim
 
 Kullanıcının “Devam” talimatıyla yalnız OPS-02 uygulandı. Durum IMPLEMENTED; hedefli kontroller PASS, kullanıcı kabulü bekliyor. UI-01 için devam izni alındı; ayrıntılı kullanıcı testi yapılmış sayılmadı.

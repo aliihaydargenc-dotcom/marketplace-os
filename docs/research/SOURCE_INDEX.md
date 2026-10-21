@@ -26,3 +26,5 @@
 - Doğrulama komutu/sonucu; çalıştırılmadıysa açıkça yaz.
 
 Ham erişim bilgili capture, rakip özel veri veya GPL kaynak dökümü bu dizine eklenmez. İncelenemeyen kaynağı belgede saklamak gözlemlendiği anlamına gelmez.
+
+FX-01: [TCMB canlı XML / Tabler kaynak kaydı](FX01_RESEARCH.md), [SHA manifesti](fx01-sources.json). Son bülten tarihi doğrudan XML üzerinden gözlendi; Ozon satış erişimi ve belirsiz mağaza doğrulanmadı.

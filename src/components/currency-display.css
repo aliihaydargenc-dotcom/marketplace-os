@@ -1,0 +1,78 @@
+.currency-display-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 20px;
+  align-items: center;
+  margin: 0 0 18px;
+  padding: 12px 14px;
+  border: 1px solid var(--line, #dce3ed);
+  border-radius: 4px;
+  background: #fff;
+  color: #40536c;
+  font-size: 12px;
+}
+.currency-display-choice {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.currency-display-choice label {
+  font-weight: 600;
+  color: #263d57;
+}
+.currency-display-choice select {
+  min-height: 34px;
+  max-width: 100%;
+}
+.currency-display-source {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+  min-width: 200px;
+  font-variant-numeric: tabular-nums;
+}
+.currency-display-source a {
+  color: #245f9e;
+  font-weight: 600;
+}
+.currency-display-source small {
+  width: 100%;
+  color: #65768b;
+  font-size: 11px;
+}
+.currency-display-bar p {
+  margin: 0;
+  width: 100%;
+  color: #65768b;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.quoted-amount {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 3px;
+  vertical-align: top;
+  font-variant-numeric: tabular-nums;
+}
+.quoted-amount .quoted-equivalent {
+  font-size: 11px;
+  line-height: 1.4;
+  font-weight: 400;
+  color: #64768d;
+  white-space: nowrap;
+}
+@media (max-width: 600px) {
+  .currency-display-bar {
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .currency-display-choice {
+    width: 100%;
+  }
+  .currency-display-source {
+    min-width: 0;
+    width: 100%;
+  }
+}

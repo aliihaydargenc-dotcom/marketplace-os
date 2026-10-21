@@ -1,0 +1,32 @@
+{
+  "reviewedAt": "2026-10-21",
+  "task": "FX-01",
+  "source": {
+    "url": "https://www.tcmb.gov.tr/kurlar/today.xml",
+    "httpStatus": 200,
+    "bulletinDate": "2026-10-20",
+    "sha256": "e984d26e2083a458bb4fb87ddcc7ccdda9195791a4acaba489a5656f1d7fbf98",
+    "observedFields": [
+      "Tarih_Date.Tarih",
+      "Currency.CurrencyCode",
+      "Unit",
+      "ForexBuying"
+    ],
+    "rawFeedCommitted": false
+  },
+  "design": {
+    "repository": "tabler/tabler",
+    "ref": "dev",
+    "path": "preview/pages/layout-condensed.astro",
+    "blobSha": "a4141d0eea812ab9e63ef6bb27640be5e9f96859",
+    "license": "MIT; previously reviewed LICENSE aa69649cde83c2d6517ec2498a9c10f5bb3bf54c",
+    "observation": "Compact layout places page actions apart from primary data content.",
+    "decision": "Separate display currency control from source-record filters; original amounts remain primary.",
+    "codeCopied": false
+  },
+  "ozon": {
+    "url": "https://docs.ozon.ru/api/seller/",
+    "result": "Search reader returned no readable content; no endpoint or live order access verified",
+    "unknown": "User said Tastak; exact public store/product URL still needed"
+  }
+}

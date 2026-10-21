@@ -52,6 +52,11 @@ import { lineContributions } from "@/domain/finance/allocation";
 import { PackingWorkbench } from "./packing-workbench";
 import { OrdersView } from "./orders-view";
 import {
+  CurrencyDisplayProvider,
+  CurrencyDisplayControls,
+  displayMoney,
+} from "./currency-display";
+import {
   canOpenSection,
   type WorkspaceSection as Section,
 } from "@/domain/navigation";
@@ -103,7 +108,7 @@ async function api<T>(url: string, options?: RequestInit): Promise<T> {
   if (!response.ok) throw new Error(data.error ?? "İşlem başarısız");
   return data;
 }
-export function Workspace({
+function WorkspaceBody({
   initialSection = "dashboard",
 }: {
   initialSection?: Section;
@@ -341,7 +346,7 @@ export function Workspace({
       header: "Sipariş tutarı",
       cell: ({ row }) => (
         <strong className="numeric">
-          {money(row.original.total, row.original.currency)}
+          {displayMoney(row.original.total, row.original.currency)}
         </strong>
       ),
     },
@@ -623,6 +628,7 @@ export function Workspace({
               </button>
             </div>
           )}
+          <CurrencyDisplayControls />
           {["dashboard", "finance"].includes(section) && (
             <div className="period-toolbar">
               <div>
@@ -673,12 +679,12 @@ export function Workspace({
               </div>
               {section !== "orders" && (
                 <select
-                  aria-label="Rapor para birimi"
+                  aria-label="Kaynak kayıtların para birimi"
                   value={currency}
                   onChange={(e) => setCurrency(e.target.value as "RUB" | "TRY")}
                 >
-                  <option>RUB</option>
-                  <option>TRY</option>
+                  <option value="RUB">Ruble kayıtları (RUB)</option>
+                  <option value="TRY">Türk lirası kayıtları (TRY)</option>
                 </select>
               )}
             </div>
@@ -692,7 +698,7 @@ export function Workspace({
                     value:
                       data.actor.role === "WAREHOUSE"
                         ? "Yetkili görünümü"
-                        : money(summary.net, currency),
+                        : displayMoney(summary.net, currency),
                     sub: `${orders.filter((o) => ids.has(o.id)).length} sipariş · seçili dönem`,
                     icon: ChartNoAxesCombined,
                   },
@@ -1078,7 +1084,7 @@ export function Workspace({
                       <span>{m.label}</span>
                       <ChartNoAxesCombined size={17} />
                     </div>
-                    <strong>{money(m.value, currency)}</strong>
+                    <strong>{displayMoney(m.value, currency)}</strong>
                     <small>
                       {incomplete && m.label.startsWith("Katkı")
                         ? "Kesin kâr değildir; eksik maliyet içerir"
@@ -1089,13 +1095,14 @@ export function Workspace({
               </div>
               <div className="finance-strip">
                 <span>
-                  Komisyon <b>{money(summary.commission, currency)}</b>
+                  Komisyon <b>{displayMoney(summary.commission, currency)}</b>
                 </span>
                 <span>
-                  Lojistik <b>{money(summary.logistics, currency)}</b>
+                  Lojistik <b>{displayMoney(summary.logistics, currency)}</b>
                 </span>
                 <span>
-                  Bilinen ürün maliyeti <b>{money(summary.cost, currency)}</b>
+                  Bilinen ürün maliyeti{" "}
+                  <b>{displayMoney(summary.cost, currency)}</b>
                 </span>
                 <span>
                   Eksik maliyetli sipariş <b>{incomplete}</b>
@@ -1111,8 +1118,10 @@ export function Workspace({
                 Katkı = net satış − komisyon − lojistik − bilinen ürün maliyeti.
                 Tahsilat veya resmi muhasebe kârı değildir. İadede
                 komisyon/lojistik otomatik geri alınmaz. TRY ve RUB toplanmaz.
-                Kur sipariş tarihine ve değere bağlıdır; demo kuru canlı kur
-                değildir.
+                Tablodaki işlem kuru siparişe kayıtlı demo kurudur. Küçük ≈
+                karşılıkları TCMB son bülteninden güncel değerlemedir. Excel/PDF
+                özgün para birimindedir; karşılıklar satır bazında
+                yuvarlandığından toplamın dönüşümünden küçük farklar olabilir.
               </p>
               <section className="panel comparison-panel">
                 <h2>Önceki dönem karşılaştırması</h2>
@@ -1129,9 +1138,9 @@ export function Workspace({
                   ).map(([label, current, previous]) => (
                     <article key={label}>
                       <span>{label}</span>
-                      <strong>{money(current, currency)}</strong>
+                      <strong>{displayMoney(current, currency)}</strong>
                       <small>
-                        Önceki: {money(previous, currency)} ·{" "}
+                        Önceki: {displayMoney(previous, currency)} ·{" "}
                         {previous === 0
                           ? "Karşılaştırma tabanı yok"
                           : `${(((current - previous) / Math.abs(previous)) * 100).toFixed(1)}% değişim`}
@@ -1161,7 +1170,7 @@ export function Workspace({
                       header: "Net satış",
                       accessorFn: (o) => profitability(o, entries).net,
                       cell: ({ getValue }) =>
-                        money(getValue<number>(), currency),
+                        displayMoney(getValue<number>(), currency),
                     },
                     {
                       id: "cost",
@@ -1169,7 +1178,7 @@ export function Workspace({
                       cell: ({ row }) => {
                         const f = profitability(row.original, entries);
                         return f.complete ? (
-                          money(f.cost, currency)
+                          displayMoney(f.cost, currency)
                         ) : (
                           <span className="danger-text">Eksik maliyet</span>
                         );
@@ -1182,7 +1191,7 @@ export function Workspace({
                         const f = profitability(row.original, entries);
                         return f.contribution === null
                           ? "Hesaplanamaz"
-                          : money(f.contribution, currency);
+                          : displayMoney(f.contribution, currency);
                       },
                     },
                     {
@@ -1469,7 +1478,7 @@ export function Workspace({
                 <div className="detail-summary">
                   <Badge status={order.status} />
                   <span className="model">{order.fulfillment}</span>
-                  <strong>{money(order.total, order.currency)}</strong>
+                  <strong>{displayMoney(order.total, order.currency)}</strong>
                 </div>
                 <div className="detail-grid">
                   <div>
@@ -1517,7 +1526,7 @@ export function Workspace({
                           </small>
                           <small>
                             Kullanılabilir: {p.available} · Birim:{" "}
-                            {money(l.unit_price, order.currency)}
+                            {displayMoney(l.unit_price, order.currency)}
                           </small>
                         </div>
                         <b>
@@ -1774,7 +1783,7 @@ export function Workspace({
                           <strong>
                             {value === null
                               ? "Eksik maliyet"
-                              : money(Number(value), order.currency)}
+                              : displayMoney(Number(value), order.currency)}
                           </strong>
                         </div>
                       ))}
@@ -1810,7 +1819,7 @@ export function Workspace({
                     .map((f) => (
                       <div key={f.id}>
                         <span>{f.kind}</span>
-                        <strong>{money(f.amount, f.currency)}</strong>
+                        <strong>{displayMoney(f.amount, f.currency)}</strong>
                       </div>
                     ))}
                 </div>
@@ -2079,7 +2088,7 @@ function ProductAnalytics({
           {
             accessorKey: "sales",
             header: "Net satış",
-            cell: ({ getValue }) => money(getValue<number>(), currency),
+            cell: ({ getValue }) => displayMoney(getValue<number>(), currency),
           },
           {
             accessorKey: "speed",
@@ -2098,7 +2107,7 @@ function ProductAnalytics({
             cell: ({ getValue }) =>
               getValue<number | null>() === null
                 ? "Eksik maliyet"
-                : money(getValue<number>(), currency),
+                : displayMoney(getValue<number>(), currency),
           },
         ]}
         label="Ürün performansı"
@@ -2307,5 +2316,13 @@ function SettingsView({
         label="Denetim kayıtları"
       />
     </>
+  );
+}
+
+export function Workspace(props: { initialSection?: Section }) {
+  return (
+    <CurrencyDisplayProvider>
+      <WorkspaceBody {...props} />
+    </CurrencyDisplayProvider>
   );
 }

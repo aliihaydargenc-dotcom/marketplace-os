@@ -29,3 +29,9 @@ Tarih filtresi siparişin UTC oluşturma gününe göre bir kohort seçer. Seçi
 
 Excel: sipariş bazında brüt/iade/net/gider/maliyet/katkı, eksik maliyet işareti, kur ve kur tarihi; ayrı finans hareket sayfası ve özet. PDF: aynı kohort ve özet + sipariş listesi. Fatura PDF'i tarayıcı yazdırma/PDF kaydet akışıdır ve DEMO / TASLAK işaretlidir. Vergi hesaplaması veya mali geçerlilik yoktur.
 
+
+## FX-01 — Güncel görüntüleme karşılığı
+
+Özgün tutarın altında ≈ seçili para birimi gösterilir; varsayılan TL. Kur TCMB son yayımlanan bültendeki ForexBuying / Unit, ölçek 10^8. Dönüşüm minor-unit tamsayı × kaynak TRY kuru / hedef TRY kuru; BigInt ile en yakın kuruş, yarımda sıfırdan uzağa yuvarlanır. Son bülten tarihi ve kontrol saati görünür; önceki gün açıkça işaretli. Eksik/bozuk/ağ hatasında karşılık yok, uydurma kur yok. Yedi günden eski veya ileri tarihli bülten reddedilir. [Kaynak ve kapsam](research/FX01_RESEARCH.md).
+
+Bu karşılık güncel gösterge değerlemesidir; geçmiş siparişin kayıtlı fx_rate/fx_date değeri ve demo maliyet hesabı değişmez. TRY/RUB ayrı kaynak toplamlar olarak kalır. Satırların yuvarlanmış karşılık toplamıyla toplamın tek dönüşümü küçük fark gösterebilir; karşılıklar resmi muhasebe mutabakatı değildir. Excel/PDF, grafik ekseni ve tooltip kaynak para biriminde kalır. Tarihsel TL/EUR export bu teslimin kapsamı değildir.

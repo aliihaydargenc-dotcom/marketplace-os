@@ -12,7 +12,19 @@
 
 DB testleri kendi UUID alanlarını oluşturup temizler; üretim/live workspace üzerinde toplu reset veya regresyon çalıştırma. Migration/test setup eksikse sonucu BLOCKED yaz.
 
-## OPS-02 — Güncel kullanıcı / Codex kontrolü
+## FX-01 — Güncel kullanıcı / Codex kontrolü
+
+Hedefli test `npx vitest run tests/exchange-rates.test.ts` (DB gerekmez). Gerçek kur testi tarih ve kaynakla sınırlıdır, ticari işlem yoktur.
+
+- [ ] Siparişler: RUB kaynak fiyat üstte değişmez, altında ≈ TL. Euro/Ruble/kapalı seçimleri sadece ikinci tutarı etkiler. Aynı para birimi seçilirse ikinci tutar yinelenmez. Yenilemede varsayılan TL'ye dönmesi bilinçlidir.
+- [ ] Kur satırı TCMB döviz alış, bülten tarihi ve son kontrol Türkiye saatini içerir; önceki tarihli bülteni bugün gibi sunmaz.
+- [ ] Finans: kaynak kayıtlar filtresi ile karşılık seçimi farklıdır. Net/brüt/komisyon/lojistik/katkı ve detay tutarları aynı bültenle değerlenir; TRY/RUB karışık toplanmaz. Eksik maliyet uyarısı kaybolmaz.
+- [ ] Kaynak 503 / timeout / bozuk / >7 gün / gelecek tarih: özgün fiyatlar kalır; eski veya demo kura sessiz fallback olmaz; karşılık gizlenir. Son başarılı kontrol iki saatten eskiyse geçersizdir; sekmeye dönüş güncel kontrol başlatır.
+- [ ] Excel/PDF ve fatura taslağı özgün tutar/kayıtlı işlem kuru ile kalır; grafik ekseni/tooltip kaynak para birimindedir. Ekran karşılıkları geçmiş TL muhasebe kârı olarak etiketlenmez. Satır/toplam dönüşümleri ayrı yuvarlandığından küçük farklar açıklanır.
+- [ ] Oturumsuz API 401; geçerli session rolüyle yalnız genel kur bilgisi; istemciden key/URL/kaynak kur değeri almaz. Sekme değişimi/seri yeniden kontrol yarışında eski yanıt yeni yanıtı ezmesin. 1440/1920 ve dar görünüm taşmasın.
+- [ ] Ozon katalog/satış işi bu teslimin dışında. Önce tam mağaza bağlantısı; yalnız kamuya açık gözlenebilen alanlar. Gerçek sipariş için ayrı izinli erişim; kurgusal sipariş gerçekmiş gibi gösterilmesin.
+
+## OPS-02 — Önceki kullanıcı / Codex kontrolü
 
 Hedefli komut: ayrı test DB bağlantısıyla `ORDER_VIEWS_DB_TEST=1 npx vitest run tests/order-views.test.ts tests/order-views.db.test.ts`. Flag verilmezse yeni DB dosyası bilinçli atlanır; saf testler çalışır. Mevcut domain testlerinin de DB istediği unutulmamalı. CI yeni DB dosyasını açık flag'li ayrı step'te çalıştırır; bu bir CI başarı kanıtı değildir.
 

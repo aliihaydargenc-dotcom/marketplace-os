@@ -1,5 +1,7 @@
 # Araştırma ve ürün kararları
 
+FX-01: [TCMB kaynağı / özgün tutar-karşılık ayrımı / Ozon belirsizliği](research/FX01_RESEARCH.md), [kaynak manifesti](research/fx01-sources.json).
+
 OPS-02 ek kaydı: [Medusa sipariş listesi / görünüm kaynak okuması ve özgün kararlar](research/OPS02_DESIGN.md), [SHA manifesti](research/ops02-sources.json). Kişisel görünüm saklama ve toplu uygunluk davranışı özgün uygulamamızdır; referansın iç sunucu davranışını bildiğimiz iddia edilmez.
 
 UI-01 tasarım ek kaydı: [Tabler ve Medusa dosya incelemesi](research/DESIGN_REFERENCES.md), [kaynak SHA/karar manifesti](research/design-sources.json). Genel giriş/çalışma ayrımı ilkeleri özgün React/CSS'e dönüştürüldü; kod/varlık kopyalanmadı. Bu çalışma önceki araştırmanın veya rakip runtime davranışının yeniden doğrulaması değildir.

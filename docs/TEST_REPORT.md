@@ -1,5 +1,11 @@
 # Doğrulama raporu
 
+## 21 Ekim 2026 — FX-01 gösterim karşılığı
+
+`npx vitest run tests/exchange-rates.test.ts`: **5/5 PASS** (son koşu 300ms toplam, 29ms test). Kur birimi normalizasyonu; kaynak/tarih meta; RUB/TRY/EUR çapraz dönüşüm; pozitif/negatif yarım yuvarlama; tamsayı sınırı; eksik/bozuk/DTD/tekrarlı/ileri/eski bülten reddi; sabit kaynak fetch ve HTTP/HTML başarısızlığı. Gerçek HTTP 200 TCMB XML gövdesi parserdan geçti (bülten 20.10.2026). Önceki kapsamlı domain/DB/E2E paketi bu görevde tekrarlanmadı; kur testleri gerçek satış veya muhasebe kabulü değildir. Build ilk denemede eski Turbopack persistence dizininden hata verdi; üretilmiş .next kenara taşınıp temiz build geçti. Son kaynak için typecheck/lint (0 uyarı)/format/production build PASS. Yayın/canlı gözlem ayrıca kaydedilecek.
+
+---
+
 ## 21 Ekim 2026 — OPS-02 kayıtlı görünümler
 
 Canlı ek kayıt: `1b5c1aa` kodu production READY. Kişisel görünüm kaydet → tam yenile → filtre/sıralama geri yükleme gözlendi. 20 seçimin toplu aday sayıları kontrol edildi; sevkiyat gönderilmedi. [Kanıt ve kapsam sınırı](research/OPS02_SMOKE.md).

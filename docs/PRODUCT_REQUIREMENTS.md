@@ -44,7 +44,7 @@ Siparişten taslak, liste/detay, yazdırılabilir PDF taslağı, belge durumlar�
 
 Brüt satış, iptal/iade, net satış, komisyon, lojistik, ürün alış maliyeti, ürün/sipariş katkısı, en çok satanlar, satış hızı, stok devri, tarih karşılaştırması, Excel/PDF. TRY/RUB ayrı tutulur. Kur tarihi/değeri izlenir. Eksik maliyette kesin kâr sunulmaz. Formüller ve veri kaynakları belgelenir; raporlar kaynak kayıtlarla mutabıktır.
 
-21 Ekim kullanıcı ek gereksinimi (FX-01, henüz uygulanmadı): ana raporlama TL olacak; TL/EUR/RUB görünümü seçilebilir olacak. Günlük kur alınacak, kaynağı ve güncellenme zamanı gösterilecek. Kaynak sipariş para birimi korunacak; geçmiş tarihli kurla rapor ve güncel kurla değerleme farklı anlamlar olarak ele alınacak. Kaynak/gün kuralı ve yuvarlama geliştirme öncesi belgelenip doğrulanacak.
+21 Ekim önceki kullanıcı ek gereksinimi (aşağıdaki son yönlendirmeyle revize edildi): ana raporlama TL olacak; TL/EUR/RUB görünümü seçilebilir olacak. Günlük kur alınacak, kaynağı ve güncellenme zamanı gösterilecek. Kaynak sipariş para birimi korunacak; geçmiş tarihli kurla rapor ve güncel kurla değerleme farklı anlamlar olarak ele alınacak. Kaynak/gün kuralı ve yuvarlama geliştirme öncesi belgelenip doğrulanacak.
 
 ### Sistem Yönetimi
 
@@ -94,3 +94,7 @@ TypeScript, lint, production build ve ilgili testler başarılı olmalı. 21 Eki
 4. Kalite-yayın: ilişkili demo, hata senaryoları, test, kullanılabilirlik, GitHub/Vercel.
 
 Her aşama çalışan kod üretir; bütünlük açığı çözülmeden özellik yığılmaz. Mevcut repo üzerinden anlamlı commit/push yapılır. README, mimari/veri modeli, test sonuçları ve eksikler saklanır. Erişim varsa yayın doğrulanır; erişilemeyen/başarısız dağıtım başarılı sayılmaz. Nihai başarı anlatılan özellik listesi değil, doğrulanmış çalışan yazılımdır.
+
+## 21 Ekim — Son gösterim ve veri kaynağı yönlendirmesi
+
+Özgün fiyat/para birimi korunacak; altında küçük TL karşılığı veya Türkçe bir kontrolle seçilen karşılık gösterilecek. Bu teslim TL varsayılan ikinci tutar, Euro/Ruble/kapalı seçimi uygular; tarihsel sipariş/finans kuru değiştirilmez. TCMB son bülten kullanılacak, tarih/kaynak açık olacak, alınmayan kur alınmış varsayılmayacak. Ozon üzerinden daha gerçekçi katalog/demo isteği kaydedildi; “Tastak” mağaza/ürün bağlantısı belirsiz. Gerçek satışlar izinli mağaza erişimi olmadan üretilmiş veri gibi gösterilmeyecek.
