@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ArrowRight, Boxes, ScanBarcode, Search, Truck } from "lucide-react";
+import { ArrowRight, Boxes, RefreshCw, ScanBarcode, Search, Truck } from "lucide-react";
 import type { Order, WorkspaceSnapshot } from "@/domain/types";
 import { statusLabels } from "@/domain/types";
 import type { Command } from "@/domain/orders/commands";
@@ -10,6 +10,7 @@ import {
   packingShortages,
   type PackingLane,
 } from "@/domain/orders/packing";
+import "./packing-v2.css";
 
 const lanes: { id: PackingLane; label: string }[] = [
   { id: "ALL", label: "Tüm bekleyenler" },
@@ -25,6 +26,7 @@ type Props = {
   busy: boolean;
   onCommand: (command: Command) => Promise<unknown>;
   onOpen: (orderId: string) => void;
+  onRefresh: () => Promise<void>;
 };
 
 export function PackingWorkbench({
@@ -32,6 +34,7 @@ export function PackingWorkbench({
   busy,
   onCommand,
   onOpen,
+  onRefresh,
   initialOrderId,
 }: Props) {
   const [lane, setLane] = useState<PackingLane>("ALL");
@@ -160,6 +163,7 @@ export function PackingWorkbench({
             busy={busy}
             hasNext={!!next && next.id !== active.id}
             onCommand={onCommand}
+            onRefresh={onRefresh}
             onShip={() => shipAndContinue(active)}
             onSkip={() => {
               setSelectedId(next?.id ?? null);
@@ -188,6 +192,7 @@ function PackingStation({
   busy,
   hasNext,
   onCommand,
+  onRefresh,
   onShip,
   onSkip,
   onOpen,
@@ -204,6 +209,13 @@ function PackingStation({
   const [pending, setPending] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const inFlight = useRef(false);
+  const scanRunning = useRef(false);
+  const scanQueue = useRef<string[]>([]);
+  const activeScan = useRef<string | null>(null);
+  const disposed = useRef(false);
+  const predictedTotal = useRef(order.lines.reduce((sum, line) => sum + line.packed, 0));
+  const confirmedByProduct = useRef(new Map(order.lines.map((line) => [line.product_id, line.packed])));
+  const [waiting, setWaiting] = useState(0);
   const locked = busy || pending;
   const scannable = ["RESERVED", "PACKING"].includes(order.status);
   const total = order.lines.reduce((n, l) => n + l.quantity, 0);
@@ -214,6 +226,117 @@ function PackingStation({
   useEffect(() => {
     if (scannable && !locked) inputRef.current?.focus();
   }, [scannable, locked]);
+
+  useEffect(() => {
+    if (scanRunning.current || scanQueue.current.length) return;
+    predictedTotal.current = order.lines.reduce((sum, line) => sum + line.packed, 0);
+    confirmedByProduct.current = new Map(order.lines.map((line) => [line.product_id, line.packed]));
+  }, [order.lines]);
+
+  useEffect(() => {
+    const focusScanner = (event: KeyboardEvent) => {
+      if (event.key !== "F8" || event.repeat || event.altKey || event.ctrlKey || event.metaKey) return;
+      if (document.querySelector('[role="dialog"][aria-modal="true"]')) return;
+      if (!scannable) return;
+      event.preventDefault();
+      inputRef.current?.focus();
+    };
+    document.addEventListener("keydown", focusScanner);
+    return () => document.removeEventListener("keydown", focusScanner);
+  }, [scannable]);
+
+  useEffect(() => () => {
+    disposed.current = true;
+    scanQueue.current = [];
+  }, []);
+
+  async function drainScans() {
+    if (scanRunning.current || inFlight.current || disposed.current) return;
+    scanRunning.current = true;
+    inFlight.current = true;
+    setPending(true);
+    setError("");
+    setMessage("");
+    let processed = 0;
+    try {
+      while (scanQueue.current.length && !disposed.current) {
+        const next = scanQueue.current.shift()!;
+        activeScan.current = next;
+        setWaiting(scanQueue.current.length);
+        await onCommand({
+          action: "SCAN",
+          orderId: order.id,
+          barcode: next,
+          expectedPackedTotal: predictedTotal.current,
+        });
+        predictedTotal.current += 1;
+        const product = data.products.find((p) => p.barcode === next);
+        if (product) {
+          confirmedByProduct.current.set(
+            product.id, (confirmedByProduct.current.get(product.id) ?? 0) + 1,
+          );
+        }
+        activeScan.current = null;
+        processed += 1;
+      }
+      if (!disposed.current && processed) {
+        setMessage(processed + " adet doğrulandı. Kayıtlar güncellendi.");
+      }
+    } catch (e) {
+      const discarded = scanQueue.current.length;
+      scanQueue.current = [];
+      setWaiting(0);
+      if (!disposed.current) {
+        setError(
+          (e instanceof Error ? e.message : "Doğrulama tamamlanamadı") +
+          (discarded ? " · " + discarded + " bekleyen okutma iptal edildi." : "") +
+          " Otomatik tekrar yapılmadı; siparişi yenileyip kontrol edin.",
+        );
+      }
+    } finally {
+      activeScan.current = null;
+      scanRunning.current = false;
+      inFlight.current = false;
+      if (!disposed.current) {
+        setPending(false);
+        setWaiting(0);
+        inputRef.current?.focus();
+      }
+    }
+  }
+
+  function queueBarcode() {
+    const code = barcode.trim();
+    if (!code || disposed.current || !scannable) return;
+    if (inFlight.current && !scanRunning.current) {
+      setError("Önce mevcut işlemin tamamlanmasını bekleyin.");
+      return;
+    }
+    const product = data.products.find((p) => p.barcode === code);
+    const line = order.lines.find((l) => l.product_id === product?.id);
+    if (!line || !product) {
+      setError("Barkod bu siparişe ait değil; kayıt yapılmadı.");
+      inputRef.current?.select();
+      return;
+    }
+    const queued = scanQueue.current.filter((item) => item === code).length +
+      (activeScan.current === code ? 1 : 0);
+    const confirmed = confirmedByProduct.current.get(product.id) ?? line.packed;
+    if (confirmed + queued >= line.quantity) {
+      setError("Bu üründe doğrulanabilecek adet kalmadı.");
+      inputRef.current?.select();
+      return;
+    }
+    if (scanQueue.current.length >= 30) {
+      setError("Okutma kuyruğu dolu. Önce bekleyen kodların doğrulanmasını bekleyin.");
+      return;
+    }
+    setError("");
+    setBarcode("");
+    scanQueue.current.push(code);
+    setWaiting(scanQueue.current.length);
+    void drainScans();
+  }
 
   async function perform(action: () => Promise<unknown>, success: string) {
     if (inFlight.current || locked) return;
@@ -242,9 +365,14 @@ function PackingStation({
           <h3>{order.number}</h3>
           <p>{order.customer}</p>
         </div>
-        <button type="button" disabled={locked} onClick={onOpen}>
-          Geçmiş ve detay ↗
-        </button>
+        <div className="packing-station-tools">
+          <button type="button" disabled={locked} onClick={() => void onRefresh()}>
+            <RefreshCw size={15} /> Yenile
+          </button>
+          <button type="button" disabled={locked} onClick={onOpen}>
+            Geçmiş ve detay ↗
+          </button>
+        </div>
       </header>
       <div className="packing-progress">
         <span>
@@ -319,16 +447,7 @@ function PackingStation({
           className="packing-scanner"
           onSubmit={(e) => {
             e.preventDefault();
-            if (!barcode.trim()) return;
-            void perform(
-              () =>
-                onCommand({
-                  action: "SCAN",
-                  orderId: order.id,
-                  barcode: barcode.trim(),
-                }),
-              "Bir adet doğrulandı.",
-            );
+            queueBarcode();
           }}
         >
           <label htmlFor={`packing-barcode-${order.id}`}>
@@ -341,7 +460,12 @@ function PackingStation({
               aria-label="Hazırlama barkodu"
               value={barcode}
               onChange={(e) => setBarcode(e.target.value)}
-              readOnly={locked}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.nativeEvent.isComposing) {
+                  e.preventDefault();
+                  queueBarcode();
+                }
+              }}
               autoComplete="off"
               spellCheck={false}
               placeholder="Barkod + Enter"
@@ -349,14 +473,20 @@ function PackingStation({
             <button
               type="submit"
               className="primary"
-              disabled={locked || !barcode.trim()}
+              disabled={!barcode.trim() || (locked && !scanRunning.current)}
             >
               Doğrula
             </button>
           </div>
           <small>
-            Her okutma bir adettir. Yanlış ürün ve fazla adet kabul edilmez.
+            Her Enter bir adettir · F8: barkoda odaklan · Kodlar sırayla
+            işlenir, başarısız işlem otomatik tekrarlanmaz.
           </small>
+          {(pending || waiting > 0) && (
+            <div className="packing-scan-queue" role="status" aria-live="polite">
+              Barkod işleniyor · {waiting} kod sırada
+            </div>
+          )}
         </form>
       )}
       {error && (
@@ -365,7 +495,7 @@ function PackingStation({
         </p>
       )}
       <p className="packing-feedback" role="status" aria-live="polite">
-        {pending ? "İşlem kaydediliyor…" : message}
+        {pending ? "İşlem sürüyor…" : message}
       </p>
       <footer>
         <button type="button" disabled={locked || !hasNext} onClick={onSkip}>

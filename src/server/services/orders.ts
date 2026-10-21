@@ -64,6 +64,14 @@ export async function applyOrder(
     await update("RESERVED");
   }
   if (c.action === "SCAN") {
+    // Workspace FOR UPDATE lock is held by execute(); compare inside the same
+    // transaction to reject concurrent stale scans before any quantity changes.
+    if (
+      c.expectedPackedTotal !== undefined &&
+      o.lines.reduce((sum, line) => sum + line.packed, 0) !== c.expectedPackedTotal
+    ) {
+      throw new DomainError("Sipariş başka bir ekranda değişti; güncelleyip tekrar kontrol edin.");
+    }
     if (!["RESERVED", "PACKING"].includes(o.status))
       throw new DomainError("Önce stok rezervasyonu yapın");
     const [p] = await rows<{ id: string }>(

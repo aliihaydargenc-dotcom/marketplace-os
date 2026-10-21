@@ -918,6 +918,7 @@ function WorkspaceBody({
               busy={busy}
               onCommand={run}
               onOpen={openOrder}
+              onRefresh={load}
             />
           )}
           {section === "returns" && allowed("QC") && (
