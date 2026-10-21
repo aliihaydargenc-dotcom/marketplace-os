@@ -33,9 +33,9 @@
 
 DB testleri ve migration için uygulamaya özel ayrı PostgreSQL gerekir. Üretim DB'sinde toplu test/reset çalıştırma. Kurulum ve alternatif Chromium ayarı README'de.
 
-## 21 Ekim — Tasarım ve kota kararı (güncel yönlendirme)
+## 21 Ekim — Tasarım ve kota kararı
 
-- Kapsamlı görsel düzenleme UX-01: Aşama 3 sonu / Aşama 4 başında, INV-01 mal kabul-sayım ile FIN-01/DOC-01 ana akışları oturduktan sonra ve QA-01 tam tarayıcı kabulünden önce. Şimdi yalnız kullanımı engelleyen arayüz sorunlarını düzelt; erken kapsamlı yeniden tasarıma başlama. Gerçek Ozon API veya üretim login'i bu demo tasarım turunu bekletme nedeni değildir.
+- SON KULLANICI TALİMATI: UX-01 kapsamlı tasarım ŞİMDİ önceliklidir. Önceki Aşama 3 sonu / 4 başı sırası iptal edilmiştir. Kullanıcı kapsamlı tasarım geliştirilmesi tamamlanmadan iç özellik geliştirmelerini veya sonraki aşamalara geçişi istemiyor. INV-01, INT-01, FIN-01, DOC-01 ve diğer yeni özellikler bekler. Tasarım yönü seçimi → tüm mevcut ekranlarda uygulama → geçiş/durum/erişilebilirlik kontrolleri → kullanıcının açık tasarım kabulü sırasını tamamlamadan diğer işlere geçme. Yalnız görsel taslak, CSS rötuşu veya bir ekranı yenilemek bu kapıyı tamamlamaz.
 - `vercel.json` içindeki `git.deploymentEnabled=false` tüm dallarda otomatik Git deploy'unu kapatır. Bu ayarı küçük bir değişikliği yayına almak için aç/kapat yapma. GitHub'a kaydetmek canlı yayına almak değildir.
 - Birbiriyle ilgili geliştirmeleri ve belgelerini paketle; yerel/izole kontrolleri bitir; yalnız anlamlı ve test edilmiş teslim paketi sonunda tek manuel production deploy yap. Aynı SHA için Git otomatiği + manuel deploy birlikte çalıştırılmaz. Dokümantasyon, test kanıtı, plan ve commit düzeltmesi için ayrı deploy yapılmaz.
 - Normal hedef günde en fazla bir planlı toplu yayın; kullanıcının açık ek yayın isteği veya canlıyı bozan acil düzeltme istisnadır. Bu bir çalışma politikasıdır, Vercel hesabı limitini değiştirmez veya zamanlanmış otomasyon oluşturmaz. Diğer projelerin kullanımını kontrol etmeden toplam hesap kotasının çözüldüğünü iddia etme.

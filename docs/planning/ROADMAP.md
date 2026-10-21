@@ -8,13 +8,30 @@ BACKLOG → IN_PROGRESS → IMPLEMENTED → VERIFIED. BLOCKED: somut engel ve ye
 
 Her görev: sorun, dosya sınırı, bağımlılık, kabul, doğrulama, kalan risk. Kullanıcının manuel UI kontrolü ve sonraki Codex regresyonu ayrı kaydedilir. Kritik veri bütünlüğü hatası diğer işleri bloke eder. Aşağıdaki işler orijinal dört aşamanın eksiklerini tamamlar; yeni aşama adı altında kapsam saklanmaz.
 
-## Aktif geliştirme dilimi — REL-02: yayın kotası ve tasarım sırası
+## Aktif geliştirme dilimi — UX-01: kapsamlı tasarım kapısı
+
+**Son kullanıcı kararı:** kapsamlı tasarım tamamlanmadan iç özellik geliştirmesi ve sonraki aşamalar yapılmayacak. Önceki tasarımı erteleme kararı geçersizdir. INV-01 / INT-01 / FIN-01 / DOC-01 ve diğer yeni özellikler bekler. Mevcut iş kuralları, PostgreSQL, RBAC ve demo izolasyonu korunur.
+
+Sorun: mevcut demo ve çalışma ekranı kullanıcı tarafından estetik, albeni, geçiş ve kullanım kolaylığı bakımından reddedildi. Amaç: satılabilir sunum kalitesi ve günlük operasyon kolaylığı için bütün mevcut ekranları kapsayan ortak tasarım. Kapsam: Demo Merkezi; ortak kabuk/menü; Operasyon Merkezi; Siparişler; Hazırlama Masası; Stok & Depo; İade & Kalite Kontrol; Fatura Merkezi; Finans & Analitik; Sistem Yönetimi; detay panelleri ve formlar.
+
+Teslim sırası:
+
+1. Mevcut ekran görüntülerine dayalı üç görsel yön; kullanıcı seçimi.
+2. Seçilen yönün tipografi, renk, yoğunluk, aralık, bileşen ve hareket kurallarına çevrilmesi.
+3. Tüm mevcut ekranların ortak sistemle uygulanması; iş eylemleri ve veri bağları korunur.
+4. Sayfa/panel/modal geçişleri, aktif seçim, yükleniyor/boş/hata/başarı durumları, klavye odağı, reduced-motion; 1440×900 ve 1920×1080 öncelikli; mobil taşma koruması.
+5. İlgili kısa teknik kontroller ve gerçek ekranda görsel/etkileşim doğrulaması; tek toplu yayın politikası.
+6. Kullanıcının kapsamlı tasarımı açıkça kabul etmesi. Ancak bundan sonra diğer geliştirme aşamaları açılır. Görsel yön seçimi tek başına kapsamlı tasarım kabulü değildir.
+
+Durum: IN_PROGRESS — mevcut audit ekranlarına dayalı görsel yön seçimi hazırlanıyor. Uygulama tamamlanmadı. Bu çalışma için otomatik deploy açılmaz; her görsel deneme veya belge commit'i için deploy yapılmaz.
+
+## Önceki geliştirme dilimi — REL-02: yayın kotası ve tasarım sırası
 
 Sorun: küçük geliştirme/belge commit'leri otomatik deploy oluyor; aynı SHA için manuel yayın da tekrar üretilebiliyor. Sınır: otomatik Git deploy'unu vercel.json ile kapatmak, tek toplu manuel yayın politikası, tasarımın net aşaması. Uygulama kodu/DB/migration değişmez. Bu değişiklik için ayrıca yayın yapılmaz. Kabul: GitHub'da config mevcut; yeni commit için Vercel deployment oluşmaması gözlenir; mevcut canlı commit korunur. Test: JSON doğrulama, commit/ref kontrolü ve Vercel liste kontrolü. Mevcut hesabın limitinin veya başka projelerin tüketiminin değiştiği iddia edilmez.
 
-### UX-01 — Tasarımın devreye gireceği yer
+### Önceki UX sırası — geçersiz
 
-Kapsamlı tasarım Aşama 3 sonunda / Aşama 4 başında: INV-01 mal kabul-sayım ve FIN-01/DOC-01 ana ekran akışları tamamlandıktan sonra, QA-01 kapsamlı tarayıcı kabulünden önce. Yoğun masaüstü tabloları, yazı/eylem hiyerarşisi, menü ve panel tutarlılığı, hata/boş/yükleniyor durumları birlikte ele alınır. Bu zamana kadar kullanım engelleri geliştirmeyle birlikte çözülür. Gerçek API veya üretim kimlik sistemi bu demo tasarımının önkoşulu değildir.
+Aşama 3 sonu / 4 başı tasarım sırası kullanıcının son talimatıyla kaldırıldı. Aşağıdaki aktif UX-01 tasarım kapısı geçerlidir.
 
 ### Yayın düzeni
 
@@ -97,7 +114,7 @@ Kontrol: 2 saf + 7 gerçek PostgreSQL hedefli test PASS (81.05s), typecheck/lint
 | FIN-01 | 3 | Sipariş finans hareket tarihi ve sipariş kohortu ayrı filtre modları; aynı siparişin kayıtları detaydan rapora izlenir; eksik maliyet düzeltmesi kuralları belgelenir | ARCH-01 + mutabakat testleri |
 | DOC-01 | 3 | Fatura hata kuyruğu/toplu taslak ve belge geçmişi; onay/iptal nedenleri; DEMO ibaresi ve unique ilişki korunur | ARCH-01 |
 | SYS-01 | 1/4 | Gerçek kullanıcı login/davet/süre sonu/rol devri; demo rol seçiminden açık ayrım | Üretim kimlik sağlayıcısı seçimi; bu aşamada anahtar istenmez |
-| UX-01 | 3 sonu / 4 başı | Ana akışlar oturunca kapsamlı masaüstü tasarım ve kullanılabilirlik; ardından QA | INV-01, FIN-01, DOC-01 |
+| UX-01 | ŞİMDİ — diğer işlerin kapısı | Tüm mevcut ekranlarda kapsamlı tasarım, hareket ve kullanılabilirlik; kullanıcı açık kabulü | Görsel yön seçimi; diğer işler UX-01 kabulünü bekler |
 | REL-02 | 4 / sürekli | Otomatik Git deploy kapalı; test edilmiş toplu paket başına tek manuel yayın | Kota ve canlı/aday commit kontrolü |
 | QA-01 | 4 | Bekleyen Codex toplu regresyonu; uzak CI hatasının gerçek kök nedeni; temiz DB, build ve iki masaüstü boyutu | TEST_HANDOFF.md |
 | REL-01 | 4 | İlgili commit için Vercel READY ve smoke kanıtı; README/rapor aynı commit kapsamını belirtir | QA sonucu ve dağıtım erişimi |

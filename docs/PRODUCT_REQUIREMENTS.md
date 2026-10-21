@@ -98,3 +98,8 @@ Her aşama çalışan kod üretir; bütünlük açığı çözülmeden özellik 
 ## 21 Ekim — Son gösterim ve veri kaynağı yönlendirmesi
 
 Özgün fiyat/para birimi korunacak; altında küçük TL karşılığı veya Türkçe bir kontrolle seçilen karşılık gösterilecek. Bu teslim TL varsayılan ikinci tutar, Euro/Ruble/kapalı seçimi uygular; tarihsel sipariş/finans kuru değiştirilmez. TCMB son bülten kullanılacak, tarih/kaynak açık olacak, alınmayan kur alınmış varsayılmayacak. Ozon üzerinden daha gerçekçi katalog/demo isteği kaydedildi; “Tastak” mağaza/ürün bağlantısı belirsiz. Gerçek satışlar izinli mağaza erişimi olmadan üretilmiş veri gibi gösterilmeyecek.
+
+
+## 21 Ekim — Son öncelik değişikliği: tasarım kabulü zorunlu kapı
+
+Kullanıcının son talimatı önceki tasarım sırasını değiştirir: kapsamlı tasarım şimdi tamamlanacak; bu bitmeden iç özellik geliştirmeleri ve diğer aşamalara geçilmeyecek. Demo Merkezi ile bütün mevcut çalışma ekranları, formlar, detay panelleri, geçişler ve geri bildirim durumları aynı tasarım sistemiyle ele alınacak. Görsel yön seçimi, çalışan uygulama ve kullanıcının açık kabulü birbirinden ayrı adımlardır. Tasarım kabulünden sonra operasyon/finans/fatura geliştirmeleri kaldığı yerden sürer. Otomatik Git deploy kapalı; test edilmiş toplu paket başına tek manuel yayın politikası geçerlidir.
