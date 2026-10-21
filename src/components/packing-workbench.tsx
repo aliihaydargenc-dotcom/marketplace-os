@@ -272,8 +272,6 @@ function PackingStation({
   useEffect(() => {
     terminalId.current = crypto.randomUUID();
     ownsLease.current = false;
-    setLease(null);
-    setLeaseError("");
     void requestLease("STATUS").catch((error: unknown) =>
       setLeaseError(error instanceof Error ? error.message : "Terminal okunamadı"),
     );

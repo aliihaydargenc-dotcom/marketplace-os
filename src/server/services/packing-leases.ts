@@ -86,7 +86,10 @@ export async function packingLease(
         await tx.execute(
           sql`DELETE FROM packing_claims WHERE workspace_id=${w}::uuid AND order_id=${orderId} AND terminal_id=${terminalId}::uuid`,
         );
-      return view(null, terminalId);
+      return view(
+        await activeLease(tx, w, orderId),
+        terminalId,
+      );
     }
     if (!["NEW", "RESERVED", "PACKING", "READY"].includes(order.status))
       throw new DomainError("Tamamlanmış sipariş sahiplenilemez", 409);

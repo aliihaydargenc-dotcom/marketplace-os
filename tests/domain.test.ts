@@ -87,6 +87,12 @@ describe("PostgreSQL domain invariants", () => {
   it("enforces terminal ownership, supervisor takeover and release under workspace lock", async () => {
     const id = await create("p2", 2);
     const first = randomUUID(), second = randomUUID();
+    await expect(
+      packingLease(accountant, id, first, "CLAIM", 1),
+    ).rejects.toThrow("yetkiniz");
+    await expect(
+      packingLease({ ...warehouse, workspaceId: other }, id, first, "CLAIM", 1),
+    ).rejects.toThrow("bulunamadı");
     expect((await packingLease(warehouse, id, first, "CLAIM", 1)).mine).toBe(true);
     await expect(packingLease(warehouse, id, second, "CLAIM", 1)).rejects.toThrow("başka");
     await expect(packingLease(warehouse, id, second, "TAKE_OVER", 1)).rejects.toThrow("yönetici");
