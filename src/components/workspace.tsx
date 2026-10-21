@@ -205,7 +205,10 @@ function WorkspaceBody({
     }
     document.addEventListener("pointerdown", dismissMenus);
     document.addEventListener("keydown", key);
-    return () => document.removeEventListener("keydown", key);
+    return () => {
+      document.removeEventListener("keydown", key);
+      document.removeEventListener("pointerdown", dismissMenus);
+    };
   }, []);
   useEffect(() => {
     if (orderId || productId || creating) {
@@ -829,10 +832,6 @@ function WorkspaceBody({
                       <ChevronRight size={15} />
                     </button>
                   ))}
-                  <div className="health-note">
-                    <span className="dot" />
-                    Tüm göstergeler veritabanı kayıtlarından hesaplanır.
-                  </div>
                 </section>
               </div>
               <div className="section-heading">
@@ -983,11 +982,13 @@ function WorkspaceBody({
                     <option value="MOVEMENT">Finans hareket tarihi</option>
                   </select>
                 </label>
-                <span className="muted">
-                  UTC takvim günü · Kohort: seçili tarihte açılan siparişlerin
-                  tüm hareketleri. Hareket: yalnız seçili tarihteki finans
-                  kayıtları.
-                </span>
+                <details className="finance-note">
+                  <summary>Tarih modları</summary>
+                  <p>
+                    UTC günü kullanılır. Kohort: seçili tarihte açılan siparişlerin
+                    tüm hareketleri. Hareket: seçili tarihteki finans kayıtları.
+                  </p>
+                </details>
               </div>
               <div className="metrics">
                 {[
@@ -1174,9 +1175,6 @@ function WorkspaceBody({
             <span>
               Marketplace OS <b>0.1</b> · Demo
             </span>
-            <span>
-              Örnek veriler · Gerçek Ozon/Paraşüt bağlantısı yok
-            </span>
           </footer>
         </main>
       </div>
@@ -1283,10 +1281,6 @@ function WorkspaceBody({
                     .catch(() => {});
                 }}
               >
-                <div className="info-box">
-                  FBS siparişi oluşturulur. Stok rezervasyonu sonraki adımda
-                  kontrol edilir. FBO bu demoda yalnızca referans görünümüdür.
-                </div>
                 <label>
                   Alıcı (kurgusal)
                   <input
@@ -1536,10 +1530,7 @@ function WorkspaceBody({
                           >
                             Doğrula
                           </button>
-                          <small>
-                            Bir okutma = bir adet. Tekrarlanan istek aynı işlem
-                            anahtarıyla tekrar sayılmaz.
-                          </small>
+                          <small>Her okutma 1 adet doğrular.</small>
                         </form>
                       )}
                     <div className="detail-actions">
@@ -2136,16 +2127,19 @@ function SettingsView({
             <strong>Paraşüt Adapter</strong>
             <span className="pill">DEMO</span>
           </div>
-          <p className="muted">
-            Gerçek API anahtarı alınmaz. Harici stok, fiyat ve belge gönderimi
-            kapalıdır.
-          </p>
+          <details className="entry-note">
+            <summary>Bağlantı durumu</summary>
+            <p>
+              Ozon/Paraşüt canlı API bağlantıları yoktur; dış sisteme veri
+              gönderilmez.
+            </p>
+          </details>
         </section>
         <section className="panel settings-panel">
           <h2>Demo alanını sıfırla</h2>
           <p>
-            Yalnızca bu alanın operasyon kayıtları 72 ürün ve 260 siparişlik
-            başlangıç verisine döner. Başka ziyaretçilerin alanları etkilenmez.
+            Yalnızca bu çalışma alanı başlangıç verilerine döner.
+            Diğer oturumlar etkilenmez.
           </p>
           <form
             className="form"
@@ -2250,10 +2244,12 @@ function SettingsView({
           </label>
           <button disabled={busy}>Kaydet</button>
         </form>
-        <p className="muted">
-          Demo girişinde üç yerleşik hesap kullanılır. Ek kullanıcıların gerçek
-          kimlik doğrulaması üretim öncesi kurulmalıdır.
-        </p>
+        <details className="entry-note">
+          <summary>Demo hesapları</summary>
+          <p>
+            Üç yerleşik demo rolü vardır. Gerçek kullanıcı doğrulaması henüz yok.
+          </p>
+        </details>
       </section>
       <div className="section-heading">
         <h2>Denetim kayıtları</h2>

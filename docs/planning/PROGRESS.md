@@ -208,3 +208,8 @@ GitHub'da bu teslim paketi saklanır; yeni production deployment, canlı migrati
 ### UX-02 — Karartmalı demo rehberi (21 Ekim)
 
 Kullanıcının ek talimatıyla ilk ziyarette kısa bağlamsal tur: girişte rol / başlangıç / açılış, çalışma alanında modül menüsü / başlık / oturum menüsü. Geç, geri, ileri, bitir, Escape ve yeniden açma; tamamlanma tercihi tarayıcıda tutulur. Uzun giriş açıklaması kaldırıldı, finans hesaplama/kur yöntemi kapalı ayrıntıya taşındı. Gerçek API bağlantısı bulunmadığı ve DEMO / TASLAK niteliği korunur. Server, DB, adaptör ve iş kuralı değişmedi. Kullanıcı kabulü, yeni GitHub Actions koşusu ve Vercel yayını bu değişikliğin kapsamında değildir.
+
+
+### UX-02B — Operasyon ekranlarında açıklama sadeleştirme ve E2E eşleştirmesi
+
+Mevcut işlem başlıkları ve durum/rol/finans kuralları korunarak Operasyon Merkezi'ndeki geliştirici notu, yeni sipariş formundaki tekrarlı bilgi kutusu ve barkod kutusundaki teknik idempotency metni kaldırıldı. Tarih modu açıklaması açılır ayrıntıya taşındı; API/demo sınırı Sistem Yönetimi'nde korunarak ikincil ayrıntıya alındı. Demo reset açıklamasındaki eski 72 ürün/260 sipariş ifadesi kaldırıldı: ilk kurulum/ürün paketi ve anlık veriler farklı olabildiğinden sabit sayaç yanıltıcıydı. Pointerdown dinleyicisi unmount sırasında kaldırılıyor. Playwright FBS akışı yeni üst gezinme ve satır içi detay düğmesine eşleştirildi; rehber için üç E2E senaryosu eklendi. Testlerin yazılması koşulduğu veya geçtiği anlamına gelmez; son kaynak için CI/DB/tarayıcı regresyonu ve kullanıcı kabulü açık.
