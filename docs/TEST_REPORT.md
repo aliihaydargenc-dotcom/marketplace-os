@@ -108,3 +108,5 @@ FX-01 canlı ek kayıt: `edb55b6` production READY. Siparişler ekranında TCMB 
 CAT-01 migration ek kaydı: İzole dalda test edildikten sonra `0003_catalog.sql` canlı demo `marketplace` DB / `br-still-grass-bab2y1vf` üzerinde uygulandı. active=true, catalog_version=0, source={} varsayılanları schema sorgusuyla doğrulandı. Eski ürün/stock/order tutarları güncellenmedi; paket mevcut alanlara ayrıca UI üzerinden eklenecek.
 
 CAT-01 yayın ek kaydı: `afc8b4f` kodu production READY. Mevcut yönetici alanında UI ile paket eklendi, 72→78 ürün ve +72 referanslı demo stok gözlendi; filtre/kaynak, kimlik kilidi ve yeni SKU formu açılması kontrol edildi. Canlı sevkiyat/reset/manual SKU kaydetme yapılmadı. [Kapsam ve ekran](research/CAT01_SMOKE.md). Kullanıcı kabulü bekliyor.
+
+INV-02 yayın ek kaydı: `545b690` production READY. Yönetici oturumunda durum kuyrukları, barkod arama/sayıları, referanslı karantina ayrımı, gerekçe+checkbox düğme kilidi ve tamamlanmış iadenin read-only hâli gözlendi. QC gönderilmedi; canlı kayıt değişmedi. [Kapsam ve görüntü](research/INV02_SMOKE.md). Kullanıcı kabulü bekliyor.

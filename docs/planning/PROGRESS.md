@@ -124,3 +124,5 @@ CAT-01 migration ek kaydı: İzole dalda test edildikten sonra `0003_catalog.sql
 CAT-01 yayın ek kaydı: `afc8b4f` kodu production READY. Mevcut yönetici alanında UI ile paket eklendi, 72→78 ürün ve +72 referanslı demo stok gözlendi; filtre/kaynak, kimlik kilidi ve yeni SKU formu açılması kontrol edildi. Canlı sevkiyat/reset/manual SKU kaydetme yapılmadı. [Kapsam ve ekran](../research/CAT01_SMOKE.md). Kullanıcı kabulü bekliyor.
 
 INV-02 hedefli doğrulama: `npx vitest run tests/returns.test.ts tests/navigation.test.ts` **6/6 PASS** (596ms). Typecheck/lint (0 uyarı)/format/production build PASS. 4 iade read modeli + 2 navigasyon testi; DB/E2E paketi ve canlı QC yazma bu turda koşulmadı. Yeni server iş kuralı veya migration yok.
+
+INV-02 yayın ek kaydı: `545b690` production READY. Yönetici oturumunda durum kuyrukları, barkod arama/sayıları, referanslı karantina ayrımı, gerekçe+checkbox düğme kilidi ve tamamlanmış iadenin read-only hâli gözlendi. QC gönderilmedi; canlı kayıt değişmedi. [Kapsam ve görüntü](../research/INV02_SMOKE.md). Kullanıcı kabulü bekliyor.
