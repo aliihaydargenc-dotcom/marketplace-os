@@ -489,7 +489,7 @@ function WorkspaceBody({
         <div className="sidebar-bottom">
           <div className="demo-status">
             <span />
-            Demo veri sağlayıcısı<small>Harici API bağlantısı yok</small>
+            Demo veri sağlayıcısı<small>Ozon / Paraşüt bağlı değil</small>
           </div>
           <div className="user-avatar">
             <span>{roleLabels[data.actor.role].slice(0, 1)}</span>

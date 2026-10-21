@@ -90,3 +90,5 @@ Veritabanı paketinin son başarılı çalışması 143.21 saniye sürdü. Topla
 
 FBS yerel demo akışı doğrulanmıştır. Gerçek Ozon/Paraşüt, FBO operasyonu, elektronik belge/vergi uygunluğu, kargo taşıyıcısı takibi, üretim kullanıcı kimliği ve gerçek cihaz testi yapılmış değildir. Detaylar ARCHITECTURE.md ve REVERSE_ENGINEERING.md içindedir.
 
+
+FX-01 canlı ek kayıt: `edb55b6` production READY. Siparişler ekranında TCMB tarih/kaynak ve özgün RUB tutar altında TL → EUR → kapalı → TL geçişi doğrulandı; sipariş/stok/finans mutasyonu yapılmadı. [Kapsam ve ekran](research/FX01_SMOKE.md). Kullanıcı kabulü bekliyor.

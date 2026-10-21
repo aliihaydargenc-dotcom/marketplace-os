@@ -96,3 +96,5 @@ Canlı yeni sürüm READY kontrolü ve kullanıcı kabulü ayrı açık iştir. 
 - Yeni/sadece hazır sekmesinde durum değişince sipariş o kuyruktan çıkar; tüm bekleyenler sekmesi kesintisiz hazırlama için kullanılabilir.
 - İstek sürerken scanner alanı salt okunur; fiziksel cihazla tamponlama/hız denemesi yapılmadı. İstek kaybı sonrası okutmayı yeniden yapmadan önce yenileyip adet kontrolü gerekir.
 - UI local state'i sayfa yenilenmesinde sıfırlanır; sipariş/rezervasyon/okutma kayıtları sunucuda kalır. Kayıtlı görünüm OPS-02'dir.
+
+FX-01 canlı ek kayıt: `edb55b6` production READY. Siparişler ekranında TCMB tarih/kaynak ve özgün RUB tutar altında TL → EUR → kapalı → TL geçişi doğrulandı; sipariş/stok/finans mutasyonu yapılmadı. [Kapsam ve ekran](../research/FX01_SMOKE.md). Kullanıcı kabulü bekliyor.
