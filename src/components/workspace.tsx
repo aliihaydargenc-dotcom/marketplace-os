@@ -1040,14 +1040,14 @@ function WorkspaceBody({
               <details className="finance-note">
                 <summary>Hesaplama ve kur yöntemi</summary>
                 <p>
-                Katkı = net satış − komisyon − lojistik − bilinen ürün maliyeti.
-                Tahsilat veya resmi muhasebe kârı değildir. İadede
-                komisyon/lojistik otomatik geri alınmaz. TRY ve RUB toplanmaz.
-                Tablodaki işlem kuru siparişe kayıtlı demo kurudur. Küçük ≈
-                karşılıkları TCMB son bülteninden güncel değerlemedir. Excel/PDF
-                özgün para birimindedir; karşılıklar satır bazında
-                yuvarlandığından toplamın dönüşümünden küçük farklar olabilir.
-              </p>
+                  Katkı = net satış − komisyon − lojistik − bilinen ürün maliyeti.
+                  Tahsilat veya resmi muhasebe kârı değildir. İadede
+                  komisyon/lojistik otomatik geri alınmaz. TRY ve RUB toplanmaz.
+                  Tablodaki işlem kuru siparişe kayıtlı demo kurudur. Küçük ≈
+                  karşılıkları TCMB son bülteninden güncel değerlemedir. Excel/PDF
+                  özgün para birimindedir; karşılıklar satır bazında
+                  yuvarlandığından toplamın dönüşümünden küçük farklar olabilir.
+                </p>
               </details>
               <section className="panel comparison-panel">
                 <h2>Önceki dönem karşılaştırması</h2>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ArrowLeft, ArrowRight, X } from "lucide-react";
+import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, X } from "lucide-react";
 import { placeTour, type GuideStep } from "@/domain/onboarding";
 import "./guided-tour.css";
 
@@ -37,18 +37,20 @@ export function GuidedTour({
 
   useEffect(() => {
     if (!ready) return;
+    let shouldOpen = false;
     if (replay > lastReplay.current) {
       lastReplay.current = replay;
-      setIndex(0);
-      return;
+      shouldOpen = true;
+    } else if (lastReplay.current === 0) {
+      try {
+        shouldOpen = window.localStorage.getItem(keyFor(id)) !== "done";
+      } catch {
+        shouldOpen = true;
+      }
     }
-    if (lastReplay.current !== 0) return;
-    try {
-      if (window.localStorage.getItem(keyFor(id)) === "done") return;
-    } catch {
-      // No storage: first-visit guidance remains optional and dismissible.
-    }
-    setIndex(0);
+    if (!shouldOpen) return;
+    const frame = requestAnimationFrame(() => setIndex(0));
+    return () => cancelAnimationFrame(frame);
   }, [id, ready, replay]);
 
   const step = index === null ? null : steps[index];
@@ -56,9 +58,11 @@ export function GuidedTour({
     if (!step || index === null || !ready) return;
     const target = document.querySelector<HTMLElement>(step.target);
     if (!target) {
-      if (index === steps.length - 1) finish();
-      else setIndex((current) => current === null ? null : current + 1);
-      return;
+      const frame = requestAnimationFrame(() => {
+        if (index === steps.length - 1) finish();
+        else setIndex((current) => current === null ? null : current + 1);
+      });
+      return () => cancelAnimationFrame(frame);
     }
     let frame = 0;
     const measure = () => {
@@ -88,14 +92,18 @@ export function GuidedTour({
   }, [index, ready, step, steps.length, finish]);
 
   useEffect(() => {
-    if (index === null) return;
-    if (!previousFocus.current)
+    if (index !== null && !previousFocus.current)
       previousFocus.current = document.activeElement as HTMLElement;
+  }, [index]);
+
+  const hasBounds = bounds !== null;
+  useEffect(() => {
+    if (index === null || !hasBounds) return;
     const frame = requestAnimationFrame(() => {
       card.current?.querySelector<HTMLButtonElement>("[data-tour-next]")?.focus({ preventScroll: true });
     });
     return () => cancelAnimationFrame(frame);
-  }, [index]);
+  }, [index, hasBounds]);
 
   useEffect(() => {
     if (index === null) return;
@@ -144,6 +152,16 @@ export function GuidedTour({
       <div className="onboarding-shade" style={{ left: bounds.right, top: y, width: Math.max(0, viewport.width - bounds.right), height }} />
       <div className="onboarding-shade" style={{ left: 0, top: bounds.bottom, width: "100%", height: Math.max(0, viewport.height - bounds.bottom) }} />
       <div className="onboarding-highlight" aria-hidden="true" style={{ left: x, top: y, width, height }} />
+      <div
+        className="onboarding-pointer"
+        aria-hidden="true"
+        style={{
+          left: Math.min(Math.max(16, x + Math.min(width / 2, 28)), Math.max(16, viewport.width - 30)),
+          top: position.placement === "below" ? bounds.bottom + 2 : bounds.top - 30,
+        }}
+      >
+        {position.placement === "below" ? <ArrowUp size={24} /> : <ArrowDown size={24} />}
+      </div>
       <div className="onboarding-card" ref={card} role="dialog" aria-label="Kısa kullanım rehberi" aria-describedby="tour-description" style={{ left: position.left, top: position.top }}>
         <div className="onboarding-head">
           <span>{index + 1} / {steps.length}</span>
