@@ -245,9 +245,13 @@ function PackingStation({
     return () => document.removeEventListener("keydown", focusScanner);
   }, [scannable]);
 
-  useEffect(() => () => {
-    disposed.current = true;
-    scanQueue.current = [];
+  useEffect(() => {
+    // React Strict Mode re-runs mount effects in development.
+    disposed.current = false;
+    return () => {
+      disposed.current = true;
+      scanQueue.current = [];
+    };
   }, []);
 
   async function drainScans() {
