@@ -50,7 +50,7 @@ export function Order360Overview({ order, data }: { order: Order; data: Workspac
         </div>
         <nav className="order360-jump" aria-label="Sipariş içi gezinme">
           <button type="button" onClick={() => goTo("products")}>Ürünler</button>
-          <button type="button" onClick={() => goTo("operations")}>İşlemler</button>
+          {order.fulfillment === "FBS" && <button type="button" onClick={() => goTo("operations")}>İşlemler</button>}
           {data.actor.role !== "WAREHOUSE" && <button type="button" onClick={() => goTo("finance")}>Finans</button>}
           <button type="button" onClick={() => goTo("trace")}>Kayıtlar</button>
         </nav>
