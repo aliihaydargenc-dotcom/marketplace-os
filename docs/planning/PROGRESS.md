@@ -23,6 +23,17 @@ PARTIAL / REFERENCE_ONLY tabloda kapsam açıklamasıdır; görev akışı ROADM
 
 ## 21 Ekim çalışma dilimi
 
+### ARCH-01 — Uygulama servisleri
+
+Kullanıcının devam yönlendirmesiyle bu teslimde yalnız ARCH-01 ele alındı. `execute.ts` 425 satırdan 97 satıra indirildi: Zod, güncel rol/aktiflik, workspace transaction kilidi, generation, fingerprint/receipt ve audit tek kapıda kaldı. Sipariş, stok, iade/QC, fatura, finans ve sistem servisleri ayrı dosyalarda; ortak FBS yükleyicisi aynı workspace filtresini korur. Servislerin hepsi dışarıdan verilen aynı Tx ile çalışır, kendi transaction/DB bağlantısını açmaz. Katalog mevcut servisinden yönlendirilir. Switch, tüm Command türleri için exhaustive kontrol içerir.
+
+SQL metinleri/sayıları mekanik karşılaştırmada 35→35 eşleşti (taşınan sipariş ID değişkeni normalleştirildi); şema, seed, API payload, UI ve mali formüller değişmedi. Bu karşılaştırma tek başına davranış kanıtı sayılmadı; izole PostgreSQL regresyonu ayrıca çalıştırıldı.
+
+Yeni hedefli bütünlük senaryosu: iki adetlik hazırlanmış siparişin toplamını finans defterinin SQL integer aralığını aşacak biçimde yalnız test alanında ayarlayarak geç aşama hata üretir. Stok, rezervasyon, sevkiyat, finans, fatura, receipt ve audit geri alınır; sipariş READY kalır. Test nedeni düzeltildikten sonra aynı işlem anahtarıyla tek sevkiyat tamamlanır. Bu veri sınırı senaryosu UI'ye yeni bir limit veya yeni hata mesajı eklemez.
+
+ARCH-01 IMPLEMENTED; hedefli doğrulama PASS. `npx vitest run tests/domain.test.ts tests/catalog.db.test.ts` izole `dev-ops02-validation` / `br-royal-fog-bael0zdv` dalında 23/23 PASS, 342.32s (16 domain + 7 katalog). Her paket kendi iki UUID alanını temizledi. Typecheck/lint (0 uyarı)/format/production build PASS. Bağlantı yalnız gizli stdin ile test sürecine aktarıldı, dosyaya/repoya yazılmadı. GitHub/Vercel sonucu ayrıca izlenir. Üretim veritabanında test/reset/migration çalıştırılmadı. Kapsamlı tarayıcı E2E, kullanıcı kabulü ve uzak CI sonucu ayrı açık. INV-01 mal kabul/sayım belgesi bu göreve dahil edilmedi; bu turda başlatılmadı.
+
+
 ### INV-02 — Güncel teslim
 
 İade & Kalite Kontrol ayrı menü/URL ile yönetici ve depoya açıldı; muhasebe başlangıç allowlist'i kabul etmez. Ayrı returns-workbench ve saf read modeli: pending/accepted/rejected/all, arama kapsamına uygun sayılar, eski iade önce, ürün/SKU/barkod/gerekçe araması. Tüm tarihler; bekleme saati açılış/manuel yenileme anına göre yaklaşık.

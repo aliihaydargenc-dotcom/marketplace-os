@@ -100,3 +100,11 @@ Hedefli komut: ayrı test DB bağlantısıyla `ORDER_VIEWS_DB_TEST=1 npx vitest 
 Orijinal 11 kabul senaryosunun tümünü, FBO engeli, rol/workspace izolasyonu, QC kabul/ret, eşzamanlı rezervasyon, mükerrer işlem ve rapor kuruş mutabakatını kapsa. Yeni özellik kanıtı için mevcut E2E'ye ayrı hazırlama masası senaryosu ekle; eski drawer senaryosunu kaldırma.
 
 Sonuç tablosu: commit SHA / ortam / komut veya manuel adım / PASS-FAIL-BLOCKED / kanıt / kalan risk. DB, browser ve deploy sonuçlarını ayrı yaz. Test bulunması testin geçtiğini göstermez.
+
+
+## ARCH-01 — Servis ayrımı
+
+- İzole PostgreSQL dalında mevcut domain/katalog regresyonu ve geç finans hatasında atomik rollback hedefli kontrolü çalıştırılır; gerçek sonuç PROGRESS kaydında.
+- [ ] Kullanıcı: Hazırlama Masası'nda rezervasyon → barkod → sevkiyat; aynı siparişin stok hareketi, fatura ve finansını kontrol et.
+- [ ] Kullanıcı: İade & Kalite Kontrol üzerinden bir demo iade kararı; karantina/satılabilir ayrımını kontrol et.
+- [ ] Kapsamlı tarayıcı E2E / uzak CI; bu sunucu ayrımı yerel build'in browser kabulü olduğu anlamına gelmez.

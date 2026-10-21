@@ -110,3 +110,6 @@ CAT-01 migration ek kaydı: İzole dalda test edildikten sonra `0003_catalog.sql
 CAT-01 yayın ek kaydı: `afc8b4f` kodu production READY. Mevcut yönetici alanında UI ile paket eklendi, 72→78 ürün ve +72 referanslı demo stok gözlendi; filtre/kaynak, kimlik kilidi ve yeni SKU formu açılması kontrol edildi. Canlı sevkiyat/reset/manual SKU kaydetme yapılmadı. [Kapsam ve ekran](research/CAT01_SMOKE.md). Kullanıcı kabulü bekliyor.
 
 INV-02 yayın ek kaydı: `545b690` production READY. Yönetici oturumunda durum kuyrukları, barkod arama/sayıları, referanslı karantina ayrımı, gerekçe+checkbox düğme kilidi ve tamamlanmış iadenin read-only hâli gözlendi. QC gönderilmedi; canlı kayıt değişmedi. [Kapsam ve görüntü](research/INV02_SMOKE.md). Kullanıcı kabulü bekliyor.
+
+
+ARCH-01 — 21 Ekim 2026: execute komut kapısı korunarak sipariş/stok/iade/fatura/finans/sistem servisleri ayrıldı. İzole `dev-ops02-validation` dalında domain + katalog PostgreSQL regresyonu **23/23 PASS**, toplam **342.32s**. Yeni geç aşama finans hatası senaryosu stok/rezervasyon/sevkiyat/finans/fatura/receipt/audit rollback ve aynı anahtarla düzeltme sonrası tek sevkiyatı doğrular. Typecheck/lint (0 uyarı)/format/build PASS. Test workspace'leri temizlendi; canlı DB'de test/reset/migration yapılmadı. Kapsamlı tarayıcı E2E ve uzak CI bu sonuç kapsamında değildir.

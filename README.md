@@ -65,6 +65,10 @@ Next.js framework, Node 24, Frankfurt (`fra1`). `DATABASE_URL` yalnız sunucu or
 
 Production ve preview için ayrı veritabanı/branch önerilir. Bu demo tek demo veritabanıyla çalıştırılabilir; gerçek müşteri verisine bağlanmamalıdır. Canlıya alınmış olması üretime hazır muhasebe/ERP sertifikasyonu anlamına gelmez.
 
+## Uygulama servisleri
+
+ARCH-01 ile sipariş, stok, iade/QC, fatura, finans ve sistem mutasyonları ayrı [uygulama servislerine](src/server/services/README.md) taşındı. Tek komut kapısı yetki, workspace kilidi, demo sürümü, idempotency ve audit sınırını korur; servisler aynı transaction bağlantısını paylaşır. Mal kabul/sayım belgesi hâlâ INV-01 kapsamındadır.
+
 ## Dokümantasyon
 
 - [Araştırma, kaynaklar ve lisans sınırları](docs/REVERSE_ENGINEERING.md)

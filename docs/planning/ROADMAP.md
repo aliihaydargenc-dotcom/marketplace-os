@@ -8,7 +8,11 @@ BACKLOG → IN_PROGRESS → IMPLEMENTED → VERIFIED. BLOCKED: somut engel ve ye
 
 Her görev: sorun, dosya sınırı, bağımlılık, kabul, doğrulama, kalan risk. Kullanıcının manuel UI kontrolü ve sonraki Codex regresyonu ayrı kaydedilir. Kritik veri bütünlüğü hatası diğer işleri bloke eder. Aşağıdaki işler orijinal dört aşamanın eksiklerini tamamlar; yeni aşama adı altında kapsam saklanmaz.
 
-## Aktif geliştirme dilimi — Aşama 2
+## Aktif geliştirme dilimi — ARCH-01
+
+Sorun: operasyon mutasyonları aynı dosyada; mal kabul ve sonraki finans/fatura işleri büyüyen ortak gövdeye bağımlı. Sınır: execute komut kapısı, yedi uygulama servis dosyası, ilgili bütünlük testi ve dokümantasyon. UI, API, migration ve yeni iş kuralı eklenmez. Bağımlılık: mevcut PostgreSQL test dalı. Kabul: rol/generation/receipt/audit tek transaction kapısında; servisler kendi transaction'ını açmaz; stok/finans/fatura aynı anda commit veya rollback; geçmiş FBS/QC/izolasyon/reset davranışı korunur. Kontrol: mevcut domain ve katalog PostgreSQL testleri, yeni geç aşama rollback senaryosu, typecheck/lint/format/build. Sonuçlar PROGRESS içinde. Bu teslimin ardından yeni geliştirme görevine geçilmez.
+
+## Önceki geliştirme dilimi — INV-02
 
 ### INV-02 — İade ve kalite kontrol kuyruğu
 

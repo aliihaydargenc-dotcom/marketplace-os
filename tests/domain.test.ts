@@ -124,6 +124,53 @@ describe("PostgreSQL domain invariants", () => {
       true,
     );
   });
+  it("late finance failure rolls back shipment, stock, receipt and audit together", async () => {
+    const id = await create("p2", 2);
+    await run({ action: "RESERVE", orderId: id });
+    for (let i = 0; i < 2; i++)
+      await run({
+        action: "SCAN",
+        orderId: id,
+        barcode: (await product()).barcode,
+      });
+    // Valid integer line price, but a total beyond the SQL ledger integer range.
+    // This fails after stock, reservation and shipment writes have already run.
+    await transaction(w, async (tx) => {
+      await tx.execute(
+        sql`UPDATE order_lines SET unit_price=2147483647 WHERE workspace_id=${w}::uuid AND order_id=${id}`,
+      );
+    });
+    const before = await product();
+    const key = randomUUID();
+    await expect(
+      run({ action: "SHIP", orderId: id }, admin, key),
+    ).rejects.toThrow();
+    const s = await snapshot(admin);
+    expect((await current(id)).status).toBe("READY");
+    expect(await product()).toMatchObject({
+      physical: before.physical,
+      reserved: before.reserved,
+    });
+    expect(s.ledger.filter((l) => l.reference === id)).toHaveLength(0);
+    expect(s.financial.filter((f) => f.order_id === id)).toHaveLength(0);
+    expect(s.invoices.filter((i) => i.order_id === id)).toHaveLength(0);
+    expect(
+      s.audit.filter((e) => e.reference === id && e.action === "SHIP"),
+    ).toHaveLength(0);
+    const state = await database().execute(sql`SELECT
+      (SELECT count(*)::int FROM shipments WHERE workspace_id=${w}::uuid AND order_id=${id}) AS shipments,
+      (SELECT count(*)::int FROM command_receipts WHERE workspace_id=${w}::uuid AND key=${key}) AS receipts`);
+    expect(state.rows[0]).toEqual({ shipments: 0, receipts: 0 });
+    await transaction(w, async (tx) => {
+      await tx.execute(
+        sql`UPDATE order_lines SET unit_price=1000 WHERE workspace_id=${w}::uuid AND order_id=${id}`,
+      );
+    });
+    // A rolled-back request key can safely complete after correcting the cause.
+    await run({ action: "SHIP", orderId: id }, admin, key);
+    expect((await current(id)).status).toBe("SHIPPED");
+    expect((await product()).physical).toBe(before.physical - 2);
+  });
   it("cancel releases reservations and never creates stock ledger entries", async () => {
     const id = await create(),
       before = await product();
