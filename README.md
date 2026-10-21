@@ -61,6 +61,8 @@ Playwright normalde yerel Chromium kullanır. Kısıtlı ortam için `BUNDLED_CH
 
 ## Vercel
 
+Otomatik Git deploy `vercel.json` ile kapalıdır. GitHub commit/push canlıyı güncellemez. Geliştirmeler ve belgeler yerel/izole kontrollerden sonra tek toplu teslim için manuel yayımlanır; aynı SHA'ya ikinci deploy ve yalnız belge/kanıt için yeni yayın yapılmaz. Normal hedef günde en fazla bir planlı yayın; açık kullanıcı talebi veya acil canlı düzeltmesi istisnadır. Canlı SHA her teslimde ayrıca belirtilir.
+
 Next.js framework, Node 24, Frankfurt (`fra1`). `DATABASE_URL` yalnız sunucu ortam değişkenidir; `NEXT_PUBLIC_` öneki kullanılmaz. Migration dağıtımdan önce uygulanır, build sırasında veritabanı sıfırlanmaz veya seed edilmez. İlk demo girişi workspace verisini transaction içinde oluşturur.
 
 Production ve preview için ayrı veritabanı/branch önerilir. Bu demo tek demo veritabanıyla çalıştırılabilir; gerçek müşteri verisine bağlanmamalıdır. Canlıya alınmış olması üretime hazır muhasebe/ERP sertifikasyonu anlamına gelmez.

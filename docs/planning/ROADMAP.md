@@ -8,7 +8,19 @@ BACKLOG → IN_PROGRESS → IMPLEMENTED → VERIFIED. BLOCKED: somut engel ve ye
 
 Her görev: sorun, dosya sınırı, bağımlılık, kabul, doğrulama, kalan risk. Kullanıcının manuel UI kontrolü ve sonraki Codex regresyonu ayrı kaydedilir. Kritik veri bütünlüğü hatası diğer işleri bloke eder. Aşağıdaki işler orijinal dört aşamanın eksiklerini tamamlar; yeni aşama adı altında kapsam saklanmaz.
 
-## Aktif geliştirme dilimi — ARCH-01
+## Aktif geliştirme dilimi — REL-02: yayın kotası ve tasarım sırası
+
+Sorun: küçük geliştirme/belge commit'leri otomatik deploy oluyor; aynı SHA için manuel yayın da tekrar üretilebiliyor. Sınır: otomatik Git deploy'unu vercel.json ile kapatmak, tek toplu manuel yayın politikası, tasarımın net aşaması. Uygulama kodu/DB/migration değişmez. Bu değişiklik için ayrıca yayın yapılmaz. Kabul: GitHub'da config mevcut; yeni commit için Vercel deployment oluşmaması gözlenir; mevcut canlı commit korunur. Test: JSON doğrulama, commit/ref kontrolü ve Vercel liste kontrolü. Mevcut hesabın limitinin veya başka projelerin tüketiminin değiştiği iddia edilmez.
+
+### UX-01 — Tasarımın devreye gireceği yer
+
+Kapsamlı tasarım Aşama 3 sonunda / Aşama 4 başında: INV-01 mal kabul-sayım ve FIN-01/DOC-01 ana ekran akışları tamamlandıktan sonra, QA-01 kapsamlı tarayıcı kabulünden önce. Yoğun masaüstü tabloları, yazı/eylem hiyerarşisi, menü ve panel tutarlılığı, hata/boş/yükleniyor durumları birlikte ele alınır. Bu zamana kadar kullanım engelleri geliştirmeyle birlikte çözülür. Gerçek API veya üretim kimlik sistemi bu demo tasarımının önkoşulu değildir.
+
+### Yayın düzeni
+
+Otomatik Git deploy kapalı; commit/push bir yayın talebi değildir. İlgili işler ve belgeleri test edilmiş tek teslim paketinde birleştirilir, paket için bir manuel production deployment oluşturulur. Normal hedef günde en fazla bir planlı yayın; açık kullanıcı isteği veya acil canlı düzeltmesi istisnadır. Limit aşımında retry döngüsü yapılmaz. Bu teslimde yayın yok; canlı d0f13f0 korunur.
+
+## Önceki geliştirme dilimi — ARCH-01
 
 Sorun: operasyon mutasyonları aynı dosyada; mal kabul ve sonraki finans/fatura işleri büyüyen ortak gövdeye bağımlı. Sınır: execute komut kapısı, yedi uygulama servis dosyası, ilgili bütünlük testi ve dokümantasyon. UI, API, migration ve yeni iş kuralı eklenmez. Bağımlılık: mevcut PostgreSQL test dalı. Kabul: rol/generation/receipt/audit tek transaction kapısında; servisler kendi transaction'ını açmaz; stok/finans/fatura aynı anda commit veya rollback; geçmiş FBS/QC/izolasyon/reset davranışı korunur. Kontrol: mevcut domain ve katalog PostgreSQL testleri, yeni geç aşama rollback senaryosu, typecheck/lint/format/build. Sonuçlar PROGRESS içinde. Bu teslimin ardından yeni geliştirme görevine geçilmez.
 
@@ -85,6 +97,8 @@ Kontrol: 2 saf + 7 gerçek PostgreSQL hedefli test PASS (81.05s), typecheck/lint
 | FIN-01 | 3 | Sipariş finans hareket tarihi ve sipariş kohortu ayrı filtre modları; aynı siparişin kayıtları detaydan rapora izlenir; eksik maliyet düzeltmesi kuralları belgelenir | ARCH-01 + mutabakat testleri |
 | DOC-01 | 3 | Fatura hata kuyruğu/toplu taslak ve belge geçmişi; onay/iptal nedenleri; DEMO ibaresi ve unique ilişki korunur | ARCH-01 |
 | SYS-01 | 1/4 | Gerçek kullanıcı login/davet/süre sonu/rol devri; demo rol seçiminden açık ayrım | Üretim kimlik sağlayıcısı seçimi; bu aşamada anahtar istenmez |
+| UX-01 | 3 sonu / 4 başı | Ana akışlar oturunca kapsamlı masaüstü tasarım ve kullanılabilirlik; ardından QA | INV-01, FIN-01, DOC-01 |
+| REL-02 | 4 / sürekli | Otomatik Git deploy kapalı; test edilmiş toplu paket başına tek manuel yayın | Kota ve canlı/aday commit kontrolü |
 | QA-01 | 4 | Bekleyen Codex toplu regresyonu; uzak CI hatasının gerçek kök nedeni; temiz DB, build ve iki masaüstü boyutu | TEST_HANDOFF.md |
 | REL-01 | 4 | İlgili commit için Vercel READY ve smoke kanıtı; README/rapor aynı commit kapsamını belirtir | QA sonucu ve dağıtım erişimi |
 

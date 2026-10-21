@@ -12,7 +12,7 @@
 
 - Mevcut Next.js / PostgreSQL projesi üzerinden devam et. Statik prototiple değiştirme.
 - Her iş için kısa plan yaz: sorun, sınır, bağımlılık, kabul şartı, gerekli kontrol. Ardından uygula; planlama döngüsünde durma.
-- 21 Ekim sonraki kullanıcı yönlendirmesi: her teslim diliminde tek görev tamamla. Ardından kullanıcıya açacağı ekranı ve 2–3 somut kontrolü söyle; geri bildirim gelmeden sonraki geliştirme görevine geçme. Aynı görevde gereken düzeltme, dokümantasyon ve yayın bunun parçasıdır.
+- 21 Ekim sonraki kullanıcı yönlendirmesi: her teslim diliminde tek görev tamamla. Ardından kullanıcıya açacağı ekranı ve 2–3 somut kontrolü söyle; geri bildirim gelmeden sonraki geliştirme görevine geçme. Aynı görevde gereken düzeltme ve dokümantasyon bunun parçasıdır. Yayın aşağıdaki toplu teslim politikasına bağlıdır; her görev sonunda deploy yapılmaz.
 - Tasarım değişikliğinden önce ilgili açık kaynak repo/dosyalarını ve lisans sınırlarını incele; gözlem/karar/kaynak SHA kayıtlarını araştırma dizinine ekle. Demo olması sıradan veya işlevsiz UI teslimini haklı çıkarmaz. Demo Merkezi tanıtım/rol seçimi, çalışma ekranı günlük operasyon içindir; gerçek kullanıcı kimliği eklenmeden gerçek login varmış gibi gösterme.
 - `ROADMAP.md` görev kimliklerini commit ve ilerleme notlarında kullan. Durumlar: BACKLOG, IN_PROGRESS, IMPLEMENTED, VERIFIED, BLOCKED. Yazılmış kodu doğrulanmış özellik diye işaretleme.
 - Kullanıcının 21 Ekim yönlendirmesi: geliştirmeye ağırlık ver; arayüz/geçiş denemelerini kullanıcı yapacak, kapsamlı regresyon Codex'te sonra yapılacak. Büyük test döngülerini her değişiklikte tekrarlama. Kod değişikliklerinde typecheck/lint ve uygun derleme, iş kuralı değişikliğinde ilgili hedefli test yeterlidir. Çalıştırılmayan testleri devir listesinde açık bırak.
@@ -32,3 +32,12 @@
 `npm ci`, `npm run typecheck`, `npm run lint`, `npm run format:check`, `npm test`, `npm run build`, `npm run test:e2e`.
 
 DB testleri ve migration için uygulamaya özel ayrı PostgreSQL gerekir. Üretim DB'sinde toplu test/reset çalıştırma. Kurulum ve alternatif Chromium ayarı README'de.
+
+## 21 Ekim — Tasarım ve kota kararı (güncel yönlendirme)
+
+- Kapsamlı görsel düzenleme UX-01: Aşama 3 sonu / Aşama 4 başında, INV-01 mal kabul-sayım ile FIN-01/DOC-01 ana akışları oturduktan sonra ve QA-01 tam tarayıcı kabulünden önce. Şimdi yalnız kullanımı engelleyen arayüz sorunlarını düzelt; erken kapsamlı yeniden tasarıma başlama. Gerçek Ozon API veya üretim login'i bu demo tasarım turunu bekletme nedeni değildir.
+- `vercel.json` içindeki `git.deploymentEnabled=false` tüm dallarda otomatik Git deploy'unu kapatır. Bu ayarı küçük bir değişikliği yayına almak için aç/kapat yapma. GitHub'a kaydetmek canlı yayına almak değildir.
+- Birbiriyle ilgili geliştirmeleri ve belgelerini paketle; yerel/izole kontrolleri bitir; yalnız anlamlı ve test edilmiş teslim paketi sonunda tek manuel production deploy yap. Aynı SHA için Git otomatiği + manuel deploy birlikte çalıştırılmaz. Dokümantasyon, test kanıtı, plan ve commit düzeltmesi için ayrı deploy yapılmaz.
+- Normal hedef günde en fazla bir planlı toplu yayın; kullanıcının açık ek yayın isteği veya canlıyı bozan acil düzeltme istisnadır. Bu bir çalışma politikasıdır, Vercel hesabı limitini değiştirmez veya zamanlanmış otomasyon oluşturmaz. Diğer projelerin kullanımını kontrol etmeden toplam hesap kotasının çözüldüğünü iddia etme.
+- Manuel yayın öncesi son canlı commit ile aday SHA'yı ve aynı SHA için mevcut deploy olup olmadığını kontrol et. Günlük limite takılınca otomatik/tekrarlı retry, başka proje açma veya belgeler için yeni deploy denemesi yapma; kodu GitHub'da koru ve engeli bildir.
+- Her teslimde yerel doğrulama, GitHub durumu ve canlı sürümü ayrı söyle. Yayınlanmamış değişiklikler için kullanıcıyı eski canlı ekranda yeni özelliği denemeye gönderme. Yeni canlı kanıtı sonraki çalışma commit'ine kat; salt kanıt yazımı için yeniden yayın çıkarma.

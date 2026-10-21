@@ -137,3 +137,14 @@ CAT-01 yayın ek kaydı: `afc8b4f` kodu production READY. Mevcut yönetici alan�
 INV-02 hedefli doğrulama: `npx vitest run tests/returns.test.ts tests/navigation.test.ts` **6/6 PASS** (596ms). Typecheck/lint (0 uyarı)/format/production build PASS. 4 iade read modeli + 2 navigasyon testi; DB/E2E paketi ve canlı QC yazma bu turda koşulmadı. Yeni server iş kuralı veya migration yok.
 
 INV-02 yayın ek kaydı: `545b690` production READY. Yönetici oturumunda durum kuyrukları, barkod arama/sayıları, referanslı karantina ayrımı, gerekçe+checkbox düğme kilidi ve tamamlanmış iadenin read-only hâli gözlendi. QC gönderilmedi; canlı kayıt değişmedi. [Kapsam ve görüntü](../research/INV02_SMOKE.md). Kullanıcı kabulü bekliyor.
+
+
+### REL-02 — Yayın sıklığı ve tasarım sırası
+
+21 Ekim kullanıcı talimatı: tasarım doğru aşamada devreye girecek; sürekli günlük deploy limitine çarpan çalışma biçimi düzeltilecek. Vercel geçmişinde belge commit'lerinden deploy ve aynı SHA için tekrarlı deploy gözlendi. Bunun toplam hesap limitinin tek nedeni olduğu ileri sürülmez.
+
+`vercel.json`: git.deploymentEnabled=false; otomatik Git deploy tüm dallarda kapalı. Ignore Build Step kullanılmadı: iptal edilen build'ler de deploy limitine sayılabildiğinden gereksiz deploy'u baştan engelleme seçildi. Yayın tek test edilmiş toplu paket için manuel; belge/kanıt commit'ine ayrı yayın yok. Normal hedef günde en fazla bir planlı yayın; açık kullanıcı isteği/acil düzeltme istisna. Mevcut canlı d0f13f0; bu config/belge değişikliği ayrıca deploy edilmez.
+
+UX-01 yol haritasına Aşama 3 sonu / 4 başı olarak eklendi: INV-01, FIN-01 ve DOC-01 ana akışlarından sonra, QA-01 geniş kabulden önce. Şimdi yalnız kullanım engelleri düzeltilir.
+
+Resmi kaynaklar (21 Ekim 2026): https://vercel.com/docs/project-configuration/git-configuration — git.deploymentEnabled=false; https://vercel.com/docs/monorepos — canceled ignored builds deployment/concurrent limits. JSON yerelde parse edildi. GitHub config ve Vercel commit bazlı deploy kontrolü teslim sırasında yapılır; bu değişiklik için uygulama testleri/DB/build tekrarlanmadı (runtime değişmedi).
