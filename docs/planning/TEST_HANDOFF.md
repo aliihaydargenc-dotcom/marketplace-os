@@ -2,6 +2,15 @@
 
 21 Ekim 2026. Kullanıcı arayüz/geçiş deneyimini elle kontrol edecek. Aşağıdaki liste **bekleyen kabul işleri**dir; geçmiş test iddiası değildir. Eski sonuçlar `../TEST_REPORT.md` içinde tarihli saklanır.
 
+## Geçerli test sorumluluğu ve zamanlama
+
+21 Ekim son kullanıcı kararı: her geliştirme görevi sonunda manuel test beklenmez. Demo işlevleri tamamlanır, teknik toplu kontrol yapılır, kapsamlı tasarım uygulanır; ardından kullanıcı bütünleşik sürümün tasarım/geçiş ve günlük kullanım kabulünü yapar. Aşağıdaki kutular bekleyen kabul senaryolarıdır, kullanıcıya her görevde durma talimatı değildir.
+
+- Geliştirici: değişikliğe uygun typecheck/lint/build; stok, finans, rol, izolasyon, idempotency ve transaction kontrolleri. Bu sorumluluk kullanıcıya devredilmez.
+- Geliştirici: demo işlevleri bittiğinde 11 ürün kabul senaryosu ve yeni işlerin hedefli senaryoları için commit/ortam/sonuç kaydı; tasarım sonrası etkilenen kontrollerin tekrarı.
+- Kullanıcı: işlevler ve tasarım tamamlandığında tek bütünleşik sürümde ekranlar, gezinme, geçişler, barkodlu günlük akış ve kullanım kolaylığı. Kullanıcı bulguları ayrı kaydedilir; geliştirici kendi adına kullanıcı kabulü vermez.
+- Gerçek scanner, tarayıcı veya izole DB erişimi yoksa eksik kanıt açık kalır. Yazılmış test geçmiş sayılmaz. Otomatik deploy kapalı; test için her görevde ayrı yayın yapılmaz.
+
 ## Hazırlık
 
 1. Repo son commitini çek; AGENTS ve ROADMAP/PROGRESS oku.

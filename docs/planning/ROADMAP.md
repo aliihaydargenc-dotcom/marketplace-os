@@ -8,22 +8,28 @@ BACKLOG → IN_PROGRESS → IMPLEMENTED → VERIFIED. BLOCKED: somut engel ve ye
 
 Her görev: sorun, dosya sınırı, bağımlılık, kabul, doğrulama, kalan risk. Kullanıcının manuel UI kontrolü ve sonraki Codex regresyonu ayrı kaydedilir. Kritik veri bütünlüğü hatası diğer işleri bloke eder. Aşağıdaki işler orijinal dört aşamanın eksiklerini tamamlar; yeni aşama adı altında kapsam saklanmaz.
 
-## Aktif geliştirme dilimi — UX-01: kapsamlı tasarım kapısı
+## Geçerli sıra — önce işlevsel demo, ardından tasarım ve kullanıcı kabulü
 
-**Son kullanıcı kararı:** kapsamlı tasarım tamamlanmadan iç özellik geliştirmesi ve sonraki aşamalar yapılmayacak. Önceki tasarımı erteleme kararı geçersizdir. INV-01 / INT-01 / FIN-01 / DOC-01 ve diğer yeni özellikler bekler. Mevcut iş kuralları, PostgreSQL, RBAC ve demo izolasyonu korunur.
+21 Ekim EN SON kullanıcı kararı önceki UX-01 kapısını ve görev başına kullanıcı testi beklemeyi iptal eder. Mevcut ekran/menü/dosya düzeni korunur; yeni işlevin gerektirdiği alanlar mevcut düzene eklenir. Kapsamlı kabuk, gezinme ve geçiş yenilemesi işlevsel tamamlanma sonrasındadır.
 
-Sorun: mevcut demo ve çalışma ekranı kullanıcı tarafından estetik, albeni, geçiş ve kullanım kolaylığı bakımından reddedildi. Amaç: satılabilir sunum kalitesi ve günlük operasyon kolaylığı için bütün mevcut ekranları kapsayan ortak tasarım. Kapsam: Demo Merkezi; ortak kabuk/menü; Operasyon Merkezi; Siparişler; Hazırlama Masası; Stok & Depo; İade & Kalite Kontrol; Fatura Merkezi; Finans & Analitik; Sistem Yönetimi; detay panelleri ve formlar.
+| Sıra | Görev | Durum / bitiş koşulu |
+| --- | --- | --- |
+| 1 | INV-01 | BACKLOG — referanslı mal kabul/sayım taslağı, onayı, delta ve tek ledger; rezervasyon, karantina ve yetki bütünlüğü |
+| 2 | INT-01 | BACKLOG — demo sağlayıcılar gerçek uygulama kapısından kullanılır; mock sağlayıcı geçişi domain/UI değişmeden kanıtlanır; canlı API yok |
+| 3 | FIN-01 | BACKLOG — hareket tarihi/kohort ayrımı, detay-rapor izlenebilirliği, geçmişi koruyan eksik maliyet düzeltme kuralı ve mutabakat |
+| 4 | DOC-01 | BACKLOG — fatura hata kuyruğu/toplu taslak, gerekçeli durumlar, belge geçmişi ve unique sipariş ilişkisi |
+| 5 | QA-01 teknik bölüm | BACKLOG — ürün talimatındaki 11 kabul senaryosu ve yeni görev kabulleri; eksikler kapanır, gerçek CI engeli kanıtlanır; kullanıcı kabulü yapılmış sayılmaz |
+| 6 | UX-01 | BACKLOG / ertelendi — bütün mevcut ve yeni ekranlar aynı tasarım sistemiyle; seçilen 2. yön üst gezinme/geniş çalışma alanı referansı; görsel yön seçimi kullanıcı kabulü değildir |
+| 7 | Kullanıcı kabulü | BEKLİYOR — bütünleşik tasarım, geçişler ve günlük iş akışı kullanıcı tarafından denenir; bulgular düzeltilir |
+| 8 | REL-01 | BACKLOG — teknik kontrolü tamamlanan teslim paketinin tek yayını ve commit/READY kanıtı; test için gereken erişilebilir aday sürüm toplu yayın politikasıyla sağlanır |
 
-Teslim sırası:
+SYS-01 gerçek kullanıcı login/davet ve canlı entegrasyonlar sonraki üretim kapsamıdır. Kullanıcı kabulü için kullanılan sürüm ve son teslim sürümü açıkça ayrılır; her ara görevde deploy yapılmaz. Yazılım geliştirme bu karar kaydıyla tamamlanmış sayılmaz.
 
-1. Mevcut ekran görüntülerine dayalı üç görsel yön; kullanıcı seçimi.
-2. Seçilen yönün tipografi, renk, yoğunluk, aralık, bileşen ve hareket kurallarına çevrilmesi.
-3. Tüm mevcut ekranların ortak sistemle uygulanması; iş eylemleri ve veri bağları korunur.
-4. Sayfa/panel/modal geçişleri, aktif seçim, yükleniyor/boş/hata/başarı durumları, klavye odağı, reduced-motion; 1440×900 ve 1920×1080 öncelikli; mobil taşma koruması.
-5. İlgili kısa teknik kontroller ve gerçek ekranda görsel/etkileşim doğrulaması; tek toplu yayın politikası.
-6. Kullanıcının kapsamlı tasarımı açıkça kabul etmesi. Ancak bundan sonra diğer geliştirme aşamaları açılır. Görsel yön seçimi tek başına kapsamlı tasarım kabulü değildir.
+### Demo işlevsel bitiş kapısı
 
-Durum: IN_PROGRESS — mevcut audit ekranlarına dayalı görsel yön seçimi hazırlanıyor. Uygulama tamamlanmadı. Bu çalışma için otomatik deploy açılmaz; her görsel deneme veya belge commit'i için deploy yapılmaz.
+INV-01 / INT-01 / FIN-01 / DOC-01 kodlanmış, ilgili teknik bütünlük kontrolleri geçmiş ve ürün talimatındaki 11 senaryo için commit/ortam/sonuç kaydı bulunmuş olmalı. Önceki OPS-01 / OPS-02 / FX-01 / CAT-01 / INV-02 / ARCH-01 kanıtları ve açık eksikleri TEST_HANDOFF üzerinden uzlaştırılır. Çalıştırılmamış senaryo VERIFIED olamaz. UI/geçiş kullanıcı kabulü sona bırakılır; stok/finans/yetki hatası çözülmeden sonraki özelliğe geçilmez.
+
+Aşağıdaki “önceki geliştirme dilimi” bölümleri tarihsel kayıttır. İçlerindeki görev sonrası bekleme ve tasarım sırası ifadeleri geçerli son sırayı değiştirmez.
 
 ## Önceki geliştirme dilimi — REL-02: yayın kotası ve tasarım sırası
 
@@ -31,7 +37,7 @@ Sorun: küçük geliştirme/belge commit'leri otomatik deploy oluyor; aynı SHA 
 
 ### Önceki UX sırası — geçersiz
 
-Aşama 3 sonu / 4 başı tasarım sırası kullanıcının son talimatıyla kaldırıldı. Aşağıdaki aktif UX-01 tasarım kapısı geçerlidir.
+Tarihsel karar: önce tasarım kapısı eklenmişti. Bu karar da son kullanıcı talimatıyla kaldırıldı; yukarıdaki işlevler → teknik kontrol → tasarım → kullanıcı kabulü sırası geçerlidir.
 
 ### Yayın düzeni
 
@@ -100,21 +106,21 @@ Kontrol: 2 saf + 7 gerçek PostgreSQL hedefli test PASS (81.05s), typecheck/lint
 - Kabul: FBO/sevk/iptal/iade kuyrukta olmaz; kendi rezervasyonu yetersiz stok diye işaretlenmez; stok engeli eksik adedi gösterir; yanlış barkod hata verir; bütün adetler bitmeden sevk yok; seri Enter tek uçuş sırasında ikinci komut göndermez; sevkiyat otomatik yapılmaz.
 - Kontrol: typecheck/lint/build ve kuyruk hedefli birim kontrolleri; kullanıcı UI kontrolü, sonraki Codex E2E. Çok sekmeli atama/claim ve fiziksel scanner throughput bu işin kapsamı değil.
 
-## Sıradaki işler
+## Görev kabul kataloğu — güncel sıra yukarıdaki tabloda
 
 | ID | Aşama | İş ve somut kabul | Bağımlılık |
 | --- | --- | --- | --- |
-| OPS-02 | 2 | Kalıcı kaydedilmiş filtre/görünüm; durum/model/tarih/SKU filtreleri yeniden açılışta korunur; seçili kayıt sayısı ve işlem uygunluğu açık; workspace sınırı korunur | OPS-01 UI geri bildirimi |
-| FX-01 | 3 | Son yönlendirmeye göre özgün tutar sabit, küçük TL/EUR/RUB karşılığı ve kapatma; TCMB son bülten ve tarih/saat; özgün para birimi korunur; geçmiş işlem kuru ve güncel değerleme ayrı; eksik/güncel olmayan kurda açık uyarı, sessiz uydurma dönüşüm yok | Bu teslimde görüntüleme dönüşümü; tarihsel çevrilmiş rapor çıktısı kapsam dışı |
-| ARCH-01 | 1–3 | `execute.ts` içindeki sipariş/envanter/fatura/finans uygulama servislerini ayır; transaction yöneticisi tek sınır; mevcut bütünlük senaryoları aynı sonucu verir | İzole DB ile hedefli regresyon |
-| CAT-01 | 2 | Ürün/SKU/varyant/barkod oluşturma-düzenleme; tekillik, aktiflik ve geçmiş sipariş fotoğraflarını koruma; stok miktarı ürün kartından yazılamaz | Veri modeli kararı + migration/rol kontrolü |
+| OPS-02 (önceden uygulandı) | 2 | Kalıcı kaydedilmiş filtre/görünüm; durum/model/tarih/SKU filtreleri yeniden açılışta korunur; seçili kayıt sayısı ve işlem uygunluğu açık; workspace sınırı korunur | OPS-01 UI geri bildirimi |
+| FX-01 (önceden uygulandı) | 3 | Son yönlendirmeye göre özgün tutar sabit, küçük TL/EUR/RUB karşılığı ve kapatma; TCMB son bülten ve tarih/saat; özgün para birimi korunur; geçmiş işlem kuru ve güncel değerleme ayrı; eksik/güncel olmayan kurda açık uyarı, sessiz uydurma dönüşüm yok | Bu teslimde görüntüleme dönüşümü; tarihsel çevrilmiş rapor çıktısı kapsam dışı |
+| ARCH-01 (önceden uygulandı) | 1–3 | `execute.ts` içindeki sipariş/envanter/fatura/finans uygulama servislerini ayır; transaction yöneticisi tek sınır; mevcut bütünlük senaryoları aynı sonucu verir | İzole DB ile hedefli regresyon |
+| CAT-01 (önceden uygulandı) | 2 | Ürün/SKU/varyant/barkod oluşturma-düzenleme; tekillik, aktiflik ve geçmiş sipariş fotoğraflarını koruma; stok miktarı ürün kartından yazılamaz | Veri modeli kararı + migration/rol kontrolü |
 | INV-01 | 2 | Referanslı mal kabul ve sayım belgesi; taslak/onay/delta; tekrar onay tek ledger; gerekçe ve kaynak siparişten izlenir | ARCH-01, hedefli DB testleri |
-| INV-02 | 2 | Ayrı iade/QC kuyruğu; ürün satırı, gerekçe, bekleme süresi, kabul/ret ve mali etki birlikte görünür | Mevcut QC kurallarını koruma |
+| INV-02 (önceden uygulandı) | 2 | Ayrı iade/QC kuyruğu; ürün satırı, gerekçe, bekleme süresi, kabul/ret ve mali etki birlikte görünür | Mevcut QC kurallarını koruma |
 | INT-01 | 3 | Adaptörleri gerçek uygulama sınırına bağla; demo provider üzerinden veri alımı/durum/taslak akışı; mock provider ile domain/UI değiştirmeden geçişi kanıtla | ARCH-01; resmi endpoint doğrulaması canlı aşama öncesi |
 | FIN-01 | 3 | Sipariş finans hareket tarihi ve sipariş kohortu ayrı filtre modları; aynı siparişin kayıtları detaydan rapora izlenir; eksik maliyet düzeltmesi kuralları belgelenir | ARCH-01 + mutabakat testleri |
 | DOC-01 | 3 | Fatura hata kuyruğu/toplu taslak ve belge geçmişi; onay/iptal nedenleri; DEMO ibaresi ve unique ilişki korunur | ARCH-01 |
 | SYS-01 | 1/4 | Gerçek kullanıcı login/davet/süre sonu/rol devri; demo rol seçiminden açık ayrım | Üretim kimlik sağlayıcısı seçimi; bu aşamada anahtar istenmez |
-| UX-01 | ŞİMDİ — diğer işlerin kapısı | Tüm mevcut ekranlarda kapsamlı tasarım, hareket ve kullanılabilirlik; kullanıcı açık kabulü | Görsel yön seçimi; diğer işler UX-01 kabulünü bekler |
+| UX-01 | İşlevsel geliştirmelerden sonra | Tüm ekranlarda kapsamlı tasarım, hareket ve kullanılabilirlik; kullanıcı kabulü en sonda | Demo işlevsel bitiş kapısı; 2. yön referansı |
 | REL-02 | 4 / sürekli | Otomatik Git deploy kapalı; test edilmiş toplu paket başına tek manuel yayın | Kota ve canlı/aday commit kontrolü |
 | QA-01 | 4 | Bekleyen Codex toplu regresyonu; uzak CI hatasının gerçek kök nedeni; temiz DB, build ve iki masaüstü boyutu | TEST_HANDOFF.md |
 | REL-01 | 4 | İlgili commit için Vercel READY ve smoke kanıtı; README/rapor aynı commit kapsamını belirtir | QA sonucu ve dağıtım erişimi |

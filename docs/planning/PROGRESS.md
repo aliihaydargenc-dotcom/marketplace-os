@@ -1,5 +1,7 @@
 # Durum ve ilerleme kaydı
 
+**Geçerli son karar:** demo işlevlerini mevcut düzeni koruyarak tamamla → teknik toplu kontrol → kapsamlı tasarım → kullanıcının manuel kabulü. Önceki UX-01 tasarım kapısı ve görev sonrası kullanıcı bekleme kuralları iptal; tarihsel kayıtlar aşağıda korunur. Yeni özellik bu karar kaydıyla tamamlanmış sayılmaz.
+
 21 Ekim 2026. Başlangıç denetimi: `84e5de9275e794e157d75ae8bc96debc2199f838`. Bu belge eski raporu değiştirmez; kod, önceki kanıt ve yeni doğrulama ayrıdır.
 
 ## Başlangıç kapsamı
@@ -150,10 +152,18 @@ UX-01 yol haritasına Aşama 3 sonu / 4 başı olarak eklendi: INV-01, FIN-01 ve
 Resmi kaynaklar (21 Ekim 2026): https://vercel.com/docs/project-configuration/git-configuration — git.deploymentEnabled=false; https://vercel.com/docs/monorepos — canceled ignored builds deployment/concurrent limits. JSON yerelde parse edildi. GitHub config ve Vercel commit bazlı deploy kontrolü teslim sırasında yapılır; bu değişiklik için uygulama testleri/DB/build tekrarlanmadı (runtime değişmedi).
 
 
-### UX-01 — Son talimat: kapsamlı tasarım önce
+### UX-01 — Önceki talimat: kapsamlı tasarım önce (artık geçersiz)
 
 Kullanıcı, kapsamlı tasarım geliştirmesi tamamlanmadan iç ekranlardaki özellik geliştirmesini ve diğer aşamalara geçişi istemediğini açıkça belirtti. Önceki tasarımın Aşama 3 sonuna bırakılması kararı geçersiz. ROADMAP ve AGENTS yeni sıraya geçirildi. Durum IN_PROGRESS: görsel yön araştırması/seçimi. Yeni özellik, migration veya uygulama UI kodu bu karar diliminde eklenmedi.
 
 Önceki canlı audit'te Demo Merkezi, Operasyon Merkezi ve Hazırlama Masası gözlendi: büyük slogan alanında çalışma önizlemesi eksik; demo/kur panelleri asıl iş alanını aşağı itiyor; hazırlama başlığı tekrarlı ve eylemler ilk görünümün altında kalabiliyor. Bunlar belirli viewport gözlemleridir; tam erişilebilirlik/hareket performansı kabulü sayılmaz. Görsel yönler bu gerçek ekranlara bağlanır.
 
 Diğer aşamalar ancak tüm mevcut ekranların kapsamlı tasarımı uygulandıktan, ilgili kontroller yapıldıktan ve kullanıcı açıkça kabul ettikten sonra açılır. Üç görsel taslak veya seçimi tasarımın tamamlandığı anlamına gelmez. Git otomatik deploy kapalı ve toplu yayın politikası korunur.
+
+### Son kullanıcı kararı — işlevsel tamamlanma önceliği
+
+Mevcut düzen işlevsel geliştirmeler tamamlanana kadar korunacak. UX-01 tasarım kapısı kaldırıldı; seçilmiş 2. yön (üst gezinme/geniş çalışma alanı) referans, henüz uygulanmadı. Görev başına kullanıcı testi/geri bildirim beklemek kaldırıldı. İşlevsel tamamlanma ve teknik toplu kontrol ardından kapsamlı tasarım, ardından kullanıcının manuel kabulü yapılacak.
+
+Sıra: INV-01 → INT-01 → FIN-01 → DOC-01 → teknik QA-01 → UX-01 → kullanıcı kabulü/eksik düzeltmeleri → nihai toplu teslim. Gerçek üretim kimliği ve canlı entegrasyonlar demo bitiş kapısına gizlice eklenmez. Güncel ayrıntılar ROADMAP içinde.
+
+Bu dilimde AGENTS, ürün talimatı, ROADMAP, PROGRESS ve TEST_HANDOFF tutarlı hale getirildi. Uygulama kodu, ekran düzeni, DB, migration ve vercel.json değişmedi. Yeni özellik uygulanmadı; mevcut testlerin yeniden geçtiği iddia edilmez. Dokümantasyon değişikliği için deploy yapılmaz. Son belgelenmiş canlı d0f13f0; bu turda canlı yeniden doğrulanmadı.

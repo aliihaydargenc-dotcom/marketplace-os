@@ -68,7 +68,7 @@ Ozon Adapter: sipariş/ürün/stok/fiyat/finans/durum. Paraşüt Adapter: satı�
 
 1440×900 / 1920×1080, profesyonel sol menü, yoğun tablolar, sabit başlık, arama/gelişmiş filtre, sütun seçimi/sıralama, toplu işlem çubuğu, klavye kısayolları, barkod okuyucu girişi, hızlı yan panel, belirgin durum, az tıklama. Mobil uyum korunur. Beyaz/koyu lacivert/mavi/nötr renkler; mor AI görünümü, gereksiz gradyan, aşırı yuvarlak ve boşlukla şişirilmiş kartlar yok.
 
-21 Ekim ek yönlendirme: her geliştirme diliminde bir iş bitirilip kullanıcıya belirli ekran/kontrol adımları sunulacak. Tasarım için açık kaynak repo araştırması ve kaynak/karar kaydı tutulacak. Demo giriş/tanıtım ekranı ile günlük çalışma ekranı ayrılacak; aynı demo kayıtları üzerinden kullanım farkı görülebilecek. Gerçek hesap girişi yapılmadan varmış gibi sunulmayacak.
+Önceki 21 Ekim yönlendirmesi (son kararla yürürlükten kalktı): her geliştirme diliminde kullanıcı kontrolü beklenecekti. Tasarım için açık kaynak repo araştırması ve kaynak/karar kaydı tutulacak. Demo giriş/tanıtım ekranı ile günlük çalışma ekranı ayrılacak; aynı demo kayıtları üzerinden kullanım farkı görülebilecek. Gerçek hesap girişi yapılmadan varmış gibi sunulmayacak.
 
 ## 7. Otomatik kabul senaryoları
 
@@ -100,6 +100,17 @@ Her aşama çalışan kod üretir; bütünlük açığı çözülmeden özellik 
 Özgün fiyat/para birimi korunacak; altında küçük TL karşılığı veya Türkçe bir kontrolle seçilen karşılık gösterilecek. Bu teslim TL varsayılan ikinci tutar, Euro/Ruble/kapalı seçimi uygular; tarihsel sipariş/finans kuru değiştirilmez. TCMB son bülten kullanılacak, tarih/kaynak açık olacak, alınmayan kur alınmış varsayılmayacak. Ozon üzerinden daha gerçekçi katalog/demo isteği kaydedildi; “Tastak” mağaza/ürün bağlantısı belirsiz. Gerçek satışlar izinli mağaza erişimi olmadan üretilmiş veri gibi gösterilmeyecek.
 
 
-## 21 Ekim — Son öncelik değişikliği: tasarım kabulü zorunlu kapı
+## 21 Ekim — Önceki öncelik kararı (yürürlükten kalktı)
 
 Kullanıcının son talimatı önceki tasarım sırasını değiştirir: kapsamlı tasarım şimdi tamamlanacak; bu bitmeden iç özellik geliştirmeleri ve diğer aşamalara geçilmeyecek. Demo Merkezi ile bütün mevcut çalışma ekranları, formlar, detay panelleri, geçişler ve geri bildirim durumları aynı tasarım sistemiyle ele alınacak. Görsel yön seçimi, çalışan uygulama ve kullanıcının açık kabulü birbirinden ayrı adımlardır. Tasarım kabulünden sonra operasyon/finans/fatura geliştirmeleri kaldığı yerden sürer. Otomatik Git deploy kapalı; test edilmiş toplu paket başına tek manuel yayın politikası geçerlidir.
+
+## 21 Ekim — Geçerli son karar: işlevler, tasarım, kullanıcı kabulü
+
+Kullanıcı tüm gerekli geliştirme aşamaları tamamlanana kadar mevcut düzenin değiştirilmemesini istedi. Önceki tasarım-önce kapısı ve her görev sonrası kullanıcı geri bildirimi bekleme şartı kaldırıldı.
+
+1. Mevcut ekran ve gezinme düzenini koruyarak demo işlevlerini tamamla: referanslı mal kabul/sayım, uygulamaya bağlı demo adaptörleri, finans tarih/kohort ve maliyet düzeltme kuralları, fatura hata/toplu taslak/geçmiş akışı. Yeni işlev için gerekli alanlar mevcut düzen içinde eklenir.
+2. İşlevlerin teknik bütünlüğünü geliştirirken doğrula; tamamlanan paket üzerinde toplu kontrol yap. Stok, finans, yetki ve izolasyon hatalarını kullanıcıya devretme. Yazılmış ve doğrulanmış durumlarını ayrı tut.
+3. İşlevsel kabul matrisi kapandıktan sonra bütün ürünü kapsayan tasarım çalışmasını yap. Seçilen 2. yön üst gezinme/geniş çalışma alanıdır; bu seçim tasarımın uygulanmış veya kabul edilmiş olduğu anlamına gelmez.
+4. Kullanıcı, bütünleşik sürümde tasarım/geçiş ve günlük iş akışının manuel kabul testini yapar; bulunan sorunlar düzeltilir.
+
+“Tüm aşamalar” bu belgedeki demo kapsamıdır. Gerçek Ozon/Paraşüt, e-Fatura, üretim kimlik doğrulaması ve diğer üretim işleri ayrı kapsam olarak açık kalır. Otomatik deploy kapalı ve tek toplu manuel yayın politikası korunur. Bu karar kaydı uygulama tamamlanması veya test başarısı değildir.
