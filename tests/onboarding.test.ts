@@ -8,11 +8,7 @@ import {
 describe("contextual demo tour", () => {
   it("keeps a popover within desktop bounds", () => {
     expect(
-      placeTour(
-        { left: 1350, right: 1410, top: 90, bottom: 130 },
-        1440,
-        900,
-      ),
+      placeTour({ left: 1350, right: 1410, top: 90, bottom: 130 }, 1440, 900),
     ).toEqual({ left: 1088, top: 144, placement: "below" });
   });
 
@@ -50,8 +46,6 @@ describe("contextual demo tour", () => {
       "#demo-enter",
     ]);
     expect(workspaceGuide).toHaveLength(3);
-    expect(
-      entryGuide.every((step) => step.description.length < 90),
-    ).toBe(true);
+    expect(entryGuide.every((step) => step.description.length < 90)).toBe(true);
   });
 });

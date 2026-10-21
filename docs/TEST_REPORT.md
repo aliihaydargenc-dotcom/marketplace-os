@@ -130,3 +130,13 @@ Toplu koşu komutu: `CATALOG_DB_TEST=1 ORDER_VIEWS_DB_TEST=1 INVENTORY_DB_TEST=1
 Gmail salt okunur gözleminde Quality başarısızlık mailleri doğrulandı. Son uzak run 39575718102 adım çalıştırmamış, log 404; kök neden bilinmiyor. Workflow YAML parse edilerek yalnız workflow_dispatch ve bütün kalite/yeni DB adımları korunduğu kontrol edildi. Uzak CI PASS denmez; tekrar run veya e-posta üreten otomasyon başlatılmadı.
 
 Kapsam dışı/henüz doğrulanmayan: yeni tarayıcı E2E, gerçek scanner, bütünleşik tasarım ve kullanıcının manuel kabulü, Excel/PDF dosyasının elle açılıp gözden geçirilmesi, Vercel READY/yeni canlı smoke. Yeni kod GitHub'da saklansa da yayında değildir.
+
+
+## 21 Ekim 2026 — Public depo / ilk izole teknik kabul
+
+- Kaynak commit `3b975ee`; public GitHub klonu Vercel Sandbox'ta, Node 24.22.1 ile `npm ci` PASS.
+- İlk `npm run typecheck` iki nullable rehber index hatasıyla, `npm run lint` Ozon bağlantısının JSX apostrof hatasıyla, `npm run format:check` 11 dosyanın biçimi nedeniyle FAIL. Düzeltilmiş kaynakta **typecheck / lint / format:check PASS**.
+- `npm run build` **PASS** (Next.js 16.4.2).
+- Canlıdan izole Neon kabul dalı: `acceptance-marketplace-20261021` (güncel geliştirme dalından kopyalandı). `npm run db:migrate` **PASS**, migration `0001`–`0007` çalıştı. Canlı `main` DB'sine migration veya reset yapılmadı.
+- İzole dalın `DATABASE_URL` bağlantısıyla `npm test`: **56 PASS**, **24 SKIP** (dört flag-gated DB suite). İlk DB'siz koşuda `DATABASE_URL yapılandırılmamış` hatası vardı; izole DB ile tekrar koşu PASS.
+- Playwright E2E ve 24 hedefli DB senaryosu **halen beklemede**. Bunlar geçmeden bütün ürün doğrulanmış sayılmaz. Vercel production güncellenmedi; kullanıcı kabulü bekliyor.

@@ -33,12 +33,7 @@ export function OzonMarketPanel({
     : ozonMarketObservations.filter(
         (product) =>
           (!onlyPriced || product.otherBankPriceRub !== null) &&
-          [
-            product.title,
-            product.details,
-            product.id,
-            product.category,
-          ]
+          [product.title, product.details, product.id, product.category]
             .join(" ")
             .toLocaleLowerCase("tr")
             .includes(match),
@@ -124,7 +119,7 @@ export function OzonMarketPanel({
                     rel="noopener noreferrer"
                     target="_blank"
                   >
-                    Ozon'da aç <ArrowUpRight size={14} />
+                    {"Ozon'da aç"} <ArrowUpRight size={14} />
                   </a>
                 </td>
               </tr>

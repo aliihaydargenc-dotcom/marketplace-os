@@ -294,7 +294,9 @@ export function ProductSource({ product }: { product: Product }) {
       >
         Ozon ürün referansı ↗
       </a>
-      <span>Kaynak kontrolü: {source.reviewedAt} · işlenen stok ve barkod örnektir</span>
+      <span>
+        Kaynak kontrolü: {source.reviewedAt} · işlenen stok ve barkod örnektir
+      </span>
       {(() => {
         const observed = findOzonObservation(source.externalId ?? "");
         return observed?.otherBankPriceRub == null ? (
@@ -306,8 +308,8 @@ export function ProductSource({ product }: { product: Product }) {
               style: "currency",
               currency: "RUB",
               maximumFractionDigits: 0,
-            }).format(observed.otherBankPriceRub)}
-            {" "}· diğer bankalar
+            }).format(observed.otherBankPriceRub)}{" "}
+            · diğer bankalar
           </strong>
         );
       })()}

@@ -699,7 +699,10 @@ function WorkspaceBody({
                   </article>
                 ))}
               </div>
-              <OzonMarketPanel compact onViewAll={() => navigate("inventory")} />
+              <OzonMarketPanel
+                compact
+                onViewAll={() => navigate("inventory")}
+              />
               <div className="dashboard-grid">
                 <section className="panel sales-chart">
                   <div className="panel-heading">
@@ -988,8 +991,9 @@ function WorkspaceBody({
                 <details className="finance-note">
                   <summary>Tarih modları</summary>
                   <p>
-                    UTC günü kullanılır. Kohort: seçili tarihte açılan siparişlerin
-                    tüm hareketleri. Hareket: seçili tarihteki finans kayıtları.
+                    UTC günü kullanılır. Kohort: seçili tarihte açılan
+                    siparişlerin tüm hareketleri. Hareket: seçili tarihteki
+                    finans kayıtları.
                   </p>
                 </details>
               </div>
@@ -1044,12 +1048,12 @@ function WorkspaceBody({
               <details className="finance-note">
                 <summary>Hesaplama ve kur yöntemi</summary>
                 <p>
-                  Katkı = net satış − komisyon − lojistik − bilinen ürün maliyeti.
-                  Tahsilat veya resmi muhasebe kârı değildir. İadede
+                  Katkı = net satış − komisyon − lojistik − bilinen ürün
+                  maliyeti. Tahsilat veya resmi muhasebe kârı değildir. İadede
                   komisyon/lojistik otomatik geri alınmaz. TRY ve RUB toplanmaz.
                   Tablodaki işlem kuru siparişe kayıtlı demo kurudur. Küçük ≈
-                  karşılıkları TCMB son bülteninden güncel değerlemedir. Excel/PDF
-                  özgün para birimindedir; karşılıklar satır bazında
+                  karşılıkları TCMB son bülteninden güncel değerlemedir.
+                  Excel/PDF özgün para birimindedir; karşılıklar satır bazında
                   yuvarlandığından toplamın dönüşümünden küçük farklar olabilir.
                 </p>
               </details>
@@ -2141,8 +2145,8 @@ function SettingsView({
         <section className="panel settings-panel">
           <h2>Demo alanını sıfırla</h2>
           <p>
-            Yalnızca bu çalışma alanı başlangıç verilerine döner.
-            Diğer oturumlar etkilenmez.
+            Yalnızca bu çalışma alanı başlangıç verilerine döner. Diğer
+            oturumlar etkilenmez.
           </p>
           <form
             className="form"
@@ -2250,7 +2254,8 @@ function SettingsView({
         <details className="workspace-disclosure">
           <summary>Demo hesapları</summary>
           <p>
-            Üç yerleşik demo rolü vardır. Gerçek kullanıcı doğrulaması henüz yok.
+            Üç yerleşik demo rolü vardır. Gerçek kullanıcı doğrulaması henüz
+            yok.
           </p>
         </details>
       </section>

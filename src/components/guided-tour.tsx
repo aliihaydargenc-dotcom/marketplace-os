@@ -65,8 +65,7 @@ export function GuidedTour({
     if (!target) {
       const frame = requestAnimationFrame(() => {
         if (index === steps.length - 1) finish();
-        else
-          setIndex((current) => (current === null ? null : current + 1));
+        else setIndex((current) => (current === null ? null : current + 1));
       });
       return () => cancelAnimationFrame(frame);
     }
@@ -240,13 +239,9 @@ export function GuidedTour({
       >
         <div className="onboarding-head">
           <span>
-            {index + 1} / {steps.length}
+            {(index ?? 0) + 1} / {steps.length}
           </span>
-          <button
-            type="button"
-            onClick={finish}
-            aria-label="Rehberi kapat"
-          >
+          <button type="button" onClick={finish} aria-label="Rehberi kapat">
             <X size={16} />
           </button>
         </div>
@@ -257,7 +252,7 @@ export function GuidedTour({
             Geç
           </button>
           <div>
-            {index > 0 && (
+            {index !== null && index > 0 && (
               <button type="button" onClick={retreat}>
                 <ArrowLeft size={15} /> Geri
               </button>

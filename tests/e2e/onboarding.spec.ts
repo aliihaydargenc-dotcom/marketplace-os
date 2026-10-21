@@ -108,12 +108,18 @@ test("Ozon real public offers keep provenance separate from seeded orders", asyn
   const full = page.getByRole("region", {
     name: "Gerçek Ozon ürün ve fiyat gözlemleri",
   });
-  await full.getByRole("searchbox", { name: "Ozon ürünlerinde ara" }).fill("3867869659");
-  await expect(full.getByText("Modalin HARMONIA pamuklu havlu seti")).toBeVisible();
+  await full
+    .getByRole("searchbox", { name: "Ozon ürünlerinde ara" })
+    .fill("3867869659");
+  await expect(
+    full.getByText("Modalin HARMONIA pamuklu havlu seti"),
+  ).toBeVisible();
   await expect(full.getByRole("link", { name: "Ozon'da aç" })).toHaveAttribute(
     "href",
     /ozon\.ru\/product\/.*3867869659/,
   );
-  await full.getByRole("searchbox", { name: "Ozon ürünlerinde ara" }).fill("1416873033");
+  await full
+    .getByRole("searchbox", { name: "Ozon ürünlerinde ara" })
+    .fill("1416873033");
   await expect(full.getByText("Doğrulanamadı")).toBeVisible();
 });
