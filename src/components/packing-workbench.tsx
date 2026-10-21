@@ -1,7 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { ArrowRight, Boxes, RefreshCw, ScanBarcode, Search, Truck } from "lucide-react";
+import {
+  ArrowRight,
+  Boxes,
+  RefreshCw,
+  ScanBarcode,
+  Search,
+  Truck,
+} from "lucide-react";
 import type { Order, WorkspaceSnapshot } from "@/domain/types";
 import { statusLabels } from "@/domain/types";
 import type { Command } from "@/domain/orders/commands";
@@ -213,8 +220,12 @@ function PackingStation({
   const scanQueue = useRef<string[]>([]);
   const activeScan = useRef<string | null>(null);
   const disposed = useRef(false);
-  const predictedTotal = useRef(order.lines.reduce((sum, line) => sum + line.packed, 0));
-  const confirmedByProduct = useRef(new Map(order.lines.map((line) => [line.product_id, line.packed])));
+  const predictedTotal = useRef(
+    order.lines.reduce((sum, line) => sum + line.packed, 0),
+  );
+  const confirmedByProduct = useRef(
+    new Map(order.lines.map((line) => [line.product_id, line.packed])),
+  );
   const [waiting, setWaiting] = useState(0);
   const locked = busy || pending;
   const scannable = ["RESERVED", "PACKING"].includes(order.status);
@@ -229,13 +240,25 @@ function PackingStation({
 
   useEffect(() => {
     if (scanRunning.current || scanQueue.current.length) return;
-    predictedTotal.current = order.lines.reduce((sum, line) => sum + line.packed, 0);
-    confirmedByProduct.current = new Map(order.lines.map((line) => [line.product_id, line.packed]));
+    predictedTotal.current = order.lines.reduce(
+      (sum, line) => sum + line.packed,
+      0,
+    );
+    confirmedByProduct.current = new Map(
+      order.lines.map((line) => [line.product_id, line.packed]),
+    );
   }, [order.lines]);
 
   useEffect(() => {
     const focusScanner = (event: KeyboardEvent) => {
-      if (event.key !== "F8" || event.repeat || event.altKey || event.ctrlKey || event.metaKey) return;
+      if (
+        event.key !== "F8" ||
+        event.repeat ||
+        event.altKey ||
+        event.ctrlKey ||
+        event.metaKey
+      )
+        return;
       if (document.querySelector('[role="dialog"][aria-modal="true"]')) return;
       if (!scannable) return;
       event.preventDefault();
@@ -277,7 +300,8 @@ function PackingStation({
         const product = data.products.find((p) => p.barcode === next);
         if (product) {
           confirmedByProduct.current.set(
-            product.id, (confirmedByProduct.current.get(product.id) ?? 0) + 1,
+            product.id,
+            (confirmedByProduct.current.get(product.id) ?? 0) + 1,
           );
         }
         activeScan.current = null;
@@ -293,8 +317,10 @@ function PackingStation({
       if (!disposed.current) {
         setError(
           (e instanceof Error ? e.message : "Doğrulama tamamlanamadı") +
-          (discarded ? " · " + discarded + " bekleyen okutma iptal edildi." : "") +
-          " Otomatik tekrar yapılmadı; siparişi yenileyip kontrol edin.",
+            (discarded
+              ? " · " + discarded + " bekleyen okutma iptal edildi."
+              : "") +
+            " Otomatik tekrar yapılmadı; siparişi yenileyip kontrol edin.",
         );
       }
     } finally {
@@ -323,7 +349,8 @@ function PackingStation({
       inputRef.current?.select();
       return;
     }
-    const queued = scanQueue.current.filter((item) => item === code).length +
+    const queued =
+      scanQueue.current.filter((item) => item === code).length +
       (activeScan.current === code ? 1 : 0);
     const confirmed = confirmedByProduct.current.get(product.id) ?? line.packed;
     if (confirmed + queued >= line.quantity) {
@@ -332,7 +359,9 @@ function PackingStation({
       return;
     }
     if (scanQueue.current.length >= 30) {
-      setError("Okutma kuyruğu dolu. Önce bekleyen kodların doğrulanmasını bekleyin.");
+      setError(
+        "Okutma kuyruğu dolu. Önce bekleyen kodların doğrulanmasını bekleyin.",
+      );
       return;
     }
     setError("");
@@ -370,7 +399,11 @@ function PackingStation({
           <p>{order.customer}</p>
         </div>
         <div className="packing-station-tools">
-          <button type="button" disabled={locked} onClick={() => void onRefresh()}>
+          <button
+            type="button"
+            disabled={locked}
+            onClick={() => void onRefresh()}
+          >
             <RefreshCw size={15} /> Yenile
           </button>
           <button type="button" disabled={locked} onClick={onOpen}>
@@ -477,7 +510,7 @@ function PackingStation({
             <button
               type="submit"
               className="primary"
-              disabled={!barcode.trim() || (locked && !scanRunning.current)}
+              disabled={!barcode.trim() || (locked && !pending)}
             >
               Doğrula
             </button>
@@ -487,7 +520,11 @@ function PackingStation({
             işlenir, başarısız işlem otomatik tekrarlanmaz.
           </small>
           {(pending || waiting > 0) && (
-            <div className="packing-scan-queue" role="status" aria-live="polite">
+            <div
+              className="packing-scan-queue"
+              role="status"
+              aria-live="polite"
+            >
               Barkod işleniyor · {waiting} kod sırada
             </div>
           )}

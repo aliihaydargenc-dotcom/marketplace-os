@@ -1533,7 +1533,11 @@ function WorkspaceBody({
                 </div>
                 {order.fulfillment === "FBS" && (
                   <>
-                    <div id="order360-operations" tabIndex={-1} className="flow-progress">
+                    <div
+                      id="order360-operations"
+                      tabIndex={-1}
+                      className="flow-progress"
+                    >
                       <span>Hazırlama doğrulaması</span>
                       <strong>
                         {progress} / {totalUnits}
@@ -1796,7 +1800,9 @@ function WorkspaceBody({
                     run={run}
                   />
                 )}
-                <h3 id="order360-trace" tabIndex={-1}>Bağlı kayıtlar ve işlem geçmişi</h3>
+                <h3 id="order360-trace" tabIndex={-1}>
+                  Bağlı kayıtlar ve işlem geçmişi
+                </h3>
                 <Order360Trace order={order} data={data} />
               </div>
             )}

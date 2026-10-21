@@ -88,17 +88,34 @@ describe("PostgreSQL domain invariants", () => {
     await run({ action: "RESERVE", orderId: id });
     const barcode = (await product("p2")).barcode;
     const attempts = await Promise.allSettled([
-      run({ action: "SCAN", orderId: id, barcode, expectedPackedTotal: 0 }, admin),
-      run({ action: "SCAN", orderId: id, barcode, expectedPackedTotal: 0 }, warehouse),
+      run(
+        { action: "SCAN", orderId: id, barcode, expectedPackedTotal: 0 },
+        admin,
+      ),
+      run(
+        { action: "SCAN", orderId: id, barcode, expectedPackedTotal: 0 },
+        warehouse,
+      ),
     ]);
-    expect(attempts.filter((result) => result.status === "fulfilled")).toHaveLength(1);
-    expect(attempts.filter((result) => result.status === "rejected")).toHaveLength(1);
+    expect(
+      attempts.filter((result) => result.status === "fulfilled"),
+    ).toHaveLength(1);
+    expect(
+      attempts.filter((result) => result.status === "rejected"),
+    ).toHaveLength(1);
     const partial = await current(id);
     expect(partial.lines[0].packed).toBe(1);
     expect(partial.status).toBe("PACKING");
-    await run({ action: "SCAN", orderId: id, barcode, expectedPackedTotal: 1 }, warehouse);
+    await run(
+      { action: "SCAN", orderId: id, barcode, expectedPackedTotal: 1 },
+      warehouse,
+    );
     expect((await current(id)).status).toBe("READY");
-    await run({ action: "CANCEL", orderId: id, reason: "İki sekme testi tamamlandı" });
+    await run({
+      action: "CANCEL",
+      orderId: id,
+      reason: "İki sekme testi tamamlandı",
+    });
   });
 
   it("demo seed has 78 products, 263 orders and no negative availability", async () => {

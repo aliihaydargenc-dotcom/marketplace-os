@@ -240,3 +240,9 @@ Pazar verisi dashboard'da KPI kartlarından sonra yerleştirildi; mevcut operasy
 Durum: IMPLEMENTED / UNVERIFIED, dal feature/ux03-order-360 (main'e alınmadı). Mevcut sipariş penceresine süreç şeridi, role göre kayıt/görev uyarıları, bölüm içi odak geçişleri ve filtrelenebilir kronolojik stok/finans/belge/iade/denetim/demo sağlayıcı zinciri eklendi. Birbirini tekrarlayan eski işlem listeleri kaldırıldı. FBO işlem düğmesi gizlendi; canlı Ozon/Paraşüt veya e-Fatura yok. SQL, servis komutları ve yetki kuralları değiştirilmedi.
 
 tests/order-360.test.ts içinde beş hedefli test YAZILDI, ÇALIŞTIRILMADI. Projenin tam bağımlılıklarıyla yerel checkout kurulamadığından typecheck/lint/format/build/DB/E2E sonucu verilmez. GitHub commit ve diff doğrulandı. Otomatik deploy kapalı; yeni production yayını yok. Zorunlu tekrar kontroller ROADMAP/TEST_HANDOFF içindedir.
+
+### UX03-3 — İzole kod doğrulaması
+
+Vercel geçici sandbox ortamında public repo `1fe1c983` checkout'u + biçimlendirilmiş ve lint düzeltilmiş dokuz dosya: `npm ci` PASS; `npm run typecheck` PASS; `npm run lint` PASS; `npm run format:check` PASS; `npx vitest run tests/packing.test.ts tests/order-360.test.ts` **8/8 PASS** (3 + 5); `npm run build` PASS, Next.js 16.4.2. Güncellenen dokuz dosyanın Git blob SHA'ları sandbox dosyalarıyla bire bir eşleşti. Bu QA sonucu çalışma dalındaki biçimlendirme commit'i için geçerlidir.
+
+**Açık:** PostgreSQL transaction regresyonu (yeni eşzamanlı iki sekme testi yalnız yazıldı), tam DB/E2E paketi, gerçek barkod tarayıcısı, operatör atama/lease, 1000+ kayıt yükü ve kullanıcının UI/geçiş kabulü. Canlı Ozon bağlantısı veya gerçek kullanıcı ataması yok; üretim yayını yok.

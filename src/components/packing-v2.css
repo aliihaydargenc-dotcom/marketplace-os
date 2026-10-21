@@ -1,18 +1,51 @@
 /* UX03-3: scanner terminal usability; existing horizontal workspace shell retained. */
-.packing-station-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
-.packing-station-tools button { display: inline-flex; align-items: center; gap: 6px; }
-.packing-scanner:focus-within { border-color: #5d91d5; box-shadow: 0 0 0 2px rgba(34,104,204,.12); }
+.packing-station-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+}
+.packing-station-tools button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.packing-scanner:focus-within {
+  border-color: #5d91d5;
+  box-shadow: 0 0 0 2px rgba(34, 104, 204, 0.12);
+}
 .packing-scan-queue {
-  margin-top: 10px; padding: 9px 12px; border: 1px solid #b6cae4;
-  background: #eaf2ff; color: #25578b; border-radius: 4px;
-  font-size: 12px; font-variant-numeric: tabular-nums;
+  margin-top: 10px;
+  padding: 9px 12px;
+  border: 1px solid #b6cae4;
+  background: #eaf2ff;
+  color: #25578b;
+  border-radius: 4px;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
 }
-.packing-station > .error { border-left: 3px solid #b45336; padding: 10px 12px; background: #fff5ef; font-size: 12px; }
-@media(max-width:650px) {
-  .packing-station-tools { width: 100%; justify-content: flex-start; }
-  .packing-scanner > div { flex-wrap: wrap; }
-  .packing-scanner input { width: 100%; }
+.packing-station > .error {
+  border-left: 3px solid #b45336;
+  padding: 10px 12px;
+  background: #fff5ef;
+  font-size: 12px;
 }
-@media(prefers-reduced-motion:reduce) {
-  .packing-scanner, .packing-scan-queue { animation: none; transition: none; }
+@media (max-width: 650px) {
+  .packing-station-tools {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .packing-scanner > div {
+    flex-wrap: wrap;
+  }
+  .packing-scanner input {
+    width: 100%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .packing-scanner,
+  .packing-scan-queue {
+    animation: none;
+    transition: none;
+  }
 }

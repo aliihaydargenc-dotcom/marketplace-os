@@ -68,9 +68,12 @@ export async function applyOrder(
     // transaction to reject concurrent stale scans before any quantity changes.
     if (
       c.expectedPackedTotal !== undefined &&
-      o.lines.reduce((sum, line) => sum + line.packed, 0) !== c.expectedPackedTotal
+      o.lines.reduce((sum, line) => sum + line.packed, 0) !==
+        c.expectedPackedTotal
     ) {
-      throw new DomainError("Sipariş başka bir ekranda değişti; güncelleyip tekrar kontrol edin.");
+      throw new DomainError(
+        "Sipariş başka bir ekranda değişti; güncelleyip tekrar kontrol edin.",
+      );
     }
     if (!["RESERVED", "PACKING"].includes(o.status))
       throw new DomainError("Önce stok rezervasyonu yapın");
