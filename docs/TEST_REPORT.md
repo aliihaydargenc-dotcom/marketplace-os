@@ -1,5 +1,11 @@
 # Doğrulama raporu
 
+## 21 Ekim 2026 — CAT-01
+
+`CATALOG_DB_TEST=1 npx vitest run tests/catalog.test.ts tests/catalog.db.test.ts`: **9/9 PASS**, 81.05s. 2 saf: doğrulama/stock-source enjeksiyon reddi, altı kaynak manifest sınırı. 7 gerçek PostgreSQL: sıfır stok/tekrar güvenli create, SKU-barkod ve workspace tekilliği, düzenleme/sürüm/başka alan reddi, tarihsel fiyat-maliyet ve pasif ürünün eski sipariş sevki, depo yetkisi/legacy sürüm artışı, import idempotency + rezervasyon-barkod-sevkiyat-finans, yeni seed/reset generation. 0003 migration önce izole `br-royal-fog-bael0zdv` dalında uygulandı; test iki UUID alanını oluşturup temizledi. Typecheck/lint (0 uyarı)/format/build PASS. Kapsamlı eski domain/E2E çalıştırılmadı; seed sayısı beklentileri güncellendi. Canlı migration/yayın ayrıca kaydedilir.
+
+---
+
 ## 21 Ekim 2026 — FX-01 gösterim karşılığı
 
 `npx vitest run tests/exchange-rates.test.ts`: **5/5 PASS** (son koşu 300ms toplam, 29ms test). Kur birimi normalizasyonu; kaynak/tarih meta; RUB/TRY/EUR çapraz dönüşüm; pozitif/negatif yarım yuvarlama; tamsayı sınırı; eksik/bozuk/DTD/tekrarlı/ileri/eski bülten reddi; sabit kaynak fetch ve HTTP/HTML başarısızlığı. Gerçek HTTP 200 TCMB XML gövdesi parserdan geçti (bülten 20.10.2026). Önceki kapsamlı domain/DB/E2E paketi bu görevde tekrarlanmadı; kur testleri gerçek satış veya muhasebe kabulü değildir. Build ilk denemede eski Turbopack persistence dizininden hata verdi; üretilmiş .next kenara taşınıp temiz build geçti. Son kaynak için typecheck/lint (0 uyarı)/format/production build PASS. Yayın/canlı gözlem ayrıca kaydedilecek.
@@ -92,3 +98,5 @@ FBS yerel demo akışı doğrulanmıştır. Gerçek Ozon/Paraşüt, FBO operasyo
 
 
 FX-01 canlı ek kayıt: `edb55b6` production READY. Siparişler ekranında TCMB tarih/kaynak ve özgün RUB tutar altında TL → EUR → kapalı → TL geçişi doğrulandı; sipariş/stok/finans mutasyonu yapılmadı. [Kapsam ve ekran](research/FX01_SMOKE.md). Kullanıcı kabulü bekliyor.
+
+CAT-01 migration ek kaydı: İzole dalda test edildikten sonra `0003_catalog.sql` canlı demo `marketplace` DB / `br-still-grass-bab2y1vf` üzerinde uygulandı. active=true, catalog_version=0, source={} varsayılanları schema sorgusuyla doğrulandı. Eski ürün/stock/order tutarları güncellenmedi; paket mevcut alanlara ayrıca UI üzerinden eklenecek.

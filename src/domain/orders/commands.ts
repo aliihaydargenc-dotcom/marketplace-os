@@ -1,7 +1,15 @@
 import { z } from "zod";
+import {
+  createProductSchema,
+  updateProductSchema,
+  importOzonDemoSchema,
+} from "@/domain/catalog/commands";
 const id = z.string().min(1).max(100);
 const reason = z.string().trim().min(3).max(300);
 export const commandSchema = z.discriminatedUnion("action", [
+  createProductSchema,
+  updateProductSchema,
+  importOzonDemoSchema,
   z.object({
     action: z.literal("CREATE_ORDER"),
     customer: z.string().trim().min(2).max(100),

@@ -8,7 +8,15 @@ BACKLOG → IN_PROGRESS → IMPLEMENTED → VERIFIED. BLOCKED: somut engel ve ye
 
 Her görev: sorun, dosya sınırı, bağımlılık, kabul, doğrulama, kalan risk. Kullanıcının manuel UI kontrolü ve sonraki Codex regresyonu ayrı kaydedilir. Kritik veri bütünlüğü hatası diğer işleri bloke eder. Aşağıdaki işler orijinal dört aşamanın eksiklerini tamamlar; yeni aşama adı altında kapsam saklanmaz.
 
-## Aktif geliştirme dilimi — Aşama 3
+## Aktif geliştirme dilimi — Aşama 2
+
+### CAT-01 — Ürün kartı ve Ozon referanslı demo paketi
+
+Kullanıcı operasyonel eksiklere ve Ozon.ru kaynaklı gerçekçi demoya öncelik verdi. Bu teslim tek ürün-katalog işidir: yeni SKU, kullanılmamış kimlik düzenleme, fiyat/maliyet/eşik/aktiflik, geçmişte kullanılan kimlik kilidi, kaynak görünürlüğü. Ayrı catalog servis/bileşen; mevcut execute transaction/RBAC/idempotency sınırı. 0003 additive migration. Kaynak ve kabul `../research/CAT01_DESIGN.md`; altı kamu ürünü, altı ledger açılışı ve üç NEW FBS demo siparişten oluşan tekrar güvenli paket. Yeni seed 78 ürün / 263 sipariş; eski oturumda reset olmadan düğmeyle eklenebilir. Stok karttan yazılmaz, tarihsel tutarlar değişmez. Variantlar ayrı SKU; aile matrisi ve çoklu barkod yok.
+
+Kontrol: 2 saf + 7 gerçek PostgreSQL hedefli test PASS (81.05s), typecheck/lint/format/build PASS. Test ve migration önce izole `dev-ops02-validation` dalında; canlı migration/yayın ayrıca doğrulanır. UI ve toplu regresyon sonraki kabul. Mal kabul ve QC ayrı sonraki işler; bu görevden sonra kullanıcıya Stok & Depo ekranını gösterip bekle.
+
+## Önceki geliştirme dilimi — Aşama 3
 
 ### FX-01 — Özgün tutar altında döviz karşılığı
 

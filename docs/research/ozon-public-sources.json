@@ -1,0 +1,66 @@
+{
+  "reviewedAt": "2026-10-21",
+  "task": "CAT-01",
+  "method": "Public search plus opening each Ozon product page in search reader; no private API, login or bot bypass",
+  "imagesCopied": false,
+  "descriptionsCopied": false,
+  "operationalPricesCostsBarcodesStockOrders": "DEMO, not live synchronized values",
+  "sources": [
+    {
+      "ozonProductId": "3867869659",
+      "nameReference": "Modalin HARMONIA",
+      "observedFacts": "50×90 cm, 2 adet, pamuk, koyu yeşil",
+      "url": "https://www.ozon.ru/product/polotentse-mahrovoe-2-sht-harmonia-nabor-mahrovyh-polotenets-dlya-ruk-2h-50h90-sm-modalin-3867869659/",
+      "observedConditionalPrice": {
+        "bankConditionRub": 874,
+        "otherBanksRub": 971
+      },
+      "priceObservationIsNotCurrentGuarantee": true
+    },
+    {
+      "ozonProductId": "1847089555",
+      "nameReference": "BROOKLIN",
+      "observedFacts": "50×90 cm, 2 adet, pamuk, latte",
+      "url": "https://www.ozon.ru/product/nabor-mahrovyh-polotenets-brooklin-50h90-2-shtuki-1847089555/",
+      "observedConditionalPrice": {
+        "bankConditionRub": 3393,
+        "otherBanksRub": 3711
+      },
+      "priceObservationIsNotCurrentGuarantee": true
+    },
+    {
+      "ozonProductId": "3028526150",
+      "nameReference": "Hobby Home Collection",
+      "observedFacts": "50×90 cm, pamuk, kırmızı",
+      "url": "https://www.ozon.ru/product/hobby-home-collection-polotentse-dlya-litsa-ruk-terma-hlopok-50x90-sm-krasnyy-3028526150/",
+      "observedConditionalPrice": null,
+      "priceObservationIsNotCurrentGuarantee": true
+    },
+    {
+      "ozonProductId": "1322337545",
+      "nameReference": "Sebze saklama kutusu",
+      "observedFacts": "10,5 litre, üçlü, bej, plastik",
+      "url": "https://www.ozon.ru/product/3-sht-konteyner-dlya-ovoshchey-pod-rakovinu-10-5l-3sht-bezhevyy-yashchik-dlya-hraneniya-1322337545/",
+      "observedConditionalPrice": null,
+      "priceObservationIsNotCurrentGuarantee": true
+    },
+    {
+      "ozonProductId": "165088562",
+      "nameReference": "Saklama kutusu",
+      "observedFacts": "6,65 litre, kapaklı, plastik, 29×19×18 cm",
+      "url": "https://www.ozon.ru/product/konteyner-dlya-hraneniya-veshchey-plastikovyy-6-65-l-s-kryshkoy-vstavkoy-prozrachnyy-korobka-165088562/",
+      "observedConditionalPrice": null,
+      "priceObservationIsNotCurrentGuarantee": true
+    },
+    {
+      "ozonProductId": "1416873033",
+      "nameReference": "Buzdolabı düzenleyicisi",
+      "observedFacts": "20×30×5 cm, kapaklı, şeffaf",
+      "url": "https://www.ozon.ru/product/organayzer-dlya-holodilnika-20h30h5-sm-s-kryshkoy-1416873033/",
+      "observedConditionalPrice": {
+        "otherBanksRub": 912
+      },
+      "priceObservationIsNotCurrentGuarantee": true
+    }
+  ]
+}

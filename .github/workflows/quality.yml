@@ -41,6 +41,9 @@ jobs:
       - run: npx vitest run tests/order-views.db.test.ts
         env:
           ORDER_VIEWS_DB_TEST: '1'
+      - run: npx vitest run tests/catalog.db.test.ts
+        env:
+          CATALOG_DB_TEST: '1'
       - run: npm run build
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e

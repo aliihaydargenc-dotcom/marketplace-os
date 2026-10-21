@@ -23,6 +23,17 @@ PARTIAL / REFERENCE_ONLY tabloda kapsam açıklamasıdır; görev akışı ROADM
 
 ## 21 Ekim çalışma dilimi
 
+### CAT-01 — Güncel teslim
+
+Aşama 2 operasyon ürünü/katalog kartı geliştirildi. CREATE_PRODUCT, UPDATE_CATALOG, IMPORT_OZON_DEMO yalnız yönetici; workspace lock/generation/idempotency/audit korunur. Ayrı `server/catalog.ts` ve `catalog-tools.tsx`; 0003 eklemeli migration: active/catalog_version/source. Yeni ürün sıfır stoklu; SKU case-insensitive ve barkod tekilliği sunucuda. Kullanılmış kimlik kilitli; yeni fiyat/maliyet eski order_lines fotoğrafını değiştirmez. Pasif ürün yeni siparişe alınmaz, mevcut hazırlama/sevki devam eder. Sürüm çakışması eski formun ezmesini engeller.
+
+Ozon'un altı kamu ürün sayfasından kısa ad/ölçü/malzeme referansı alındı, ürün kartına kaynak/tarih kondu. Fotoğraf/yorum/açıklama kopyalanmadı. Operasyonel fiyat/maliyet/barkod/komisyon/lojistik/stok/siparişler DEMO; gerçek satış çekilmedi. Paket altı ürün, 12'şer kurgusal ledger açılışı, üç iki satırlı NEW FBS sipariş. Yeni seed 78/263; mevcut alan yönetici düğmesiyle reset yapmadan alır. Tekrar aynı paketi farklı istek anahtarıyla ekleme ikinci stok/ürün/sipariş üretmez. [Araştırma ve sınırlar](../research/CAT01_DESIGN.md), [Ozon kaynakları](../research/ozon-public-sources.json).
+
+İzole test dalında 0003 migration ve 2 saf + 7 PostgreSQL test PASS, toplam 81.05s. Oluşturulan iki UUID test alanı temizlendi. Test eski/başka workspace koruması, depo rol reddi, fiyat/maliyet fotoğrafı, pasif ürünün mevcut sipariş sevki, importtan rezervasyon-barkod-sevkiyat-finans ve reset/generation kontrolünü kapsadı. Typecheck/lint (0 uyarı)/format/build PASS. Uzak CI/full eski domain/E2E koşulmadı; seed sayı beklentileri 78/263'e uyarlandı. Canlı migration/yayın/kısa ekran gözlemi ayrıca kaydedilir.
+
+CAT-01 kapsamı IMPLEMENTED; kullanıcı kabulü bekliyor. Ürün aile matrisi, çoklu barkod, kimlik snapshot düzeltmesi, gerçek Ozon API ve mal kabul/QC ekranı sonraki kapsam. Bunlar tamamlandı sayılmadı.
+
+
 ### FX-01 — Güncel teslim: özgün tutar altında karşılık
 
 Kullanıcının para birimi geri bildirimiyle Aşama 3'te tek görev geliştirildi. Önceki “ana tutar TL” isteği bu görev için revize: kaynak RUB/TRY sabit; altında küçük ≈ TL (varsayılan), Euro/Ruble/kapalı seçimi. Kaynak kayıt filtresi dönüşümden ayrı adlandırıldı. Gösterim kontrolü yenilemede TL varsayılanına döner; sipariş görünümü veya mağaza ayarına yazılmaz.
@@ -98,3 +109,5 @@ Canlı yeni sürüm READY kontrolü ve kullanıcı kabulü ayrı açık iştir. 
 - UI local state'i sayfa yenilenmesinde sıfırlanır; sipariş/rezervasyon/okutma kayıtları sunucuda kalır. Kayıtlı görünüm OPS-02'dir.
 
 FX-01 canlı ek kayıt: `edb55b6` production READY. Siparişler ekranında TCMB tarih/kaynak ve özgün RUB tutar altında TL → EUR → kapalı → TL geçişi doğrulandı; sipariş/stok/finans mutasyonu yapılmadı. [Kapsam ve ekran](../research/FX01_SMOKE.md). Kullanıcı kabulü bekliyor.
+
+CAT-01 migration ek kaydı: İzole dalda test edildikten sonra `0003_catalog.sql` canlı demo `marketplace` DB / `br-still-grass-bab2y1vf` üzerinde uygulandı. active=true, catalog_version=0, source={} varsayılanları schema sorgusuyla doğrulandı. Eski ürün/stock/order tutarları güncellenmedi; paket mevcut alanlara ayrıca UI üzerinden eklenecek.

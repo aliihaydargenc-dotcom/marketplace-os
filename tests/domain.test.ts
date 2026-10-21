@@ -83,10 +83,10 @@ afterAll(async () => {
   await pool().end();
 });
 describe("PostgreSQL domain invariants", () => {
-  it("demo seed has 72 products, 260 orders and no negative availability", async () => {
+  it("demo seed has 78 products, 263 orders and no negative availability", async () => {
     const s = await snapshot(admin);
-    expect(s.products).toHaveLength(72);
-    expect(s.orders).toHaveLength(260);
+    expect(s.products).toHaveLength(78);
+    expect(s.orders).toHaveLength(263);
     expect(s.products.every((p) => p.available >= 0 && p.quarantine >= 0)).toBe(
       true,
     );
@@ -317,8 +317,8 @@ describe("PostgreSQL domain invariants", () => {
       .length;
     await run({ action: "RESET", confirmation: "SIFIRLA" });
     const s = await snapshot(admin);
-    expect(s.orders).toHaveLength(260);
-    expect(s.products).toHaveLength(72);
+    expect(s.orders).toHaveLength(263);
+    expect(s.products).toHaveLength(78);
     expect(s.workspace.generation).toBe(2);
     expect(
       (await snapshot({ ...admin, workspaceId: other })).orders,

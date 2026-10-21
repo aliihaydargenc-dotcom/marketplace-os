@@ -6,6 +6,7 @@ import { commandSchema, type Command } from "@/domain/orders/commands";
 import { requireAvailable, balance } from "@/domain/inventory/stock";
 import { costInOrderCurrency } from "@/domain/finance/calculations";
 import { seed } from "./seed";
+import { applyCatalog } from "./catalog";
 export async function execute(
   actor: Actor,
   input: Command,
@@ -87,6 +88,13 @@ async function draft(tx: Tx, w: string, orderId: string) {
 }
 async function apply(tx: Tx, a: Actor, c: Command): Promise<string> {
   const w = a.workspaceId;
+  if (
+    c.action === "CREATE_PRODUCT" ||
+    c.action === "UPDATE_CATALOG" ||
+    c.action === "IMPORT_OZON_DEMO"
+  ) {
+    return applyCatalog(tx, a, c);
+  }
   if (c.action === "CREATE_ORDER") {
     if (new Set(c.lines.map((l) => l.productId)).size !== c.lines.length)
       throw new DomainError("Aynı SKU tek satırda birleştirilmeli");
@@ -96,11 +104,17 @@ async function apply(tx: Tx, a: Actor, c: Command): Promise<string> {
       sql`INSERT INTO orders VALUES(${w}::uuid,${id},'ozon-demo',${number},${c.customer},'FBS','NEW',${c.currency},now(),null,${c.fxDate}::date,${c.fxRate},${c.commissionBps},${c.logistics})`,
     );
     for (const l of c.lines) {
-      const [p] = await rows<{ price_rub: number; cost_try: number | null }>(
+      const [p] = await rows<{
+        price_rub: number;
+        cost_try: number | null;
+        active: boolean;
+      }>(
         tx,
-        sql`SELECT price_rub,cost_try FROM products WHERE workspace_id=${w}::uuid AND id=${l.productId}`,
+        sql`SELECT price_rub,cost_try,active FROM products WHERE workspace_id=${w}::uuid AND id=${l.productId}`,
       );
       if (!p) throw new DomainError("Ürün bulunamadı", 404);
+      if (!p.active)
+        throw new DomainError("Pasif ürün yeni siparişe eklenemez");
       const price =
         c.currency === "RUB"
           ? p.price_rub
@@ -138,7 +152,7 @@ async function apply(tx: Tx, a: Actor, c: Command): Promise<string> {
   if (c.action === "PRODUCT") {
     const p = await rows(
       tx,
-      sql`UPDATE products SET cost_try=${c.costTry},threshold=${c.threshold} WHERE workspace_id=${w}::uuid AND id=${c.productId} RETURNING id`,
+      sql`UPDATE products SET cost_try=${c.costTry},threshold=${c.threshold},catalog_version=catalog_version+1 WHERE workspace_id=${w}::uuid AND id=${c.productId} RETURNING id`,
     );
     if (!p.length) throw new DomainError("Ürün bulunamadı", 404);
     return c.productId;

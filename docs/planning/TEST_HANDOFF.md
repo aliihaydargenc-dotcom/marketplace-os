@@ -12,6 +12,18 @@
 
 DB testleri kendi UUID alanlarını oluşturup temizler; üretim/live workspace üzerinde toplu reset veya regresyon çalıştırma. Migration/test setup eksikse sonucu BLOCKED yaz.
 
+## CAT-01 — Güncel kontrol
+
+İzole DB'de önce `npm run db:migrate`. Hedefli: `CATALOG_DB_TEST=1 npx vitest run tests/catalog.test.ts tests/catalog.db.test.ts`. Flag'siz DB dosyası atlanır. Bu tur 9/9 PASS; eski toplu testlerde seed adetleri 78/263 olarak güncellendi fakat o paketler koşulmadı.
+
+- [ ] Stok & Depo → Ozon örnek paketini ekle: reset olmadan altı ürün, üç NEW sipariş ve altı referanslı açılış; tekrar tık/ayrı anahtar çift kayıt yapmasın. Yeni alan otomatik 78 ürün/263 sipariş başlasın.
+- [ ] Ozon referanslı ürünler filtresi kaynak link/tarih/DEMO fiyat ve barkod ayrımını göstersin; isim/ölçü bilgi kaynağı ile stok/satış kurgusu karışmasın.
+- [ ] Yeni ürün / SKU: sıfır stok; doğru fiyat/maliyet/eşik ve aktiflik. Çift SKU/barkod 409. Stok/source payload'ı reddedilir. Depo/muhasebe mutasyonu 403.
+- [ ] Kullanılmamış kimlik düzenlenebilir; siparişte kullanılan kimlik kilitli. Fiyat/maliyet eski siparişin unit_price/unit_cost_try tutarını değiştirmez. Eski sürümle güncelleme çakışır.
+- [ ] Pasif ürün yeni siparişte seçilemez ve doğrudan komut da reddedilir. Mevcut siparişin rezervasyon/barkod/sevkiyatı devam eder. Fiziksel stok kaybolmaz.
+- [ ] 1440/1920 ve dar görünüm: kart alanları, iç tablo kayması, kaynak linkine basınca detay yanlış açılmaması, hata ve kaydetme geri bildirimi.
+- [ ] Ozon demo siparişlerinden birini normal rezervasyon → barkod → sevkiyat → taslak fatura → finans zincirinde UI ile çalıştır. Hedefli DB testi zinciri invoice öncesine kadar kapsadı, yeni browser E2E ayrı bekliyor.
+
 ## FX-01 — Güncel kullanıcı / Codex kontrolü
 
 Hedefli test `npx vitest run tests/exchange-rates.test.ts` (DB gerekmez). Gerçek kur testi tarih ve kaynakla sınırlıdır, ticari işlem yoktur.

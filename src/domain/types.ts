@@ -14,6 +14,15 @@ export interface Actor {
   role: Role;
 }
 export interface Product {
+  active?: boolean;
+  catalog_version?: number;
+  source?: {
+    provider?: string;
+    externalId?: string;
+    url?: string;
+    reviewedAt?: string;
+    pricing?: string;
+  };
   id: string;
   sku: string;
   name: string;

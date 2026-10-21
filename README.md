@@ -78,3 +78,5 @@ Gerçek Ozon/Paraşüt/kargo, FBO operasyonu, gerçek kullanıcı daveti/şifre/
 
 
 FX-01: kaynak RUB/TRY tutar korunur; altında varsayılan TL veya seçilen Euro/Ruble karşılığı. TCMB döviz alış son bülten tarihi ve kontrol saati görünür; alınmayan/bozuk/eski kurda karşılık gösterilmez. Bu güncel yaklaşık değerlemedir; kayıtlı demo işlem kuru ve Excel/PDF özgün tutarları değişmez. [Kaynak/yuvarlama/sınırlar](docs/research/FX01_RESEARCH.md). Ozon gerçek satış bağlantısı henüz eklenmedi.
+
+CAT-01: Stok & Depo'da yeni SKU, kullanılmamış kimlik düzenleme, fiyat/maliyet/eşik/aktiflik ve kaynak kaydı. Kullanılmış ürün kimliği kilitli; pasif ürün yeni siparişe alınmaz. Yeni demo 78 SKU / 263 sipariş; altı açık Ozon ürün referansı ve üç kurgusal FBS siparişi dahil. Eski alanda “Ozon örnek paketini ekle” ile reset gerektirmeden eklenir. Paket stok/fiyat/maliyet/barkod/siparişleri DEMO'dur. Önce `0003_catalog.sql` migration. [Kaynak ve kapsam](docs/research/CAT01_DESIGN.md).

@@ -1,5 +1,7 @@
 # Araştırma ve ürün kararları
 
+CAT-01: [Medusa ürün listesi / özgün kart kararları](research/CAT01_DESIGN.md), [altı açık Ozon ürün kaynağı](research/ozon-public-sources.json). Gerçek ürün referansı ile kurgusal operasyon verileri ayrı; görsel/açıklama/yorum alınmadı.
+
 FX-01: [TCMB kaynağı / özgün tutar-karşılık ayrımı / Ozon belirsizliği](research/FX01_RESEARCH.md), [kaynak manifesti](research/fx01-sources.json).
 
 OPS-02 ek kaydı: [Medusa sipariş listesi / görünüm kaynak okuması ve özgün kararlar](research/OPS02_DESIGN.md), [SHA manifesti](research/ops02-sources.json). Kişisel görünüm saklama ve toplu uygunluk davranışı özgün uygulamamızdır; referansın iç sunucu davranışını bildiğimiz iddia edilmez.

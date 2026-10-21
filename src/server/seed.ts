@@ -1,3 +1,4 @@
+import { importOzonDemo } from "./catalog";
 import { sql, rows, type Tx } from "./db";
 import { randomUUID } from "node:crypto";
 const names = [
@@ -45,7 +46,7 @@ export async function seed(tx: Tx, w: string, anchor = new Date()) {
     threshold: 12,
   }));
   await tx.execute(
-    sql`INSERT INTO products SELECT ${w}::uuid,x.* FROM jsonb_to_recordset(${JSON.stringify(products)}::jsonb) AS x(id text,sku text,name text,variant text,barcode text,category text,cost_try integer,price_rub integer,threshold integer)`,
+    sql`INSERT INTO products(workspace_id,id,sku,name,variant,barcode,category,cost_try,price_rub,threshold) SELECT ${w}::uuid,x.* FROM jsonb_to_recordset(${JSON.stringify(products)}::jsonb) AS x(id text,sku text,name text,variant text,barcode text,category text,cost_try integer,price_rub integer,threshold integer)`,
   );
   const orders: Record<string, unknown>[] = [],
     lines: Record<string, unknown>[] = [],
@@ -356,5 +357,6 @@ export async function seed(tx: Tx, w: string, anchor = new Date()) {
       sql`INSERT INTO ${sql.identifier(table)} (workspace_id,${sql.raw(columns)}) SELECT ${w}::uuid,x.* FROM jsonb_to_recordset(${JSON.stringify(records)}::jsonb) AS x(${sql.raw(def)})`,
     );
   }
+  await importOzonDemo(tx, { workspaceId: w, userId: "admin", role: "ADMIN" });
   await rows(tx, sql`SELECT id FROM workspaces WHERE id=${w}::uuid`);
 }

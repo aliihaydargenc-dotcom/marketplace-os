@@ -144,6 +144,6 @@ test("server permissions, session isolation and scoped reset through browser", a
   await expect(other.getByText("Nesil: 2", { exact: false })).toBeVisible();
   const after = await (await page.request.get("/api/workspace")).json();
   expect(after.workspace.generation).toBe(a.workspace.generation);
-  expect(after.orders.length).toBe(260);
+  expect(after.orders.length).toBe(263);
   await context.close();
 });

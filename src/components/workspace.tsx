@@ -51,6 +51,7 @@ import { DataTable } from "./data-table";
 import { lineContributions } from "@/domain/finance/allocation";
 import { PackingWorkbench } from "./packing-workbench";
 import { OrdersView } from "./orders-view";
+import { CatalogTools, ProductEditor, ProductSource } from "./catalog-tools";
 import {
   CurrencyDisplayProvider,
   CurrencyDisplayControls,
@@ -294,7 +295,9 @@ function WorkspaceBody({
         .includes(search.toLocaleLowerCase("tr")) &&
       (stockFilter === "ALL" ||
         (stockFilter === "LOW" && p.available <= p.threshold) ||
-        (stockFilter === "QUARANTINE" && p.quarantine > 0)),
+        (stockFilter === "QUARANTINE" && p.quarantine > 0) ||
+        (stockFilter === "OZON" && p.source?.provider === "OZON_PUBLIC") ||
+        (stockFilter === "INACTIVE" && p.active === false)),
   );
   const order = data.orders.find((o) => o.id === orderId),
     product = data.products.find((p) => p.id === productId);
@@ -381,6 +384,10 @@ function WorkspaceBody({
       cell: ({ row }) => (
         <div>
           <strong>{row.original.name}</strong>
+          <span className="catalog-status">
+            {row.original.active === false ? "Pasif" : "Aktif"}
+          </span>
+          <ProductSource product={row.original} />
           <small>
             {row.original.variant} · {row.original.category}
           </small>
@@ -388,6 +395,11 @@ function WorkspaceBody({
       ),
     },
     { accessorKey: "barcode", header: "Barkod" },
+    {
+      accessorKey: "price_rub",
+      header: "Örnek fiyat (RUB)",
+      cell: ({ getValue }) => displayMoney(getValue<number>(), "RUB"),
+    },
     { accessorKey: "physical", header: "Fiziksel" },
     { accessorKey: "reserved", header: "Rezerve" },
     {
@@ -912,6 +924,12 @@ function WorkspaceBody({
           )}
           {section === "inventory" && (
             <>
+              <CatalogTools
+                data={data}
+                busy={busy}
+                run={run}
+                onCreated={setProductId}
+              />
               <div className="inventory-summary">
                 <span>
                   <Boxes size={18} />
@@ -951,6 +969,8 @@ function WorkspaceBody({
                 >
                   <option value="ALL">Tüm ürünler</option>
                   <option value="LOW">Kritik stok</option>
+                  <option value="OZON">Ozon referanslı ürünler</option>
+                  <option value="INACTIVE">Pasif ürünler</option>
                   <option value="QUARANTINE">Karantinada stok</option>
                 </select>
                 <span className="muted">
@@ -1413,11 +1433,14 @@ function WorkspaceBody({
                         )
                       }
                     >
-                      {data.products.map((p) => (
-                        <option value={p.id} key={p.id}>
-                          {p.sku} · {p.name} / {p.variant} ({p.available} adet)
-                        </option>
-                      ))}
+                      {data.products
+                        .filter((p) => p.active !== false)
+                        .map((p) => (
+                          <option value={p.id} key={p.id}>
+                            {p.sku} · {p.name} / {p.variant} ({p.available}{" "}
+                            adet)
+                          </option>
+                        ))}
                     </select>
                     <input
                       aria-label={`Miktar ${index + 1}`}
@@ -1902,56 +1925,17 @@ function WorkspaceBody({
                     <button disabled={busy}>Referanslı hareket kaydet</button>
                   </form>
                 )}
-                {allowed("PRODUCT") && (
-                  <form
-                    className="form reason-box"
-                    key={product.id}
-                    onSubmit={(e) => {
-                      e.preventDefault();
-                      const f = new FormData(e.currentTarget);
-                      act({
-                        action: "PRODUCT",
-                        productId: product.id,
-                        costTry:
-                          f.get("cost") === ""
-                            ? null
-                            : Math.round(Number(f.get("cost")) * 100),
-                        threshold: Number(f.get("threshold")),
-                      });
-                    }}
-                  >
-                    <h3>Ürün kartı</h3>
-                    <label>
-                      Alış maliyeti (TRY; boş = bilinmiyor)
-                      <input
-                        name="cost"
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        defaultValue={
-                          product.cost_try === null
-                            ? ""
-                            : product.cost_try / 100
-                        }
-                      />
-                    </label>
-                    <label>
-                      Kritik eşik
-                      <input
-                        name="threshold"
-                        type="number"
-                        min="0"
-                        step={1}
-                        defaultValue={product.threshold}
-                        required
-                      />
-                    </label>
-                    <small>
-                      Maliyet değişikliği önceki siparişin maliyet fotoğrafını
-                      değiştirmez.
-                    </small>
-                    <button disabled={busy}>Kartı güncelle</button>
-                  </form>
+                <ProductSource product={product} />
+                {allowed("UPDATE_CATALOG") && (
+                  <ProductEditor
+                    key={`${product.id}:${product.catalog_version}`}
+                    product={product}
+                    locked={data.orders.some((o) =>
+                      o.lines.some((l) => l.product_id === product.id),
+                    )}
+                    busy={busy}
+                    run={run}
+                  />
                 )}
                 <h3>Stok hareket defteri</h3>
                 <DataTable
