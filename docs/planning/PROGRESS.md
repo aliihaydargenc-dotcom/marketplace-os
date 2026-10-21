@@ -223,3 +223,8 @@ Dar yüksekliklerde rehber kartı hedefe göre daha geniş boşluğun bulunduğu
 ### OZON-REAL-01 — Kamu ürün/fiyat veri entegrasyonu (21 Ekim)
 
 10 gerçek Ozon ürün sayfası ID'si, 8 koşullu fiyat çifti ve 2 fiyatı doğrulanmamış ürün salt okunur pazar listesine kondu. Operasyon Merkezi'nde kısa liste, Stok & Depo'da tam arama/filtre ve kaynak bağlantısı var. Mevcut altı Ozon referanslı stok kartına eşleşen gözlem fiyatı eklenir. Bu tarihli kamu fiyatı **canlı satış değildir**. İç demo FBS siparişleri, stok ve maliyet kayıtları değişmedi. Yeni kaynak birim testleri yazıldı; tam test, typecheck, lint, build, E2E, izole DB ve kullanıcı kabulü bu adımla yapılmış sayılmaz.
+
+
+### OZON-REAL-01B — UX ve QA devri
+
+Pazar verisi dashboard'da KPI kartlarından sonra yerleştirildi; mevcut operasyon göstergelerinin önüne geçirilmedi. 10 ürün için arama/8 fiyat/2 belirsiz kayıt/ürün sayfa bağlantısı UI E2E testi eklendi. Gerçek ürün fiyatları, eski seeded satış raporundan ayrı gösteriliyor. CI/Playwright/DB testi yazılması bunların çalıştırıldığı anlamına gelmez. Kodun izole test ortamında çalıştırılması için Vercel Sandbox ile private GitHub deposunu shallow clone denemesi 400 git clone failed döndü; hiçbir Vercel dağıtımı yapılmadı, canlı DB değişmedi.

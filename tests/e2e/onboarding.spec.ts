@@ -80,3 +80,40 @@ test("guidance remains controllable in a narrow mobile viewport", async ({
   }
   await expect(guide).toHaveCount(0);
 });
+
+test("Ozon real public offers keep provenance separate from seeded orders", async ({
+  page,
+}) => {
+  await page.addInitScript(() => {
+    try {
+      localStorage.setItem("marketplace-os:tour:entry-v1", "done");
+      localStorage.setItem("marketplace-os:tour:workspace-v1", "done");
+    } catch {
+      // Browsers without local storage may display the dismissible tour.
+    }
+  });
+  await page.goto("/");
+  await page.locator("#demo-enter").click();
+  await expect(
+    page.getByRole("heading", { name: "Operasyon Merkezi", exact: true }),
+  ).toBeVisible();
+  const overview = page.getByRole("region", {
+    name: "Gerçek Ozon ürün ve fiyat gözlemleri",
+  });
+  await expect(overview.getByText("Ozon Pazar Verileri")).toBeVisible();
+  await overview.getByRole("button", { name: "Tüm ürünler" }).click();
+  await expect(
+    page.getByRole("heading", { name: "Stok & Depo", exact: true }),
+  ).toBeVisible();
+  const full = page.getByRole("region", {
+    name: "Gerçek Ozon ürün ve fiyat gözlemleri",
+  });
+  await full.getByRole("searchbox", { name: "Ozon ürünlerinde ara" }).fill("3867869659");
+  await expect(full.getByText("Modalin HARMONIA pamuklu havlu seti")).toBeVisible();
+  await expect(full.getByRole("link", { name: "Ozon'da aç" })).toHaveAttribute(
+    "href",
+    /ozon\.ru\/product\/.*3867869659/,
+  );
+  await full.getByRole("searchbox", { name: "Ozon ürünlerinde ara" }).fill("1416873033");
+  await expect(full.getByText("Doğrulanamadı")).toBeVisible();
+});

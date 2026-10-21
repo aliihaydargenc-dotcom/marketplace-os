@@ -657,7 +657,6 @@ function WorkspaceBody({
           )}
           {section === "dashboard" && (
             <>
-              <OzonMarketPanel compact onViewAll={() => navigate("inventory")} />
               <div className="metrics">
                 {[
                   {
@@ -700,6 +699,7 @@ function WorkspaceBody({
                   </article>
                 ))}
               </div>
+              <OzonMarketPanel compact onViewAll={() => navigate("inventory")} />
               <div className="dashboard-grid">
                 <section className="panel sales-chart">
                   <div className="panel-heading">
