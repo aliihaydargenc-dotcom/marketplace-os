@@ -2127,7 +2127,7 @@ function SettingsView({
             <strong>Paraşüt Adapter</strong>
             <span className="pill">DEMO</span>
           </div>
-          <details className="entry-note">
+          <details className="workspace-disclosure">
             <summary>Bağlantı durumu</summary>
             <p>
               Ozon/Paraşüt canlı API bağlantıları yoktur; dış sisteme veri
@@ -2244,7 +2244,7 @@ function SettingsView({
           </label>
           <button disabled={busy}>Kaydet</button>
         </form>
-        <details className="entry-note">
+        <details className="workspace-disclosure">
           <summary>Demo hesapları</summary>
           <p>
             Üç yerleşik demo rolü vardır. Gerçek kullanıcı doğrulaması henüz yok.

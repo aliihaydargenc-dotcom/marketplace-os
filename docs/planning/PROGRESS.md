@@ -213,3 +213,8 @@ Kullanıcının ek talimatıyla ilk ziyarette kısa bağlamsal tur: girişte rol
 ### UX-02B — Operasyon ekranlarında açıklama sadeleştirme ve E2E eşleştirmesi
 
 Mevcut işlem başlıkları ve durum/rol/finans kuralları korunarak Operasyon Merkezi'ndeki geliştirici notu, yeni sipariş formundaki tekrarlı bilgi kutusu ve barkod kutusundaki teknik idempotency metni kaldırıldı. Tarih modu açıklaması açılır ayrıntıya taşındı; API/demo sınırı Sistem Yönetimi'nde korunarak ikincil ayrıntıya alındı. Demo reset açıklamasındaki eski 72 ürün/260 sipariş ifadesi kaldırıldı: ilk kurulum/ürün paketi ve anlık veriler farklı olabildiğinden sabit sayaç yanıltıcıydı. Pointerdown dinleyicisi unmount sırasında kaldırılıyor. Playwright FBS akışı yeni üst gezinme ve satır içi detay düğmesine eşleştirildi; rehber için üç E2E senaryosu eklendi. Testlerin yazılması koşulduğu veya geçtiği anlamına gelmez; son kaynak için CI/DB/tarayıcı regresyonu ve kullanıcı kabulü açık.
+
+
+### UX-02C — Rehber taşma kontrolü (21 Ekim)
+
+Dar yüksekliklerde rehber kartı hedefe göre daha geniş boşluğun bulunduğu yöne alınır; kart kendi içinde kaydırılabilir yükseklik sınırına sahiptir. 320px testindeki yanlış sabit koordinat beklentisi düzeltildi ve daha büyük alt boşluk fallback senaryosu eklendi. Çalışma alanının bağlantı/demoya ilişkin açılır ayrıntıları artık yalnız Demo Merkezi rotasında yüklenebilen stil dosyasına bağımlı değil. Rehber saklıyken Escape işleyicisi arka plandaki pencereye müdahale etmez. Bu değişiklikler henüz canlı tarayıcı veya CI tarafından doğrulanmış sayılmaz.

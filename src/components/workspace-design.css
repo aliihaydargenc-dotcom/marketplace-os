@@ -1025,3 +1025,18 @@
 }
 .design-ledger .finance-note summary { width: fit-content; padding: 6px 0; cursor: pointer; }
 .design-ledger .finance-note p { line-height: 1.6; margin: 6px 0 0; }
+
+.design-ledger .workspace-disclosure {
+  margin-top: 12px;
+  font-size: 12px;
+  color: #65758c;
+}
+.design-ledger .workspace-disclosure summary {
+  width: fit-content;
+  cursor: pointer;
+  padding: 5px 0;
+}
+.design-ledger .workspace-disclosure p {
+  margin: 5px 0 0;
+  line-height: 1.5;
+}

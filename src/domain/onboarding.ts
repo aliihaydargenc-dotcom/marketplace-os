@@ -13,9 +13,15 @@ export function placeTour(
   const cardHeight = 194;
   const gap = 14;
   const left = Math.max(margin, Math.min(bounds.left, viewportWidth - cardWidth - margin));
-  const below = bounds.bottom + gap + cardHeight <= viewportHeight - margin;
-  const proposed = below ? bounds.bottom + gap : bounds.top - cardHeight - gap;
-  const top = Math.max(margin, Math.min(proposed, Math.max(margin, viewportHeight - cardHeight - margin)));
+  const belowSpace = viewportHeight - bounds.bottom - gap - margin;
+  const aboveSpace = bounds.top - gap - margin;
+  const below =
+    belowSpace >= cardHeight ||
+    (aboveSpace < cardHeight &&
+      belowSpace >= Math.max(96, aboveSpace));
+  const top = below
+    ? Math.max(margin, bounds.bottom + gap)
+    : Math.max(margin, bounds.top - cardHeight - gap);
   return { left, top, placement: below ? "below" : "above" };
 }
 

@@ -106,7 +106,7 @@ export function GuidedTour({
   }, [index, hasBounds]);
 
   useEffect(() => {
-    if (index === null) return;
+    if (index === null || !ready) return;
     const keyboard = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         event.preventDefault();
@@ -131,12 +131,16 @@ export function GuidedTour({
     };
     document.addEventListener("keydown", keyboard, true);
     return () => document.removeEventListener("keydown", keyboard, true);
-  }, [index, finish]);
+  }, [index, ready, finish]);
 
   if (!step || !bounds || !ready) return null;
   const x = bounds.left, y = bounds.top;
   const width = Math.max(0, bounds.right - x), height = Math.max(0, bounds.bottom - y);
   const position = placeTour(bounds, viewport.width, viewport.height);
+  const maxCardHeight =
+    position.placement === "above"
+      ? Math.max(96, bounds.top - position.top - 14)
+      : Math.max(96, viewport.height - position.top - 16);
   const last = index === steps.length - 1;
   const advance = () => {
     if (last) finish();
@@ -162,7 +166,7 @@ export function GuidedTour({
       >
         {position.placement === "below" ? <ArrowUp size={24} /> : <ArrowDown size={24} />}
       </div>
-      <div className="onboarding-card" ref={card} role="dialog" aria-label="Kısa kullanım rehberi" aria-describedby="tour-description" style={{ left: position.left, top: position.top }}>
+      <div className="onboarding-card" ref={card} role="dialog" aria-label="Kısa kullanım rehberi" aria-describedby="tour-description" style={{ left: position.left, top: position.top, maxHeight: maxCardHeight }}>
         <div className="onboarding-head">
           <span>{index + 1} / {steps.length}</span>
           <button type="button" onClick={finish} aria-label="Rehberi kapat"><X size={16} /></button>

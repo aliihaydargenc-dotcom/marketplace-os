@@ -13,7 +13,17 @@ describe("contextual demo tour", () => {
   it("clamps an unusually short viewport", () => {
     const position = placeTour({ left: 260, right: 365, top: 200, bottom: 260 }, 375, 320);
     expect(position.left).toBe(23);
-    expect(position.top).toBe(110);
+    expect(position.top).toBe(16);
+    expect(position.placement).toBe("above");
+  });
+  it("uses the roomier side if neither side fits full height", () => {
+    const position = placeTour(
+      { left: 20, right: 100, top: 50, bottom: 95 },
+      390,
+      270,
+    );
+    expect(position.placement).toBe("below");
+    expect(position.top).toBe(109);
   });
   it("points to controls and keeps steps concise", () => {
     expect(entryGuide.map((step) => step.target)).toEqual(["#demo-role", "#demo-section", "#demo-enter"]);
