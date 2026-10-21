@@ -12,6 +12,18 @@
 
 DB testleri kendi UUID alanlarını oluşturup temizler; üretim/live workspace üzerinde toplu reset veya regresyon çalıştırma. Migration/test setup eksikse sonucu BLOCKED yaz.
 
+## INV-02 — Güncel kontrol
+
+Hedefli: `npx vitest run tests/returns.test.ts tests/navigation.test.ts`. Yeni DB komutu veya migration yok; aşağıdaki browser kabulü eski QC testlerinden ayrı tutulur.
+
+- [ ] Yönetici/depo İade & Kalite Kontrol menüsünü ve URL'sini açar. Muhasebe `section=returns` ile faturalara düşer; doğrudan QC komutu mevcut server yetkisinde 403 kalır.
+- [ ] Bekleyen / Stoğa alındı / Satışa uygun değil / Tümü; arama sayıları scope ile tutarlı; SKU/barkod/Türkçe ürün/gerekçe bulur, FBO veya siparişsiz kayıt operasyon kuyruğuna alınmaz.
+- [ ] Satırda gösterilen karantina bu order referansının net ledger toplamı; başka iadeden stokla karışmaz. Ürün kayıp/miktar uyuşmaz/durum yanlışsa karar verilemez.
+- [ ] Kabulde bütün iadeler karantinadan MAIN'e, ret durumunda satılabilir artışı yok. Gerekçe/checkbox/karar olmadan submit yok; çift tık/Enter tek uçuş. QC önce yeni REFUND üretmez, mevcut maliyet geri alımı ve eksik maliyet uyarısı doğru.
+- [ ] Kapanan iade doğru sekmede read-only, tarih/gerekçe/ledger görünür. İlk gerekçe yalnız ayrı RETURN audit'i varsa gösterilir. Detaydan dönünce queue state'i korunur.
+- [ ] İki operatör aynı iadede farklı karar: sunucudaki ilk tamamlanan korunur, UI son durumu gösterir; no-op yanıtı istenen karar kesin uygulandı diye yazılmaz. Ağ kaybı otomatik retry yapmaz; tam yenileme sonrası kontrol.
+- [ ] 1440/1920/dar görünüm, uzun gerekçe, kuyruk iç kaydırma, boş/aranan sonuç ve finans redaksiyonu. Yeni ekranın kapsamlı E2E'si ve fiziksel operasyon kabulü açık.
+
 ## CAT-01 — Güncel kontrol
 
 İzole DB'de önce `npm run db:migrate`. Hedefli: `CATALOG_DB_TEST=1 npx vitest run tests/catalog.test.ts tests/catalog.db.test.ts`. Flag'siz DB dosyası atlanır. Bu tur 9/9 PASS; eski toplu testlerde seed adetleri 78/263 olarak güncellendi fakat o paketler koşulmadı.

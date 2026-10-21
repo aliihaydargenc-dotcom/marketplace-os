@@ -1,0 +1,14 @@
+{
+  "reviewedAt": "2026-10-21",
+  "task": "INV-02",
+  "repository": "medusajs/medusa",
+  "ref": "develop",
+  "path": "packages/admin/dashboard/src/routes/orders/order-list/components/order-list-table/order-list-table.tsx",
+  "blobSha": "1e11bba07557ac2f70c6ef5ad4d9a00848141004",
+  "url": "https://github.com/medusajs/medusa/blob/develop/packages/admin/dashboard/src/routes/orders/order-list/components/order-list-table/order-list-table.tsx",
+  "observation": "Heading/actions distinct from table filter/search/pagination and record-detail navigation.",
+  "decision": "Own return status lanes/search plus queue and inline QC station, preserving contextual order-detail access.",
+  "codeCopied": false,
+  "assetsCopied": false,
+  "licenseBoundary": "Medusa open-core LICENSE and ENTERPRISE-LICENSE previously reviewed in DESIGN_REFERENCES.md; no Enterprise code used."
+}

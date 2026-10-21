@@ -1,5 +1,11 @@
 # Doğrulama raporu
 
+## 21 Ekim 2026 — INV-02 iade masası
+
+`npx vitest run tests/returns.test.ts tests/navigation.test.ts`: **6/6 PASS**, 596ms. 4 saf iade testi: FBS/status/orphan/sıralama ve immutability; SKU/barkod/Türkçe/gerekçe araması; order referansı bazlı karantina ve kayıp ürün/durum engeli; bekleme saati. 2 navigasyon testi: mevcut URL allowlist ve yeni returns bölümünde depo erişimi/muhasebe güvenli varsayılanı. Typecheck/lint (0 uyarı)/format/production build PASS. QC sunucu mutasyonu/DB migration değişmedi; geniş DB/E2E ve yeni browser kabul/ret işlemi bu görevde koşulmadı. Yayın ve salt okuma canlı kontrol ayrıca kaydedilir.
+
+---
+
 ## 21 Ekim 2026 — CAT-01
 
 `CATALOG_DB_TEST=1 npx vitest run tests/catalog.test.ts tests/catalog.db.test.ts`: **9/9 PASS**, 81.05s. 2 saf: doğrulama/stock-source enjeksiyon reddi, altı kaynak manifest sınırı. 7 gerçek PostgreSQL: sıfır stok/tekrar güvenli create, SKU-barkod ve workspace tekilliği, düzenleme/sürüm/başka alan reddi, tarihsel fiyat-maliyet ve pasif ürünün eski sipariş sevki, depo yetkisi/legacy sürüm artışı, import idempotency + rezervasyon-barkod-sevkiyat-finans, yeni seed/reset generation. 0003 migration önce izole `br-royal-fog-bael0zdv` dalında uygulandı; test iki UUID alanını oluşturup temizledi. Typecheck/lint (0 uyarı)/format/build PASS. Kapsamlı eski domain/E2E çalıştırılmadı; seed sayısı beklentileri güncellendi. Canlı migration/yayın ayrıca kaydedilir.

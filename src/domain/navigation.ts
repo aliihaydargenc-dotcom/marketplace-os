@@ -5,6 +5,7 @@ export const workspaceSections = {
   orders: "Siparişler",
   packing: "Hazırlama Masası",
   inventory: "Stok & Depo",
+  returns: "İade & Kalite Kontrol",
   invoices: "Fatura Merkezi",
   finance: "Finans & Analitik",
   settings: "Sistem Yönetimi",
@@ -16,7 +17,7 @@ export function canOpenSection(role: Role, section: WorkspaceSection) {
   if (role === "ADMIN") return true;
   if (role === "WAREHOUSE")
     return !["invoices", "finance", "settings"].includes(section);
-  return !["packing", "settings"].includes(section);
+  return !["packing", "returns", "settings"].includes(section);
 }
 
 export function defaultSection(role: Role): WorkspaceSection {

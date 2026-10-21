@@ -1,5 +1,7 @@
 # Araştırma ve ürün kararları
 
+INV-02: [Medusa liste / özgün iade istasyonu kararı](research/INV02_DESIGN.md), [SHA manifesti](research/inv02-sources.json). Kaynak çalışma düzeni içindir; Ozon iade API davranışı doğrulanmış sayılmaz.
+
 CAT-01: [Medusa ürün listesi / özgün kart kararları](research/CAT01_DESIGN.md), [altı açık Ozon ürün kaynağı](research/ozon-public-sources.json). Gerçek ürün referansı ile kurgusal operasyon verileri ayrı; görsel/açıklama/yorum alınmadı.
 
 FX-01: [TCMB kaynağı / özgün tutar-karşılık ayrımı / Ozon belirsizliği](research/FX01_RESEARCH.md), [kaynak manifesti](research/fx01-sources.json).

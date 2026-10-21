@@ -18,6 +18,7 @@ import {
   LogOut,
   ChevronRight,
   ScanBarcode,
+  RotateCcw,
   Truck,
   Clock,
   AlertTriangle,
@@ -51,6 +52,7 @@ import { DataTable } from "./data-table";
 import { lineContributions } from "@/domain/finance/allocation";
 import { PackingWorkbench } from "./packing-workbench";
 import { OrdersView } from "./orders-view";
+import { ReturnsWorkbench } from "./returns-workbench";
 import { CatalogTools, ProductEditor, ProductSource } from "./catalog-tools";
 import {
   CurrencyDisplayProvider,
@@ -66,6 +68,7 @@ const nav = [
   { id: "orders", name: "Siparişler", icon: ShoppingBag },
   { id: "packing", name: "Hazırlama Masası", icon: ScanBarcode },
   { id: "inventory", name: "Stok & Depo", icon: Boxes },
+  { id: "returns", name: "İade & Kalite Kontrol", icon: RotateCcw },
   { id: "invoices", name: "Fatura Merkezi", icon: FileText },
   { id: "finance", name: "Finans & Analitik", icon: ChartNoAxesCombined },
   { id: "settings", name: "Sistem Yönetimi", icon: Settings },
@@ -579,6 +582,8 @@ function WorkspaceBody({
                       "Bekleyen FBS siparişlerini sırayla hazırlayın, barkodla doğrulayın ve sevk edin.",
                     inventory:
                       "Fiziksel stok, rezervasyon ve kullanılabilir miktar tek görünümde.",
+                    returns:
+                      "Bekleyen iadeleri kontrol edin; stok ve maliyet etkisini izleyerek karar verin.",
                     invoices:
                       "Siparişe bağlı belgeler. Tüm belgeler DEMO / TASLAK niteliğindedir.",
                     finance:
@@ -920,6 +925,16 @@ function WorkspaceBody({
               busy={busy}
               onCommand={run}
               onOpen={setOrderId}
+            />
+          )}
+          {section === "returns" && allowed("QC") && (
+            <ReturnsWorkbench
+              key={`${data.workspace.id}:${data.actor.userId}:${data.workspace.generation}`}
+              data={data}
+              busy={busy}
+              onCommand={run}
+              onOpen={setOrderId}
+              onRefresh={load}
             />
           )}
           {section === "inventory" && (

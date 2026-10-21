@@ -10,6 +10,14 @@ Her görev: sorun, dosya sınırı, bağımlılık, kabul, doğrulama, kalan ris
 
 ## Aktif geliştirme dilimi — Aşama 2
 
+### INV-02 — İade ve kalite kontrol kuyruğu
+
+Bu turdaki tek iş. INV-01 mal kabul belgesi ARCH-01'e bağlı kaldığından, mevcut kuralları değiştirmeden ayrı QC çalışma ekranı geliştirildi. Sorun: iadeler sipariş detayına dağılmış; bekleme ve referans bazlı karantina/finans etkisi birlikte görülemiyor. Sınır: saf iade read modeli, ayrı returns-workbench, navigasyon. Yeni migration/komut/stok-finans yazma kuralı yok. Yönetici/depo; QC mevcut server RBAC/idempotency/transaction/generation üzerinden.
+
+Kabul: dört durum kuyruğu ve arama; eski iade önce; SKU/barkod/ürün/adet; bu iadeye ait karantina ile güncel satılabilir stok ayrı; gerekçe + karar + açık tam sipariş onayı; tamamlanan kayıt salt okunur ve ledger geçmişi görünür. Eksik/kayıp/tutarsız kayıtta blok, belirsiz ağ sonucunda yenilemeden otomatik retry yok. [Karar ve kaynak](../research/INV02_DESIGN.md). Hedefli test/typecheck/lint/format/build; geniş E2E kullanıcı/Codex'te. Teslimden sonra yalnız bu ekranı kullanıcıya gösterip bekle.
+
+## Önceki geliştirme dilimi — CAT-01
+
 ### CAT-01 — Ürün kartı ve Ozon referanslı demo paketi
 
 Kullanıcı operasyonel eksiklere ve Ozon.ru kaynaklı gerçekçi demoya öncelik verdi. Bu teslim tek ürün-katalog işidir: yeni SKU, kullanılmamış kimlik düzenleme, fiyat/maliyet/eşik/aktiflik, geçmişte kullanılan kimlik kilidi, kaynak görünürlüğü. Ayrı catalog servis/bileşen; mevcut execute transaction/RBAC/idempotency sınırı. 0003 additive migration. Kaynak ve kabul `../research/CAT01_DESIGN.md`; altı kamu ürünü, altı ledger açılışı ve üç NEW FBS demo siparişten oluşan tekrar güvenli paket. Yeni seed 78 ürün / 263 sipariş; eski oturumda reset olmadan düğmeyle eklenebilir. Stok karttan yazılmaz, tarihsel tutarlar değişmez. Variantlar ayrı SKU; aile matrisi ve çoklu barkod yok.

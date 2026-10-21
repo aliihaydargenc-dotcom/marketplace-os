@@ -30,3 +30,5 @@ Ham erişim bilgili capture, rakip özel veri veya GPL kaynak dökümü bu dizin
 FX-01: [TCMB canlı XML / Tabler kaynak kaydı](FX01_RESEARCH.md), [SHA manifesti](fx01-sources.json). Son bülten tarihi doğrudan XML üzerinden gözlendi; Ozon satış erişimi ve belirsiz mağaza doğrulanmadı.
 
 CAT-01: [ürün yönetimi tasarım ve veri kararları](CAT01_DESIGN.md), [Ozon açık kaynak manifesti](ozon-public-sources.json). Medusa ürün listesi blob SHA ve open-core sınırı belgeli; altı Ozon ürün sayfası açıldı, satış verisi çekilmedi.
+
+INV-02: [İade istasyonu tasarım ve veri sınırları](INV02_DESIGN.md), [Medusa kaynak SHA](inv02-sources.json). Statik liste kaynağı tekrar okundu; kendi QC kuralları korunarak özgün kuyruk yapıldı.

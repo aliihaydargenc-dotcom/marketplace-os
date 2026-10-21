@@ -12,6 +12,8 @@ describe("workspace entry URLs", () => {
     expect(resolveSection("settings", "ACCOUNTANT")).toBe("invoices");
     expect(resolveSection("packing", "ACCOUNTANT")).toBe("invoices");
     expect(canOpenSection("WAREHOUSE", "inventory")).toBe(true);
+    expect(resolveSection("returns", "WAREHOUSE")).toBe("returns");
+    expect(resolveSection("returns", "ACCOUNTANT")).toBe("invoices");
   });
   it("accepts only allowlisted local section IDs, including on return links", () => {
     for (const input of [

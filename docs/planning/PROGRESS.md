@@ -23,6 +23,15 @@ PARTIAL / REFERENCE_ONLY tabloda kapsam açıklamasıdır; görev akışı ROADM
 
 ## 21 Ekim çalışma dilimi
 
+### INV-02 — Güncel teslim
+
+İade & Kalite Kontrol ayrı menü/URL ile yönetici ve depoya açıldı; muhasebe başlangıç allowlist'i kabul etmez. Ayrı returns-workbench ve saf read modeli: pending/accepted/rejected/all, arama kapsamına uygun sayılar, eski iade önce, ürün/SKU/barkod/gerekçe araması. Tüm tarihler; bekleme saati açılış/manuel yenileme anına göre yaklaşık.
+
+Seçili iade ürünleri, referans bazlı net karantina, güncel satılabilir stok, gerekçe, tamamlanan karar tarihi ve ledger geçmişi birlikte. Bekleyende iki açık karar, 3–300 karakter gerekçe ve bütün adetler için onay. Yanlış sipariş/iade durumu veya karantina/ürün tutarsızlığında blok. Tamamlanmış kayıt salt okunur. İlk iade nedeni yalnız audit'te varsa gösterilir; eski seed için uydurulmaz. Finans REFUND/COGS_REVERSAL kaynaklı; depoya maliyet verilmez. Ağ hatasında otomatik retry yok; tam yenileme istenir. Önceki tamamlanmış işlem no-op dönebildiğinden başarı mesajı kararı kesin uygulandı diye iddia etmez.
+
+Mevcut QC server komutu aynen kullanıldı; migration, seed, ledger veya finans formülü değişmedi. Yeni QC ekranı tam sipariş bazlıdır; kısmi kabul/ret, görev sahipliği, görsel kontrol ve harici iade senkronu yok. ARCH-01/INV-01 hâlâ bekliyor. [Kaynak ve sınır](../research/INV02_DESIGN.md). Kod IMPLEMENTED; kullanıcı kabulü ve canlı gözlem ayrı takip edilir.
+
+
 ### CAT-01 — Güncel teslim
 
 Aşama 2 operasyon ürünü/katalog kartı geliştirildi. CREATE_PRODUCT, UPDATE_CATALOG, IMPORT_OZON_DEMO yalnız yönetici; workspace lock/generation/idempotency/audit korunur. Ayrı `server/catalog.ts` ve `catalog-tools.tsx`; 0003 eklemeli migration: active/catalog_version/source. Yeni ürün sıfır stoklu; SKU case-insensitive ve barkod tekilliği sunucuda. Kullanılmış kimlik kilitli; yeni fiyat/maliyet eski order_lines fotoğrafını değiştirmez. Pasif ürün yeni siparişe alınmaz, mevcut hazırlama/sevki devam eder. Sürüm çakışması eski formun ezmesini engeller.
@@ -113,3 +122,5 @@ FX-01 canlı ek kayıt: `edb55b6` production READY. Siparişler ekranında TCMB 
 CAT-01 migration ek kaydı: İzole dalda test edildikten sonra `0003_catalog.sql` canlı demo `marketplace` DB / `br-still-grass-bab2y1vf` üzerinde uygulandı. active=true, catalog_version=0, source={} varsayılanları schema sorgusuyla doğrulandı. Eski ürün/stock/order tutarları güncellenmedi; paket mevcut alanlara ayrıca UI üzerinden eklenecek.
 
 CAT-01 yayın ek kaydı: `afc8b4f` kodu production READY. Mevcut yönetici alanında UI ile paket eklendi, 72→78 ürün ve +72 referanslı demo stok gözlendi; filtre/kaynak, kimlik kilidi ve yeni SKU formu açılması kontrol edildi. Canlı sevkiyat/reset/manual SKU kaydetme yapılmadı. [Kapsam ve ekran](../research/CAT01_SMOKE.md). Kullanıcı kabulü bekliyor.
+
+INV-02 hedefli doğrulama: `npx vitest run tests/returns.test.ts tests/navigation.test.ts` **6/6 PASS** (596ms). Typecheck/lint (0 uyarı)/format/production build PASS. 4 iade read modeli + 2 navigasyon testi; DB/E2E paketi ve canlı QC yazma bu turda koşulmadı. Yeni server iş kuralı veya migration yok.
