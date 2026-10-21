@@ -10,7 +10,7 @@ Her görev: sorun, dosya sınırı, bağımlılık, kabul, doğrulama, kalan ris
 
 ## Geçerli sıra — önce işlevsel demo, ardından tasarım ve kullanıcı kabulü
 
-21 Ekim EN SON kullanıcı kararı önceki UX-01 kapısını ve görev başına kullanıcı testi beklemeyi iptal eder. Mevcut ekran/menü/dosya düzeni korunur; yeni işlevin gerektirdiği alanlar mevcut düzene eklenir. Kapsamlı kabuk, gezinme ve geçiş yenilemesi işlevsel tamamlanma sonrasındadır.
+21 Ekim EN SON kullanıcı kararı önceki UX-01 kapısını ve görev başına kullanıcı testi beklemeyi iptal eder. Mevcut ekran/menü/dosya düzeni korunur; yeni işlevin gerektirdiği alanlar mevcut düzene eklenir. Kapsamlı kabuk, gezinme ve geçiş yenilemesi işlevsel tamamlanma sonrasındadır. Bu kapının ardından kullanıcı 3. görseli seçti; güncel tasarım kaydı ve yerel kabul design-qa.md içindedir.
 
 | Sıra | Görev | Durum / bitiş koşulu |
 | --- | --- | --- |
@@ -19,7 +19,7 @@ Her görev: sorun, dosya sınırı, bağımlılık, kabul, doğrulama, kalan ris
 | 3 | FIN-01 | IMPLEMENTED; dönem/maliyet DB kabulü PASS — hareket tarihi/kohort ayrımı, detay-rapor izlenebilirliği, geçmişi koruyan eksik maliyet düzeltme kuralı ve mutabakat |
 | 4 | DOC-01 | IMPLEMENTED; belge geçmişi DB kabulü PASS, toplu UI kullanıcı kabulü bekliyor — fatura hata kuyruğu/toplu taslak, gerekçeli durumlar, belge geçmişi ve unique sipariş ilişkisi |
 | 5 | QA-01 teknik bölüm | Yerel teknik VERIFIED: 15 dosya/70 test + typecheck/lint/format/build PASS; uzak CI kök nedeni BLOCKED/UNVERIFIED, manuel UI kabulü bekliyor |
-| 6 | UX-01 | BACKLOG / ertelendi — bütün mevcut ve yeni ekranlar aynı tasarım sistemiyle; seçilen 2. yön üst gezinme/geniş çalışma alanı referansı; görsel yön seçimi kullanıcı kabulü değildir |
+| 6 | UX-01 | IMPLEMENTED; üçüncü görsel uygulandı: üst gezinme, geniş tablo, satır içi detay; yerel tasarım QA PASS. Kullanıcı kabulü ve production yayını bekliyor; bkz. design-qa.md |
 | 7 | Kullanıcı kabulü | BEKLİYOR — bütünleşik tasarım, geçişler ve günlük iş akışı kullanıcı tarafından denenir; bulgular düzeltilir |
 | 8 | REL-01 | BACKLOG — teknik kontrolü tamamlanan teslim paketinin tek yayını ve commit/READY kanıtı; test için gereken erişilebilir aday sürüm toplu yayın politikasıyla sağlanır |
 

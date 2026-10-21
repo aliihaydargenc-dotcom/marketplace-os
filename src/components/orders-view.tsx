@@ -1,4 +1,6 @@
 "use client";
+import { requestId } from "@/domain/request-id";
+import { createPortal } from "react-dom";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   Bookmark,
@@ -26,6 +28,8 @@ import {
   type OrderViewPreferences,
 } from "@/domain/orders/views";
 import { DataTable } from "./data-table";
+import { OrderInlineDetail } from "./order-inline-detail";
+import { CurrencyDisplayControls } from "./currency-display";
 import "./orders-view.css";
 
 class RequestError extends Error {
@@ -59,7 +63,9 @@ type Outcome = {
 type Props = {
   data: WorkspaceSnapshot;
   columns: ColumnDef<Order>[];
+  viewSlot: HTMLDivElement | null;
   onOpen: (order: Order) => void;
+  onPrepare: (order: Order) => void;
   initialStatus?: string;
   busy: boolean;
   onBulkBusy: (busy: boolean) => void;
@@ -69,12 +75,16 @@ type Props = {
 export function OrdersView({
   data,
   columns,
+  viewSlot,
   onOpen,
+  onPrepare,
   initialStatus,
   busy,
   onBulkBusy,
   onRefresh,
 }: Props) {
+  const [columnsSlot, setColumnsSlot] = useState<HTMLDivElement | null>(null);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
   const [prefs, setPrefs] = useState<OrderViewPreferences | null>(null);
   const [config, setConfig] = useState<OrderViewConfig>(defaultOrderView);
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -94,6 +104,7 @@ export function OrdersView({
   );
   const writing = useRef(false);
   const searchRef = useRef<HTMLInputElement>(null);
+  const expandedTrigger = useRef<HTMLElement | null>(null);
   const generation = data.workspace.generation;
   const locked = busy || saving || loading || batch !== null;
 
@@ -175,14 +186,35 @@ export function OrdersView({
   const canShip = (permissions.SHIP as readonly string[]).includes(
     data.actor.role,
   );
+  const toggleExpanded = useCallback((order: Order) => {
+    expandedTrigger.current = document.activeElement as HTMLElement;
+    setExpandedId((current) => (current === order.id ? null : order.id));
+  }, []);
   const tableColumns = useMemo(
     () =>
-      columns.map((c) =>
-        "accessorKey" in c && c.accessorKey === "number"
-          ? { ...c, enableHiding: false }
-          : c,
+      columns.map((column) =>
+        "accessorKey" in column && column.accessorKey === "number"
+          ? {
+              ...column,
+              enableHiding: false,
+              cell: ({ row }: { row: { original: Order } }) => (
+                <div>
+                  <button
+                    className="text-link"
+                    aria-expanded={expandedId === row.original.id}
+                    aria-label={`${row.original.number} ürünlerini göster`}
+                    disabled={locked}
+                    onClick={() => toggleExpanded(row.original)}
+                  >
+                    {row.original.number}
+                  </button>
+                  <small>{row.original.customer}</small>
+                </div>
+              ),
+            }
+          : column,
       ),
-    [columns],
+    [columns, expandedId, locked, toggleExpanded],
   );
 
   const updateFilters = useCallback((patch: Partial<OrderFilters>) => {
@@ -191,6 +223,7 @@ export function OrdersView({
       filters: { ...current.filters, ...patch },
     }));
     setSelection({});
+    setExpandedId(null);
     setNotice("");
   }, []);
 
@@ -247,7 +280,7 @@ export function OrdersView({
     const next = await write({
       action: "SAVE",
       view: {
-        id: !asNew && activeId ? activeId : crypto.randomUUID(),
+        id: !asNew && activeId ? activeId : requestId(),
         name: name.trim(),
         config: parsed.data,
       },
@@ -296,7 +329,7 @@ export function OrdersView({
           await request("/api/command", {
             method: "POST",
             body: JSON.stringify({
-              key: crypto.randomUUID(),
+              key: requestId(),
               generation,
               command: { action, orderId: order.id },
             }),
@@ -353,62 +386,70 @@ export function OrdersView({
       </section>
     );
 
-  return (
-    <section className="orders-view" aria-label="Sipariş çalışma listesi">
-      <div className="order-view-toolbar">
-        <label>
-          <Bookmark size={17} />
-          <span>Görünümlerim</span>
-          <select
-            aria-label="Kayıtlı sipariş görünümü"
-            value={activeId ?? ""}
-            disabled={locked}
-            onChange={(e) => void activate(e.target.value || null)}
-          >
-            <option value="">Tüm siparişler</option>
-            {prefs.views.map((view) => (
-              <option key={view.id} value={view.id}>
-                {view.name}
-              </option>
-            ))}
-          </select>
-        </label>
-        <span className="order-view-state">
-          {saving
-            ? "Kaydediliyor…"
-            : modified
-              ? "Kaydedilmemiş değişiklikler"
-              : selectedView
-                ? "Sunucuda kayıtlı"
-                : "Varsayılan görünüm"}
-        </span>
+  const viewToolbar = (
+    <div className="order-view-toolbar">
+      <label>
+        <Bookmark size={17} />
+
+        <select
+          aria-label="Kayıtlı sipariş görünümü"
+          value={activeId ?? ""}
+          disabled={locked}
+          onChange={(e) => void activate(e.target.value || null)}
+        >
+          <option value="">Günlük operasyon</option>
+          {prefs.views.map((view) => (
+            <option key={view.id} value={view.id}>
+              {view.name}
+            </option>
+          ))}
+        </select>
+      </label>
+      <span
+        className="order-view-state"
+        role="status"
+        title={modified ? "Kaydedilmemiş değişiklikler" : undefined}
+      >
+        {saving
+          ? "Kaydediliyor…"
+          : modified
+            ? "Değiştirildi"
+            : selectedView
+              ? ""
+              : ""}
+      </span>
+      <button
+        type="button"
+        disabled={locked}
+        onClick={() => {
+          setName(selectedView?.name ?? "");
+          setSaveOpen((v) => !v);
+          setConfirmDelete(false);
+        }}
+      >
+        <Save size={15} />
+        <span className="sr-only">Görünümü kaydet</span>
+      </button>
+      {activeId && (
         <button
           type="button"
+          className="icon-button"
+          aria-label="Kayıtlı görünümü sil"
           disabled={locked}
           onClick={() => {
-            setName(selectedView?.name ?? "");
-            setSaveOpen((v) => !v);
-            setConfirmDelete(false);
+            setConfirmDelete(true);
+            setSaveOpen(false);
           }}
         >
-          <Save size={15} />
-          Görünümü kaydet
+          <Trash2 size={15} />
         </button>
-        {activeId && (
-          <button
-            type="button"
-            className="icon-button"
-            aria-label="Kayıtlı görünümü sil"
-            disabled={locked}
-            onClick={() => {
-              setConfirmDelete(true);
-              setSaveOpen(false);
-            }}
-          >
-            <Trash2 size={15} />
-          </button>
-        )}
-      </div>
+      )}
+    </div>
+  );
+
+  return (
+    <section className="orders-view" aria-label="Sipariş çalışma listesi">
+      {viewSlot ? createPortal(viewToolbar, viewSlot) : viewToolbar}
       {saveOpen && (
         <form
           className="order-view-editor"
@@ -508,6 +549,8 @@ export function OrdersView({
           ["READY", "Sevke hazır"],
           ["SHIPPED", "Sevk edildi"],
           ["RETURN_PENDING", "İade kontrolü"],
+          ["RETURNED", "İade tamamlandı"],
+          ["CANCELLED", "İptal"],
         ].map(([id, label]) => (
           <button
             key={id}
@@ -543,125 +586,146 @@ export function OrdersView({
             />
             <kbd>Ctrl K</kbd>
           </div>
-          <select
-            aria-label="Sipariş durumu"
-            value={filters.status}
-            disabled={locked}
-            onChange={(e) =>
-              updateFilters({
-                status: e.target.value as OrderFilters["status"],
-              })
-            }
-          >
-            <option value="ALL">Tüm durumlar</option>
-            {Object.entries(statusLabels).map(([id, label]) => (
-              <option key={id} value={id}>
-                {label}
-              </option>
-            ))}
-          </select>
-          <select
-            aria-label="Lojistik modeli"
-            value={filters.fulfillment}
-            disabled={locked}
-            onChange={(e) =>
-              updateFilters({
-                fulfillment: e.target.value as OrderFilters["fulfillment"],
-              })
-            }
-          >
-            <option value="ALL">FBS + FBO</option>
-            <option value="FBS">FBS</option>
-            <option value="FBO">FBO · Referans</option>
-          </select>
+          <details className="order-filter-popover">
+            <summary>
+              <Filter size={16} />
+              Filtrele
+              {(filters.fulfillment !== "ALL" ||
+                filters.from ||
+                filters.to) && <span className="filter-indicator" />}
+            </summary>
+            <div className="order-filter-content">
+              <div className="order-filter-selects">
+                <select
+                  aria-label="Sipariş durumu"
+                  value={filters.status}
+                  disabled={locked}
+                  onChange={(e) =>
+                    updateFilters({
+                      status: e.target.value as OrderFilters["status"],
+                    })
+                  }
+                >
+                  <option value="ALL">Tüm durumlar</option>
+                  {Object.entries(statusLabels).map(([id, label]) => (
+                    <option key={id} value={id}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  aria-label="Lojistik modeli"
+                  value={filters.fulfillment}
+                  disabled={locked}
+                  onChange={(e) =>
+                    updateFilters({
+                      fulfillment: e.target
+                        .value as OrderFilters["fulfillment"],
+                    })
+                  }
+                >
+                  <option value="ALL">FBS + FBO</option>
+                  <option value="FBS">FBS</option>
+                  <option value="FBO">FBO · Referans</option>
+                </select>
+              </div>
+              <div className="order-datebar">
+                <Filter size={14} />
+                <span>Oluşturma tarihi</span>
+                <label>
+                  Başlangıç
+                  <input
+                    type="date"
+                    aria-label="Sipariş başlangıç tarihi"
+                    value={filters.from}
+                    disabled={locked}
+                    onChange={(e) => updateFilters({ from: e.target.value })}
+                  />
+                </label>
+                <span>—</span>
+                <label>
+                  Bitiş
+                  <input
+                    type="date"
+                    aria-label="Sipariş bitiş tarihi"
+                    value={filters.to}
+                    disabled={locked}
+                    onChange={(e) => updateFilters({ to: e.target.value })}
+                  />
+                </label>
+                <button
+                  type="button"
+                  disabled={locked}
+                  onClick={() => {
+                    const to = new Date().toLocaleDateString("sv-SE", {
+                      timeZone: "Europe/Istanbul",
+                    });
+                    const from = new Date(`${to}T12:00:00Z`);
+                    from.setUTCDate(from.getUTCDate() - 29);
+                    updateFilters({
+                      from: from.toISOString().slice(0, 10),
+                      to,
+                    });
+                  }}
+                >
+                  Son 30 gün
+                </button>
+                <button
+                  type="button"
+                  disabled={locked}
+                  onClick={() => updateFilters({ from: "", to: "" })}
+                >
+                  Tüm tarihler
+                </button>
+                <small>
+                  Türkiye saati · {filtered.length} / {data.orders.length} kayıt
+                </small>
+              </div>
+              {dateError && (
+                <p className="error" role="alert">
+                  Başlangıç tarihi bitişten sonra olamaz.
+                </p>
+              )}
+              {(filters.query ||
+                filters.status !== "ALL" ||
+                filters.fulfillment !== "ALL" ||
+                filters.from ||
+                filters.to) && (
+                <div className="order-filter-summary">
+                  <span>Etkin filtreler</span>
+                  {filters.status !== "ALL" && (
+                    <span>{statusLabels[filters.status]}</span>
+                  )}
+                  {filters.fulfillment !== "ALL" && (
+                    <span>{filters.fulfillment}</span>
+                  )}
+                  {filters.query && <span>Arama: {filters.query}</span>}
+                  {(filters.from || filters.to) && (
+                    <span>
+                      {filters.from || "Başlangıç yok"} →{" "}
+                      {filters.to || "Bitiş yok"}
+                    </span>
+                  )}
+                  <button
+                    type="button"
+                    disabled={locked}
+                    onClick={() => updateFilters(defaultOrderView().filters)}
+                  >
+                    <X size={12} />
+                    Filtreleri temizle
+                  </button>
+                </div>
+              )}
+            </div>
+          </details>
+          <div id="order-columns-slot" ref={setColumnsSlot} />
+          <CurrencyDisplayControls />
         </div>
-        <div className="order-datebar">
-          <Filter size={14} />
-          <span>Oluşturma tarihi</span>
-          <label>
-            Başlangıç
-            <input
-              type="date"
-              aria-label="Sipariş başlangıç tarihi"
-              value={filters.from}
-              disabled={locked}
-              onChange={(e) => updateFilters({ from: e.target.value })}
-            />
-          </label>
-          <span>—</span>
-          <label>
-            Bitiş
-            <input
-              type="date"
-              aria-label="Sipariş bitiş tarihi"
-              value={filters.to}
-              disabled={locked}
-              onChange={(e) => updateFilters({ to: e.target.value })}
-            />
-          </label>
-          <button
-            type="button"
-            disabled={locked}
-            onClick={() => {
-              const to = new Date().toLocaleDateString("sv-SE", {
-                timeZone: "Europe/Istanbul",
-              });
-              const from = new Date(`${to}T12:00:00Z`);
-              from.setUTCDate(from.getUTCDate() - 29);
-              updateFilters({ from: from.toISOString().slice(0, 10), to });
-            }}
-          >
-            Son 30 gün
-          </button>
-          <button
-            type="button"
-            disabled={locked}
-            onClick={() => updateFilters({ from: "", to: "" })}
-          >
-            Tüm tarihler
-          </button>
-          <small>
-            Türkiye saati · {filtered.length} / {data.orders.length} kayıt
-          </small>
-        </div>
-        {dateError && (
-          <p className="error" role="alert">
-            Başlangıç tarihi bitişten sonra olamaz.
-          </p>
-        )}
       </div>
-      {(filters.query ||
-        filters.status !== "ALL" ||
-        filters.fulfillment !== "ALL" ||
-        filters.from ||
-        filters.to) && (
-        <div className="order-filter-summary">
-          <span>Etkin filtreler</span>
-          {filters.status !== "ALL" && (
-            <span>{statusLabels[filters.status]}</span>
-          )}
-          {filters.fulfillment !== "ALL" && <span>{filters.fulfillment}</span>}
-          {filters.query && <span>Arama: {filters.query}</span>}
-          {(filters.from || filters.to) && (
-            <span>
-              {filters.from || "Başlangıç yok"} → {filters.to || "Bitiş yok"}
-            </span>
-          )}
-          <button
-            type="button"
-            disabled={locked}
-            onClick={() => updateFilters(defaultOrderView().filters)}
-          >
-            <X size={12} />
-            Filtreleri temizle
-          </button>
-        </div>
-      )}
       {selected.length > 0 && (
         <div className="order-bulkbar">
           <div>
             <strong>{selected.length} sipariş seçildi</strong>
-            <small>Seçim filtrelenen listenin tüm sayfalarında korunur.</small>
           </div>
           <div className="order-bulk-actions">
             {canReserve && (
@@ -690,10 +754,6 @@ export function OrdersView({
               Seçimi temizle
             </button>
           </div>
-          <p>
-            Yalnız durumu uygun FBS kayıtları işlenir. Stok ve yetkiler sunucuda
-            yeniden kontrol edilir.
-          </p>
         </div>
       )}
       {batch && (
@@ -729,7 +789,23 @@ export function OrdersView({
         key={tableEpoch}
         data={filtered}
         columns={tableColumns}
-        onOpen={onOpen}
+        onOpen={toggleExpanded}
+        expandedId={expandedId}
+        toolsId="order-columns-slot"
+        toolsContainer={columnsSlot}
+        renderExpanded={(order) => (
+          <OrderInlineDetail
+            order={order}
+            data={data}
+            busy={locked}
+            onOpen={() => onOpen(order)}
+            onPrepare={() => onPrepare(order)}
+            onClose={() => {
+              setExpandedId(null);
+              expandedTrigger.current?.focus();
+            }}
+          />
+        )}
         selection={selection}
         onSelection={setSelection}
         layout={config.layout}
@@ -741,16 +817,6 @@ export function OrdersView({
         disabled={locked}
         label="Siparişler"
       />
-      <p className="order-view-scope">
-        <Bookmark size={13} />
-        Kişisel görünümler bu demo alanındaki{" "}
-        {data.actor.role === "ADMIN"
-          ? "yönetici"
-          : data.actor.role === "WAREHOUSE"
-            ? "depo"
-            : "muhasebe"}{" "}
-        kullanıcısına aittir.
-      </p>
     </section>
   );
 }

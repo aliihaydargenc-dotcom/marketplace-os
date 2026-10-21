@@ -45,3 +45,7 @@ DB testleri ve migration için uygulamaya özel ayrı PostgreSQL gerekir. Üreti
 ## 21 Ekim — E-posta ve GitHub kontrolü
 
 Kullanıcı tekrarlayan e-posta istemiyor. Geliştirme raporlarını bu konuşmada ver; e-posta gönderme veya bildirimli otomasyon oluşturma. Gmail salt okunur aramada marketplace-os Quality başarısız run mailleri doğrulandı. Quality workflow otomatik push/PR yerine workflow_dispatch ile yalnız açıkça başlatılır; kullanıcı istemedikçe remote run/retry başlatma. Yerel teknik kontroller zorunlu olmaya devam eder. Hesap genelindeki veya diğer projelerin e-posta ayarlarının değiştiğini iddia etme.
+
+## 21 Ekim — Güncel görsel seçim: UX-01 / 3
+
+Kullanıcı üç ekran taslağının üçüncüsünü seçti: Operasyon Defteri. Önceki 2. yön referansının somut görsel karşılığı artık `docs/research/ux03/reference.jpg`. İşlevsel paket ve teknik regresyon sonrasında bu tasarım uygulanır. Üst gezinme, geniş tablo, satır içi detay, kısa metin ve isteğe bağlı açıklamalar korunur. Kullanıcı estetik/geçiş kabulü henüz verilmedi. Kaynak karşılaştırması `design-qa.md` ve `docs/research/UX01_SCREEN_EXPLORATION_20261021.md` içinde. Yeni görevde eski sol menüyü yeniden ekleme; öneri/görsel/çalışan uygulama/production ayrımını açık tut.

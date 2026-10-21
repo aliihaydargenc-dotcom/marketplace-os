@@ -1,22 +1,19 @@
 "use client";
+import { requestId } from "@/domain/request-id";
 import { useEffect, useState, useRef, useCallback } from "react";
 import Link from "next/link";
 import {
   LayoutDashboard,
   ShoppingBag,
+  ChevronRight,
   Boxes,
   FileText,
   ChartNoAxesCombined,
   Settings,
   Search,
   ArrowUpRight,
-  RefreshCw,
   Plus,
   PackageCheck,
-  PanelLeftClose,
-  ShieldCheck,
-  LogOut,
-  ChevronRight,
   ScanBarcode,
   RotateCcw,
   Truck,
@@ -51,6 +48,8 @@ import { DataTable } from "./data-table";
 import { lineContributions } from "@/domain/finance/allocation";
 import { PackingWorkbench } from "./packing-workbench";
 import { OrdersView } from "./orders-view";
+import { WorkspaceHeader } from "./workspace-header";
+import "./workspace-design.css";
 import { ReturnsWorkbench } from "./returns-workbench";
 import { InvoiceWorkbench } from "./invoice-workbench";
 import { CostCorrections } from "./cost-corrections";
@@ -62,10 +61,7 @@ import {
   CurrencyDisplayControls,
   displayMoney,
 } from "./currency-display";
-import {
-  canOpenSection,
-  type WorkspaceSection as Section,
-} from "@/domain/navigation";
+import { type WorkspaceSection as Section } from "@/domain/navigation";
 const nav = [
   { id: "dashboard", name: "Operasyon Merkezi", icon: LayoutDashboard },
   { id: "orders", name: "Siparişler", icon: ShoppingBag },
@@ -134,6 +130,10 @@ function WorkspaceBody({
       new Date(Date.now() - 29 * 86400000).toISOString().slice(0, 10),
     ),
     [to, setTo] = useState(today);
+  const [orderViewSlot, setOrderViewSlot] = useState<HTMLDivElement | null>(
+    null,
+  );
+  const [packingOrderId, setPackingOrderId] = useState<string | null>(null);
   const [financeMode, setFinanceMode] = useState<FinancialDateMode>("COHORT");
   const [orderId, setOrderId] = useState<string | null>(null),
     [productId, setProductId] = useState<string | null>(null),
@@ -178,20 +178,41 @@ function WorkspaceBody({
         setOrderId(null);
         setProductId(null);
         setCreating(false);
+        document
+          .querySelectorAll<HTMLDetailsElement>(".design-ledger details[open]")
+          .forEach((menu) => {
+            menu.open = false;
+            menu.querySelector("summary")?.focus();
+          });
       }
       if ((e.ctrlKey || e.metaKey) && e.key === "k") {
         e.preventDefault();
         searchRef.current?.focus();
       }
     }
+    function dismissMenus(event: PointerEvent) {
+      document
+        .querySelectorAll<HTMLDetailsElement>(
+          ".workspace-menu[open], .order-filter-popover[open], .table-column-picker[open], .currency-popover[open]",
+        )
+        .forEach((menu) => {
+          if (event.target instanceof Node && !menu.contains(event.target))
+            menu.open = false;
+        });
+    }
+    document.addEventListener("pointerdown", dismissMenus);
     document.addEventListener("keydown", key);
     return () => document.removeEventListener("keydown", key);
   }, []);
   useEffect(() => {
     if (orderId || productId || creating) {
-      openerRef.current = document.activeElement as HTMLElement;
+      const overflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
       closeRef.current?.focus();
-      return () => openerRef.current?.focus();
+      return () => {
+        document.body.style.overflow = overflow;
+        openerRef.current?.focus();
+      };
     }
   }, [orderId, productId, creating]);
   const allowed = (action: Action) =>
@@ -205,7 +226,7 @@ function WorkspaceBody({
       const result = await api<{ reference: string }>("/api/command", {
         method: "POST",
         body: JSON.stringify({
-          key: crypto.randomUUID(),
+          key: requestId(),
           generation: data.workspace.generation,
           command,
         }),
@@ -222,6 +243,18 @@ function WorkspaceBody({
       setBusy(false);
     }
   }
+  function openOrder(id: string) {
+    openerRef.current = document.activeElement as HTMLElement;
+    setOrderId(id);
+  }
+  function openProduct(id: string) {
+    openerRef.current = document.activeElement as HTMLElement;
+    setProductId(id);
+  }
+  function openCreate() {
+    openerRef.current = document.activeElement as HTMLElement;
+    setCreating(true);
+  }
   function act(c: Command) {
     void run(c).catch(() => {});
   }
@@ -230,14 +263,26 @@ function WorkspaceBody({
     window.history.replaceState(null, "", `/workspace?section=${next}`);
     setSearch("");
     setStatus("ALL");
+    requestAnimationFrame(() => {
+      document
+        .getElementById("workspace-heading")
+        ?.focus({ preventScroll: true });
+      window.scrollTo({ top: 0, behavior: "instant" });
+    });
   }
   if (loading)
     return (
-      <main className="boot">
-        <div className="brand-mark">M</div>
-        <h2>Marketplace OS</h2>
-        <p>Operasyon alanı yükleniyor…</p>
-      </main>
+      <div className="app-shell design-ledger">
+        <header className="ledger-header">
+          <span className="ledger-brand">
+            marketplace<strong>OS</strong>
+          </span>
+          <span className="ledger-demo">DEMO</span>
+        </header>
+        <main className="workspace-main" aria-busy="true">
+          <p role="status">Çalışma alanı yükleniyor…</p>
+        </main>
+      </div>
     );
   if (!data)
     return (
@@ -309,7 +354,7 @@ function WorkspaceBody({
         <div>
           <button
             className="text-link"
-            onClick={() => setOrderId(row.original.id)}
+            onClick={() => openOrder(row.original.id)}
           >
             {row.original.number}
           </button>
@@ -372,7 +417,7 @@ function WorkspaceBody({
       cell: ({ row }) => (
         <button
           className="text-link"
-          onClick={() => setProductId(row.original.id)}
+          onClick={() => openProduct(row.original.id)}
         >
           {row.original.sku}
         </button>
@@ -464,136 +509,45 @@ function WorkspaceBody({
     totalUnits = order ? order.lines.reduce((s, l) => s + l.quantity, 0) : 0;
   const financialOrder = order ? profitability(order, data.financial) : null;
   return (
-    <div className="app-shell">
-      <aside className="sidebar">
-        <div className="brand">
-          <span className="brand-mark">M</span>
-          <span>
-            marketplace<b>OS</b>
-          </span>
-        </div>
-        <div className="store">
-          <span className="store-avatar">PT</span>
-          <div>
-            <strong>{data.workspace.name}</strong>
-            <small>Ozon Global · Demo mağaza</small>
-          </div>
-        </div>
-        <p className="nav-label">ÇALIŞMA ALANI</p>
-        <nav>
-          {nav
-            .filter((n) => canOpenSection(data.actor.role, n.id))
-            .map((n) => (
-              <button
-                key={n.id}
-                className={section === n.id ? "active" : ""}
-                disabled={busy}
-                onClick={() => navigate(n.id)}
-              >
-                <n.icon size={18} />
-                {n.name}
-                {n.id === "orders" && (
-                  <span>
-                    {data.orders.filter((o) => o.status === "NEW").length}
-                  </span>
-                )}
-              </button>
-            ))}
-        </nav>
-        <div className="sidebar-bottom">
-          <div className="demo-status">
-            <span />
-            Demo veri sağlayıcısı<small>Ozon / Paraşüt bağlı değil</small>
-          </div>
-          <div className="user-avatar">
-            <span>{roleLabels[data.actor.role].slice(0, 1)}</span>
-            <div>
-              <strong>{roleLabels[data.actor.role]}</strong>
-              <small>İzole çalışma alanı</small>
-            </div>
-            <button
-              aria-label="Çıkış yap"
-              disabled={busy}
-              onClick={() => {
-                void api("/api/session", { method: "DELETE" })
-                  .then(() =>
-                    // eslint-disable-next-line @next/next/no-location-assign-relative-destination -- Ended sessions must discard the complete workspace client state.
-                    window.location.assign("/"),
-                  )
-                  .catch((e: Error) => setError(e.message));
-              }}
-            >
-              <LogOut size={17} />
-            </button>
-          </div>
-        </div>
-      </aside>
-      <div className="main-shell">
-        <header className="topbar">
-          <div>
-            <PanelLeftClose size={17} />
-            <span>Çalışma alanı</span>
-            <ChevronRight size={14} />
-            <strong>{nav.find((n) => n.id === section)?.name}</strong>
-          </div>
-          <div>
-            <Link
-              className="demo-center-link"
-              href={`/?returnTo=${section}`}
-              prefetch={false}
-              aria-disabled={busy}
-              onClick={(e) => {
-                if (busy) e.preventDefault();
-              }}
-            >
-              <LayoutDashboard size={15} /> Demo Merkezi
-            </Link>
-            <span className="demo-tag">DEMO VERİSİ</span>
-            <span className="top-date">
-              {new Date().toLocaleDateString("tr-TR", {
-                day: "numeric",
-                month: "long",
-                year: "numeric",
-              })}
-            </span>
-            <button
-              className="icon-button"
-              aria-label="Verileri yenile"
-              onClick={() => void load()}
-            >
-              <RefreshCw size={17} />
-            </button>
-          </div>
-        </header>
-        <main className="workspace-main">
+    <div className="app-shell design-ledger">
+      <div className="main-shell" inert={!!(order || product || creating)}>
+        <a className="workspace-skip" href="#workspace-content">
+          İçeriğe geç
+        </a>
+        <WorkspaceHeader
+          data={data}
+          section={section}
+          busy={busy}
+          onNavigate={navigate}
+          onRefresh={() => void load()}
+          onLogout={() => {
+            void api("/api/session", { method: "DELETE" })
+              .then(() => {
+                // eslint-disable-next-line @next/next/no-location-assign-relative-destination -- A closed session discards privileged client state.
+                window.location.assign("/");
+              })
+              .catch((e: Error) => setError(e.message));
+          }}
+        />
+        <main
+          id="workspace-content"
+          className="workspace-main"
+          data-section={section}
+        >
           <div className="page-heading">
             <div>
-              <p className="eyebrow">OZON GLOBAL OPERASYONLARI</p>
-              <h1>{nav.find((n) => n.id === section)?.name}</h1>
-              <p>
-                {
-                  {
-                    dashboard:
-                      "Operasyonun nabzı. Bekleyen işler ve kayıtlarla hesaplanan sonuçlar.",
-                    orders:
-                      "Siparişleri kontrol edin, hazırlayın ve sevkiyata ilerletin.",
-                    packing:
-                      "Bekleyen FBS siparişlerini sırayla hazırlayın, barkodla doğrulayın ve sevk edin.",
-                    inventory:
-                      "Fiziksel stok, rezervasyon ve kullanılabilir miktar tek görünümde.",
-                    returns:
-                      "Bekleyen iadeleri kontrol edin; stok ve maliyet etkisini izleyerek karar verin.",
-                    invoices:
-                      "Siparişe bağlı belgeler. Tüm belgeler DEMO / TASLAK niteliğindedir.",
-                    finance:
-                      "Sipariş kohortuna göre satış, gider ve katkı kârı mutabakatı.",
-                    settings:
-                      "Demo mağazası, kullanıcı yetkileri ve işlem kayıtları.",
-                  }[section]
-                }
-              </p>
+              <h1 id="workspace-heading" tabIndex={-1}>
+                {nav.find((n) => n.id === section)?.name}
+              </h1>
+              {section === "orders" && (
+                <div id="order-view-slot" ref={setOrderViewSlot} />
+              )}
             </div>
             <div className="heading-actions">
+              {["dashboard", "finance", "inventory"].includes(section) && (
+                <CurrencyDisplayControls />
+              )}
+
               {["finance", "dashboard"].includes(section) &&
                 allowed("REPORT") && (
                   <a
@@ -605,23 +559,12 @@ function WorkspaceBody({
                 )}
               {["orders", "dashboard"].includes(section) &&
                 allowed("CREATE_ORDER") && (
-                  <button className="primary" onClick={() => setCreating(true)}>
+                  <button className="primary" onClick={openCreate}>
                     <Plus size={17} />
                     Yeni sipariş
                   </button>
                 )}
             </div>
-          </div>
-          <div className="demo-banner">
-            <ShieldCheck size={17} />
-            <span>
-              <strong>Demo çalışma alanı.</strong> İşlemleriniz kalıcıdır ve
-              yalnızca bu oturuma aittir. Gerçek sipariş veya e-Fatura
-              gönderilmez.
-            </span>
-            <span className="session-id">
-              Alan {data.workspace.id.slice(0, 8)}
-            </span>
           </div>
           {error && (
             <div className="alert error" role="alert">
@@ -644,7 +587,6 @@ function WorkspaceBody({
               </button>
             </div>
           )}
-          <CurrencyDisplayControls />
           {["dashboard", "finance"].includes(section) && (
             <div className="period-toolbar">
               <div>
@@ -901,7 +843,7 @@ function WorkspaceBody({
               <DataTable
                 data={orders.slice(0, 8)}
                 columns={orderColumns}
-                onOpen={(o) => setOrderId(o.id)}
+                onOpen={(o) => openOrder(o.id)}
                 label="Son siparişler"
               />
             </>
@@ -911,7 +853,12 @@ function WorkspaceBody({
               key={`${data.workspace.id}:${data.actor.userId}:${data.workspace.generation}`}
               data={data}
               columns={orderColumns}
-              onOpen={(o) => setOrderId(o.id)}
+              viewSlot={orderViewSlot}
+              onOpen={(o) => openOrder(o.id)}
+              onPrepare={(o) => {
+                setPackingOrderId(o.id);
+                navigate("packing");
+              }}
               initialStatus={status !== "ALL" ? status : undefined}
               busy={busy}
               onBulkBusy={setBusy}
@@ -920,10 +867,12 @@ function WorkspaceBody({
           )}
           {section === "packing" && allowed("SCAN") && (
             <PackingWorkbench
+              key={packingOrderId ?? "queue"}
+              initialOrderId={packingOrderId}
               data={data}
               busy={busy}
               onCommand={run}
-              onOpen={setOrderId}
+              onOpen={openOrder}
             />
           )}
           {section === "returns" && allowed("QC") && (
@@ -932,7 +881,7 @@ function WorkspaceBody({
               data={data}
               busy={busy}
               onCommand={run}
-              onOpen={setOrderId}
+              onOpen={openOrder}
               onRefresh={load}
             />
           )}
@@ -942,7 +891,7 @@ function WorkspaceBody({
                 data={data}
                 busy={busy}
                 run={run}
-                onCreated={setProductId}
+                onCreated={openProduct}
               />
               <div className="inventory-summary">
                 <span>
@@ -994,7 +943,7 @@ function WorkspaceBody({
               <DataTable
                 data={products}
                 columns={productColumns}
-                onOpen={(p) => setProductId(p.id)}
+                onOpen={(p) => openProduct(p.id)}
                 label="Stok ve depo"
               />
               <InventoryDocuments
@@ -1012,7 +961,7 @@ function WorkspaceBody({
               busy={busy}
               run={run}
               reload={load}
-              onOpen={setOrderId}
+              onOpen={openOrder}
             />
           )}
           {section === "finance" && (
@@ -1178,7 +1127,7 @@ function WorkspaceBody({
                     },
                   ] satisfies ColumnDef<Order>[]
                 }
-                onOpen={(o) => setOrderId(o.id)}
+                onOpen={(o) => openOrder(o.id)}
                 label="Finans mutabakatı"
               />
               <section className="panel">
@@ -1188,7 +1137,7 @@ function WorkspaceBody({
                     <div key={e.id}>
                       <button
                         className="text-link"
-                        onClick={() => setOrderId(e.order_id)}
+                        onClick={() => openOrder(e.order_id)}
                       >
                         {data.orders.find((o) => o.id === e.order_id)?.number ??
                           e.order_id}
@@ -1226,7 +1175,7 @@ function WorkspaceBody({
       </div>
       {(order || product || creating) && (
         <div
-          className="drawer-backdrop"
+          className="drawer-backdrop record-sheet-backdrop"
           onMouseDown={(e) => {
             if (e.target === e.currentTarget) {
               setOrderId(null);
@@ -1236,7 +1185,7 @@ function WorkspaceBody({
           }}
         >
           <aside
-            className="drawer"
+            className="drawer record-sheet"
             role="dialog"
             aria-modal="true"
             aria-label={

@@ -56,23 +56,6 @@ export function ReturnsWorkbench({
       className="returns-workbench"
       aria-label="İade kalite kontrol çalışma alanı"
     >
-      <div className="returns-heading">
-        <div>
-          <h2>
-            <RotateCcw size={18} />
-            İade ve kalite kontrol
-          </h2>
-          <p>FBS · En eski iade önce · Tüm tarihler · Tam sipariş kararı</p>
-        </div>
-        <button
-          disabled={busy}
-          onClick={() => {
-            void onRefresh().then(() => setNow(Date.now()));
-          }}
-        >
-          Kuyruğu yenile
-        </button>
-      </div>
       <div className="returns-toolbar">
         <div className="returns-lanes" aria-label="İade kuyrukları">
           {(["PENDING", "ACCEPTED", "REJECTED", "ALL"] as const).map((id) => (
@@ -101,6 +84,16 @@ export function ReturnsWorkbench({
             </button>
           ))}
         </div>
+        <button
+          disabled={busy}
+          aria-label="İade kuyruğunu yenile"
+          onClick={() => {
+            void onRefresh().then(() => setNow(Date.now()));
+          }}
+        >
+          <RotateCcw size={16} />
+          Yenile
+        </button>
         <label className="search-field">
           <Search size={16} />
           <input

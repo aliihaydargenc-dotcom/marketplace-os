@@ -21,15 +21,24 @@ const lanes: { id: PackingLane; label: string }[] = [
 
 type Props = {
   data: WorkspaceSnapshot;
+  initialOrderId?: string | null;
   busy: boolean;
   onCommand: (command: Command) => Promise<unknown>;
   onOpen: (orderId: string) => void;
 };
 
-export function PackingWorkbench({ data, busy, onCommand, onOpen }: Props) {
+export function PackingWorkbench({
+  data,
+  busy,
+  onCommand,
+  onOpen,
+  initialOrderId,
+}: Props) {
   const [lane, setLane] = useState<PackingLane>("ALL");
   const [search, setSearch] = useState("");
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(
+    initialOrderId ?? null,
+  );
   const [feedback, setFeedback] = useState("");
   const queue = packingQueue(data.orders, data.products, lane, search);
   const active = queue.find((o) => o.id === selectedId) ?? queue[0];

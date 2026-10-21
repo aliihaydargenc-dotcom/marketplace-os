@@ -1,0 +1,119 @@
+.ledger-entry {
+  min-height: 100dvh;
+  background: #fff;
+  font-family: Inter, Arial, sans-serif;
+  color: #233653;
+}
+.entry-header {
+  min-height: 56px;
+  padding: 0 36px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #192d45;
+  color: white;
+}
+.entry-brand {
+  color: white;
+  letter-spacing: -0.8px;
+  font-size: 22px;
+  font-weight: 700;
+}
+.entry-brand strong {
+  color: #59a0ff;
+}
+.entry-header > span {
+  font-size: 10px;
+  background: #ffffff12;
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+.entry-main {
+  min-height: calc(100dvh - 56px);
+  display: grid;
+  place-items: center;
+  padding: 48px 24px;
+}
+.entry-launch {
+  width: 100%;
+  max-width: 420px;
+}
+.entry-eyebrow {
+  font-size: 11px;
+  color: #65758c;
+  letter-spacing: 1.8px;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+.entry-launch h1 {
+  font-size: 30px;
+  letter-spacing: -1px;
+  margin-bottom: 10px;
+}
+.entry-description {
+  color: #65758c;
+  font-size: 14px;
+  margin-bottom: 30px;
+}
+.entry-launch > label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #536580;
+  font-size: 13px;
+  margin-bottom: 18px;
+}
+.entry-launch select {
+  min-height: 44px;
+  font-size: 14px;
+}
+.entry-submit {
+  width: 100%;
+  min-height: 44px;
+  margin-top: 8px;
+  display: flex;
+  justify-content: space-between;
+  background: #1264f4 !important;
+}
+.entry-resume {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 13px;
+  padding: 16px 0;
+}
+.entry-session {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #16816a;
+  font-size: 12px;
+  margin-bottom: 24px;
+}
+.entry-note {
+  margin-top: 24px;
+  border-top: 1px solid #e8edf4;
+  padding-top: 16px;
+  color: #65758c;
+  font-size: 12px;
+}
+.entry-note summary {
+  cursor: pointer;
+}
+.entry-note p {
+  margin-top: 10px;
+  line-height: 1.7;
+}
+@media (max-width: 550px) {
+  .entry-header {
+    padding: 0 20px;
+  }
+  .entry-main {
+    place-items: start center;
+    padding-top: 50px;
+  }
+  .entry-launch h1 {
+    font-size: 27px;
+  }
+}

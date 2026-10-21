@@ -216,7 +216,6 @@ export function CatalogTools({
     <section className="catalog-tools" aria-label="Ürün kataloğu yönetimi">
       <div className="catalog-tools-row">
         <div>
-          <strong>Ürün kataloğu</strong>
           <p>
             {count} Ozon referanslı örnek ürün ·{" "}
             {data.products.filter((p) => p.active === false).length} pasif SKU
@@ -249,11 +248,14 @@ export function CatalogTools({
           </div>
         )}
       </div>
-      <p className="catalog-hint">
-        Ozon referansı yalnız açık ürün bilgilerini belirtir. Fiyatlar, alış
-        maliyetleri, DEMO barkodlar, stoklar ve üç örnek sipariş kurgusaldır;
-        canlı satış aktarımı değildir.
-      </p>
+      <details className="catalog-data-note">
+        <summary>Örnek veriler hakkında</summary>
+        <p className="catalog-hint">
+          Ozon referansı yalnız açık ürün bilgilerini belirtir. Fiyatlar, alış
+          maliyetleri, DEMO barkodlar, stoklar ve üç örnek sipariş kurgusaldır;
+          canlı satış aktarımı değildir.
+        </p>
+      </details>
       {error && (
         <p role="alert" className="danger-text">
           {error}
@@ -281,7 +283,8 @@ export function ProductSource({ product }: { product: Product }) {
   )
     return null;
   return (
-    <div className="catalog-source">
+    <details className="catalog-source">
+      <summary>Ozon referansı</summary>
       <a
         href={source.url}
         target="_blank"
@@ -291,6 +294,6 @@ export function ProductSource({ product }: { product: Product }) {
         Ozon ürün referansı ↗
       </a>
       <span>Kontrol: {source.reviewedAt} · fiyat / stok / barkod DEMO</span>
-    </div>
+    </details>
   );
 }

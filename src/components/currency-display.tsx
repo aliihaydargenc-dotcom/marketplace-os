@@ -91,74 +91,86 @@ export function CurrencyDisplayProvider({ children }: { children: ReactNode }) {
   }, [load]);
   const valid = quote && usableQuote(quote) ? quote : null;
   const controls = (
-    <section className="currency-display-bar" aria-label="Döviz karşılığı">
-      <div className="currency-display-choice">
-        <label htmlFor="currency-equivalent">Tutarların altında</label>
-        <select
-          id="currency-equivalent"
-          value={target}
-          onChange={(e) => setTarget(e.target.value as QuoteCurrency | "OFF")}
+    <details className="currency-popover">
+      <summary aria-label="Döviz karşılığı">
+        {target === "OFF"
+          ? "Özgün tutar"
+          : `≈ ${target === "TRY" ? "TL" : target}`}
+        {!loading && !valid
+          ? " · Kur yok"
+          : valid && quoteAge(valid) > 0
+            ? " · Önceki bülten"
+            : ""}
+      </summary>
+      <section className="currency-display-bar" aria-label="Kur ayrıntıları">
+        <div className="currency-display-choice">
+          <label htmlFor="currency-equivalent">Tutarların altında</label>
+          <select
+            id="currency-equivalent"
+            value={target}
+            onChange={(e) => setTarget(e.target.value as QuoteCurrency | "OFF")}
+          >
+            <option value="TRY">Türk lirası karşılığını göster</option>
+            <option value="EUR">Euro karşılığını göster</option>
+            <option value="RUB">Ruble karşılığını göster</option>
+            <option value="OFF">Yalnız özgün tutarı göster</option>
+          </select>
+        </div>
+        <div className="currency-display-source" aria-live="polite">
+          {valid ? (
+            <>
+              <a href={rateSource} target="_blank" rel="noreferrer">
+                TCMB · döviz alış
+              </a>
+              <span>
+                Bülten: {valid.bulletinDate.split("-").reverse().join(".")}{" "}
+                {quoteAge(valid) > 0 ? "· Önceki tarihli bülten" : ""}
+              </span>
+              <span>
+                1 RUB ={" "}
+                {(valid.tryPerUnit.RUB / RATE_SCALE).toLocaleString("tr-TR", {
+                  maximumFractionDigits: 8,
+                })}{" "}
+                TL · 1 EUR ={" "}
+                {(valid.tryPerUnit.EUR / RATE_SCALE).toLocaleString("tr-TR", {
+                  maximumFractionDigits: 8,
+                })}{" "}
+                TL
+              </span>
+              <small>
+                Son kontrol:{" "}
+                {new Date(valid.checkedAt).toLocaleTimeString("tr-TR", {
+                  timeZone: "Europe/Istanbul",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}{" "}
+                · Türkiye saati
+              </small>
+            </>
+          ) : (
+            <span role={error ? "alert" : "status"}>
+              {loading
+                ? "TCMB kuru kontrol ediliyor…"
+                : error || "Kur geçerli değil; karşılıklar gösterilmiyor."}
+            </span>
+          )}
+        </div>
+        <button
+          type="button"
+          disabled={loading}
+          onClick={() => {
+            setLoading(true);
+            void load();
+          }}
         >
-          <option value="TRY">Türk lirası karşılığını göster</option>
-          <option value="EUR">Euro karşılığını göster</option>
-          <option value="RUB">Ruble karşılığını göster</option>
-          <option value="OFF">Yalnız özgün tutarı göster</option>
-        </select>
-      </div>
-      <div className="currency-display-source" aria-live="polite">
-        {valid ? (
-          <>
-            <a href={rateSource} target="_blank" rel="noreferrer">
-              TCMB · döviz alış
-            </a>
-            <span>
-              Bülten: {valid.bulletinDate.split("-").reverse().join(".")}{" "}
-              {quoteAge(valid) > 0 ? "· Önceki tarihli bülten" : ""}
-            </span>
-            <span>
-              1 RUB ={" "}
-              {(valid.tryPerUnit.RUB / RATE_SCALE).toLocaleString("tr-TR", {
-                maximumFractionDigits: 8,
-              })}{" "}
-              TL · 1 EUR ={" "}
-              {(valid.tryPerUnit.EUR / RATE_SCALE).toLocaleString("tr-TR", {
-                maximumFractionDigits: 8,
-              })}{" "}
-              TL
-            </span>
-            <small>
-              Son kontrol:{" "}
-              {new Date(valid.checkedAt).toLocaleTimeString("tr-TR", {
-                timeZone: "Europe/Istanbul",
-                hour: "2-digit",
-                minute: "2-digit",
-              })}{" "}
-              · Türkiye saati
-            </small>
-          </>
-        ) : (
-          <span role={error ? "alert" : "status"}>
-            {loading
-              ? "TCMB kuru kontrol ediliyor…"
-              : error || "Kur geçerli değil; karşılıklar gösterilmiyor."}
-          </span>
-        )}
-      </div>
-      <button
-        type="button"
-        disabled={loading}
-        onClick={() => {
-          setLoading(true);
-          void load();
-        }}
-      >
-        {loading ? "Kontrol ediliyor…" : "Kuru kontrol et"}
-      </button>
-      <p>
-        Özgün tutarlar değişmez. ≈ işaretli karşılıklar son bültenle yaklaşık
-        değerlemedir; işlem kuru ve rapor çıktıları ayrıdır.
-      </p>
-    </section>
+          {loading ? "Kontrol ediliyor…" : "Kuru kontrol et"}
+        </button>
+        <p>
+          Özgün tutarlar değişmez. ≈ işaretli karşılıklar son bültenle yaklaşık
+          değerlemedir; işlem kuru ve rapor çıktıları ayrıdır.
+        </p>
+      </section>
+    </details>
   );
   return (
     <CurrencyContext.Provider value={{ quote: valid, target }}>

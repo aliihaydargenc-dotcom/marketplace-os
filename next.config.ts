@@ -6,5 +6,6 @@ const config: NextConfig = {
     "https-proxy-agent",
   ],
   poweredByHeader: false,
+  allowedDevOrigins: ["terminal.local"],
 };
 export default config;

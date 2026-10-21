@@ -1,4 +1,5 @@
 "use client";
+import { Search } from "lucide-react";
 import { useRef, useState } from "react";
 import type { ColumnDef, RowSelectionState } from "@tanstack/react-table";
 import type { WorkspaceSnapshot } from "@/domain/types";
@@ -85,8 +86,8 @@ export function InvoiceWorkbench({
     }
   }
   return (
-    <>
-      <div className="filterbar">
+    <section className="invoice-workbench" aria-label="Fatura çalışma alanı">
+      <div className="filterbar invoice-lanes">
         {Object.entries(labels).map(([id, label]) => (
           <button
             key={id}
@@ -106,9 +107,11 @@ export function InvoiceWorkbench({
         ))}
       </div>
       <div className="filterbar">
-        <label>
-          Belge, sipariş veya hata ara
+        <label className="search-field">
+          <Search size={17} />
           <input
+            aria-label="Belge, sipariş veya hata ara"
+            placeholder="Belge, sipariş veya hata ara…"
             value={query}
             disabled={locked}
             onChange={(e) => {
@@ -117,7 +120,9 @@ export function InvoiceWorkbench({
             }}
           />
         </label>
-        <span>Paraşüt: demo · Dışarı gönderilmez · DEMO / TASLAK</span>
+        <span className="pill" title="Paraşüt bağlı değil · Dışarı gönderilmez">
+          DEMO / TASLAK
+        </span>
       </div>
       <div className="filterbar">
         <button
@@ -126,10 +131,12 @@ export function InvoiceWorkbench({
         >
           Seçili {candidates.length} siparişe taslak oluştur
         </button>
-        <span className="muted">
-          İşlem başına en çok 50 uygun sipariş. Hatalı/iptal belgeler detaydan
-          gerekçeyle yeniden açılır.
-        </span>
+        <small
+          className="muted"
+          title="Hatalı ve iptal belgeler detaydan gerekçeyle yeniden açılır"
+        >
+          En fazla 50 uygun sipariş
+        </small>
       </div>
       {results.length > 0 && (
         <div role="status">
@@ -193,6 +200,6 @@ export function InvoiceWorkbench({
           ] satisfies ColumnDef<(typeof rows)[number]>[]
         }
       />
-    </>
+    </section>
   );
 }

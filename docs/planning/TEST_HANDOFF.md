@@ -128,3 +128,16 @@ Sonuç tablosu: commit SHA / ortam / komut veya manuel adım / PASS-FAIL-BLOCKED
 - [ ] Sipariş detayındaki demo sağlayıcı kayıtları “dışarı gönderilmedi” olarak görünür. Gerçek Ozon/Paraşüt veya e-Fatura bağlantısı iddia edilmez.
 
 Geliştirici hedefli dosyaları: inventory-documents.db.test.ts, operations-completion.db.test.ts, reporting-periods.test.ts, integrations.test.ts. Bayraklar README'de. Toplu test ve derleme sonucu PROGRESS/TEST_REPORT içinde kaydedilir. Kullanıcı kabulü işlevsel paket ve kapsamlı tasarım sonrasında yapılır; bu kutular şimdi kullanıcıdan test bekleme şartı değildir.
+
+
+## UX-01 — 3. görsel / güncel kabul
+
+Geliştirici yerel UI ve teknik kontrolleri PROGRESS ve design-qa.md içinde. Kullanıcı kabulü bunlardan ayrıdır. Önizleme PGlite test veritabanı kullanır; üretim verisi değildir.
+
+- [ ] Üst gezinmede günlük modül erişimi; mağaza menüsünde Operasyon Merkezi, Sistem Yönetimi, Demo Merkezi ve çıkış bulunabilirliği.
+- [ ] Sipariş satırını aç/kapat, filtre/sütun/görünüm, ortalı detay penceresi ve aramaya/odağa dönüş; 1440/1920 gerçek masaüstü akıcılığı.
+- [ ] Satırdan hazırlamaya doğru sipariş; gerçek barkod okuyucuyla seri işlem ve sevkiyat geri bildirimi.
+- [ ] Stok, iadeler, faturalar ve finansın ortak tipografi/yoğunluğu; gereksiz kalan metin ve alanlar.
+- [ ] Güncel kur erişimi olan yayın ortamında ≈ tutar seçimi ve kaynak/tarih ayrıntısı; önizlemede kur yoksa sessiz demo kuruna düşülmemesi.
+
+Bu kutular son kullanıcı tarafından işaretlenmedi. Yeni production linki ancak ayrı READY/smoke kanıtıyla verilir.

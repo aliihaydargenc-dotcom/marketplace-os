@@ -188,3 +188,18 @@ Kullanıcının e-posta istemediği kaydedildi; gelişmeler konuşmadan bildiril
 ### Bu paketin kapanış durumu
 
 INV-01 / INT-01 / FIN-01 / DOC-01 kodlandı; ilgili sunucu/DB/saf hesap kabulleri ve mevcut regresyonlar geçti. QA-01 yerel teknik bölümü PASS; uzak GitHub CI kök nedeni BLOCKED/UNVERIFIED (run adımları yok, log 404), yeni remote run kullanıcı e-posta talebi nedeniyle başlatılmadı. Geniş UI/geçiş, scanner ve kullanıcı kabulü son tasarım aşaması sonrasında açık kalır. UX-01 henüz uygulanmadı; sıradaki ürün çalışmasıdır. Yeni production yayını yapılmadı. Mevcut canlı d0f13f0 önceki kayıt olup bu tur yeniden ölçülmedi.
+
+
+### UX-01 — Seçilen üçüncü ekran uygulandı
+
+Kullanıcının 3 seçimi, `docs/research/ux03/reference.jpg` (Operasyon Defteri). Sorun/sınır: üstte açıklama kutuları ve global sol menü tabloyu daraltıyordu; mevcut Next.js uygulamasının kabuğu ve gerçek kayıtlarla çalışan Siparişler yapısı değiştirildi. Yeni statik uygulama veya sahte veri API'si yapılmadı. Bağımlılık: önceki işlevsel paket; kaynak okuma ve lisans kaydı UX01_SCREEN_EXPLORATION_20261021.md. Kabul: sol global menü yok; role uygun üst gezinme, kısa başlık ve tek araç satırı; satır içinde gerçek SKU/barkod/adet; ayrıntı kapatınca bağlam; seçili siparişe hazırlama geçişi; mevcut sunucu işlem sınırları.
+
+Ayrı WorkspaceHeader ve OrderInlineDetail; DataTable genişleyen satırı, ayrı sütun menüsü yuvası; OrdersView kayıtlı görünümü başlık yanında, filtre ve kur bilgisi isteğe bağlı. Stok araçları/ürün kaynak bilgisi ve fatura/iade araçları sadeleşti; Demo Merkezi tek rol/başlangıç formu. Inter dosyası ve OFL lisansı yerel. Detay penceresi ortalı, arka içerik inert; odak ve gövde kaydırması geri gelir. Escape/dış tık, focus-visible, reduced-motion. `workspace.tsx` küçüldü; transaction/şema/finans ve server RBAC değiştirilmedi.
+
+Yerel typecheck, lint (0 uyarı), format ve production build PASS. Son hedefli koşu **11 dosya / 32 test PASS**, 5.47s (182ms test); requestId için iki yeni anlamlı kontrol dahil. HTTP yerel önizlemede randomUUID yokluğu görüldü; getRandomValues tabanlı UUID v4 fallback düzeltildi ve gerçek işlem zinciri tekrar denendi. Önceki 70 testlik Neon regresyonu tekrarlanmadı; önceki kanıt ayrı. Uzak GitHub CI/run/retry başlatılmadı.
+
+Bulut tarayıcıda yerel, izole bellek PGlite 0.5.10 + pglite-socket 0.2.13; mevcut 0001–0007 migration ve seed, uygulamanın gerçek session/workspace/command/order-views uçları. Neon dış bağlantısı önizleme ortamında başarısız olduğundan bu yerel araç yalnız QA için kullanıldı; production bağımlılığına eklenmedi. Gerçek Neon concurrency regresyonu diye sayılmaz. DEMO-OZON-001: satırdan doğru hazırlama hedefi → rezervasyon → iki barkod → sevkiyat → gerçek yerel taslak fatura; finans/stok referansları görüldü. Görünüm kaydet/yenile, filtre, sütun, detay sonrası arama/açık satır/odak, üst modüller ve depo rolü gezinmesi doğrulandı.
+
+Kaynak + uygulama birleşik karşılaştırmasında ilk P2 yoğunluk/hizalama bulguları düzeltildi; son tam ve odak görselleri kontrol edilip **design-qa.md final result: passed**. 390/1440/1920 CSS iframe'lerinde main yatay taşması yok. Geniş iframe screenshot araç zaman aşımı; bu boyutlarda tam görsel var denmedi. Gerçek fiziksel mobil/scanner ve kullanıcının estetik/geçiş kabulü bekliyor. TCMB önizleme ağında alınamadığından karşılıklar gizli; özgün tutarlar ve açık Kur yok durumu korunur. Seçili görseldeki ürün fotoğrafları için katalog alanı/lisanslı kaynak yok; uydurma fotoğraf eklenmedi.
+
+GitHub'da bu teslim paketi saklanır; yeni production deployment, canlı migration/reset veya e-posta yok. Kullanıcı yeni tasarımı yerel bulut önizlemede inceleyebilir; eski canlı site yeni sürümmüş gibi verilmez.

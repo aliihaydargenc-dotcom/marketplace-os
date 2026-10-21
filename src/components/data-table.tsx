@@ -1,5 +1,7 @@
 "use client";
-import { useState } from "react";
+import { createPortal } from "react-dom";
+import { Fragment, useState, type ReactNode } from "react";
+import { Columns3, MoreHorizontal } from "lucide-react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -27,6 +29,10 @@ export function DataTable<T extends { id: string }>({
   layout,
   onLayoutChange,
   disabled = false,
+  expandedId,
+  renderExpanded,
+  toolsId,
+  toolsContainer,
 }: {
   data: T[];
   columns: ColumnDef<T>[];
@@ -37,6 +43,10 @@ export function DataTable<T extends { id: string }>({
   layout?: DataTableLayout;
   onLayoutChange?: (layout: DataTableLayout) => void;
   disabled?: boolean;
+  expandedId?: string | null;
+  renderExpanded?: (row: T) => ReactNode;
+  toolsId?: string;
+  toolsContainer?: HTMLElement | null;
 }) {
   const [sorting, setSorting] = useState<SortingState>([]),
     [visibility, setVisibility] = useState<VisibilityState>({}),
@@ -95,31 +105,38 @@ export function DataTable<T extends { id: string }>({
     getPaginationRowModel: getPaginationRowModel(),
     autoResetPageIndex: true,
   });
+  const columnPicker = (
+    <details className="table-column-picker">
+      <summary>
+        <Columns3 size={16} /> Sütunlar
+      </summary>
+      <div className="column-menu">
+        {table
+          .getAllLeafColumns()
+          .filter((c) => c.getCanHide())
+          .map((c) => (
+            <label key={c.id}>
+              <input
+                type="checkbox"
+                checked={c.getIsVisible()}
+                disabled={disabled}
+                onChange={c.getToggleVisibilityHandler()}
+              />
+              {typeof c.columnDef.header === "string"
+                ? c.columnDef.header
+                : c.id}
+            </label>
+          ))}
+      </div>
+    </details>
+  );
   return (
-    <section className="table-panel">
+    <section className={`table-panel${toolsId ? " table-panel-ledger" : ""}`}>
       <div className="table-meta">
         <span>{data.length} kayıt</span>
-        <details>
-          <summary>Sütunlar</summary>
-          <div className="column-menu">
-            {table
-              .getAllLeafColumns()
-              .filter((c) => c.getCanHide())
-              .map((c) => (
-                <label key={c.id}>
-                  <input
-                    type="checkbox"
-                    checked={c.getIsVisible()}
-                    disabled={disabled}
-                    onChange={c.getToggleVisibilityHandler()}
-                  />
-                  {typeof c.columnDef.header === "string"
-                    ? c.columnDef.header
-                    : c.id}
-                </label>
-              ))}
-          </div>
-        </details>
+        {toolsContainer
+          ? createPortal(columnPicker, toolsContainer)
+          : columnPicker}
       </div>
       <div className="table-scroll">
         <table aria-label={label}>
@@ -177,36 +194,54 @@ export function DataTable<T extends { id: string }>({
           </thead>
           <tbody>
             {table.getRowModel().rows.map((r) => (
-              <tr key={r.id} data-selected={r.getIsSelected()}>
-                {onSelection && (
-                  <td>
-                    <input
-                      type="checkbox"
-                      disabled={disabled}
-                      aria-label={`${r.id} seç`}
-                      checked={r.getIsSelected()}
-                      onChange={r.getToggleSelectedHandler()}
-                    />
-                  </td>
-                )}
-                {r.getVisibleCells().map((c) => (
-                  <td key={c.id}>
-                    {flexRender(c.column.columnDef.cell, c.getContext())}
-                  </td>
-                ))}
-                {onOpen && (
-                  <td>
-                    <button
-                      className="row-open"
-                      disabled={disabled}
-                      onClick={() => onOpen(r.original)}
-                      aria-label={`${r.id} detay`}
+              <Fragment key={r.id}>
+                <tr
+                  data-selected={r.getIsSelected()}
+                  data-expanded={expandedId === r.id}
+                >
+                  {onSelection && (
+                    <td>
+                      <input
+                        type="checkbox"
+                        disabled={disabled}
+                        aria-label={`${r.id} seç`}
+                        checked={r.getIsSelected()}
+                        onChange={r.getToggleSelectedHandler()}
+                      />
+                    </td>
+                  )}
+                  {r.getVisibleCells().map((c) => (
+                    <td key={c.id}>
+                      {flexRender(c.column.columnDef.cell, c.getContext())}
+                    </td>
+                  ))}
+                  {onOpen && (
+                    <td>
+                      <button
+                        className="row-open"
+                        disabled={disabled}
+                        onClick={() => onOpen(r.original)}
+                        aria-label={`${r.id} detay`}
+                      >
+                        {renderExpanded ? <MoreHorizontal size={17} /> : "Aç ↗"}
+                      </button>
+                    </td>
+                  )}
+                </tr>
+                {expandedId === r.id && renderExpanded && (
+                  <tr className="expanded-table-row">
+                    <td
+                      colSpan={
+                        r.getVisibleCells().length +
+                        (onSelection ? 1 : 0) +
+                        (onOpen ? 1 : 0)
+                      }
                     >
-                      Aç ↗
-                    </button>
-                  </td>
+                      {renderExpanded(r.original)}
+                    </td>
+                  </tr>
                 )}
-              </tr>
+              </Fragment>
             ))}
             {!data.length && (
               <tr>
