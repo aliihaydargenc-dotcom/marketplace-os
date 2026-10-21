@@ -10,6 +10,7 @@ import {
   LayoutDashboard,
   LogOut,
   RefreshCw,
+  CircleHelp,
   RotateCcw,
   ScanBarcode,
   Settings,
@@ -34,6 +35,7 @@ export function WorkspaceHeader({
   onNavigate,
   onRefresh,
   onLogout,
+  onGuide,
 }: {
   data: WorkspaceSnapshot;
   section: WorkspaceSection;
@@ -41,6 +43,7 @@ export function WorkspaceHeader({
   onNavigate: (section: WorkspaceSection) => void;
   onRefresh: () => void;
   onLogout: () => void;
+  onGuide: () => void;
 }) {
   const menuRef = useRef<HTMLDetailsElement>(null);
   return (
@@ -53,7 +56,7 @@ export function WorkspaceHeader({
       >
         marketplace<strong>OS</strong>
       </button>
-      <nav aria-label="Çalışma alanları">
+      <nav aria-label="Çalışma alanları" data-tour="workspace-nav">
         {sections
           .filter((item) => canOpenSection(data.actor.role, item.id))
           .map((item) => (
@@ -72,6 +75,7 @@ export function WorkspaceHeader({
         <details
           ref={menuRef}
           className="workspace-menu"
+          data-tour="workspace-menu"
           onKeyDown={(e) => {
             if (e.key === "Escape" && menuRef.current) {
               menuRef.current.open = false;
@@ -123,6 +127,15 @@ export function WorkspaceHeader({
             </button>
           </div>
         </details>
+        <button
+          type="button"
+          className="ledger-help"
+          aria-label="Kısa kullanım rehberini aç"
+          title="Rehberi aç"
+          onClick={onGuide}
+        >
+          <CircleHelp size={17} />
+        </button>
         <span
           className="ledger-demo"
           title="Demo verisi · Ozon ve Paraşüt bağlı değil"

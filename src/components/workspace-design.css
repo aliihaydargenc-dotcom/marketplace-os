@@ -1014,3 +1014,14 @@
     margin-left: 0;
   }
 }
+
+.ledger-header .ledger-help {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 4px; color: #c9d4e4;
+}
+.ledger-header .ledger-help:hover { color: white; }
+.design-ledger .finance-note {
+  margin: 0 0 18px; padding: 0; color: #65758c; font-size: 12px;
+}
+.design-ledger .finance-note summary { width: fit-content; padding: 6px 0; cursor: pointer; }
+.design-ledger .finance-note p { line-height: 1.6; margin: 6px 0 0; }

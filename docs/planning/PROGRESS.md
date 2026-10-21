@@ -203,3 +203,8 @@ Bulut tarayıcıda yerel, izole bellek PGlite 0.5.10 + pglite-socket 0.2.13; mev
 Kaynak + uygulama birleşik karşılaştırmasında ilk P2 yoğunluk/hizalama bulguları düzeltildi; son tam ve odak görselleri kontrol edilip **design-qa.md final result: passed**. 390/1440/1920 CSS iframe'lerinde main yatay taşması yok. Geniş iframe screenshot araç zaman aşımı; bu boyutlarda tam görsel var denmedi. Gerçek fiziksel mobil/scanner ve kullanıcının estetik/geçiş kabulü bekliyor. TCMB önizleme ağında alınamadığından karşılıklar gizli; özgün tutarlar ve açık Kur yok durumu korunur. Seçili görseldeki ürün fotoğrafları için katalog alanı/lisanslı kaynak yok; uydurma fotoğraf eklenmedi.
 
 GitHub'da bu teslim paketi saklanır; yeni production deployment, canlı migration/reset veya e-posta yok. Kullanıcı yeni tasarımı yerel bulut önizlemede inceleyebilir; eski canlı site yeni sürümmüş gibi verilmez.
+
+
+### UX-02 — Karartmalı demo rehberi (21 Ekim)
+
+Kullanıcının ek talimatıyla ilk ziyarette kısa bağlamsal tur: girişte rol / başlangıç / açılış, çalışma alanında modül menüsü / başlık / oturum menüsü. Geç, geri, ileri, bitir, Escape ve yeniden açma; tamamlanma tercihi tarayıcıda tutulur. Uzun giriş açıklaması kaldırıldı, finans hesaplama/kur yöntemi kapalı ayrıntıya taşındı. Gerçek API bağlantısı bulunmadığı ve DEMO / TASLAK niteliği korunur. Server, DB, adaptör ve iş kuralı değişmedi. Kullanıcı kabulü, yeni GitHub Actions koşusu ve Vercel yayını bu değişikliğin kapsamında değildir.

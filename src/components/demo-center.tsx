@@ -2,7 +2,9 @@
 
 import Link from "next/link";
 import { useRef, useState } from "react";
-import { ArrowRight, ArrowUpRight, Check } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Check, CircleHelp } from "lucide-react";
+import { GuidedTour } from "./guided-tour";
+import { entryGuide } from "@/domain/onboarding";
 import type { Role } from "@/domain/types";
 import { roleLabels } from "@/domain/types";
 import {
@@ -31,7 +33,7 @@ export function DemoCenter({
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
   const inFlight = useRef(false);
-  const launchRef = useRef<HTMLElement>(null);
+  const [guideReplay, setGuideReplay] = useState(0);
   const resumeSection = resolveSection(returnTo, activeRole ?? "ADMIN");
 
   async function enter() {
@@ -48,6 +50,11 @@ export function DemoCenter({
       const result = await response.json();
       if (!response.ok)
         throw new Error(result.error ?? "Çalışma alanı açılamadı");
+      try {
+        window.localStorage.setItem("marketplace-os:tour:entry-v1", "done");
+      } catch {
+        // Continue without persistent onboarding storage.
+      }
       // A document navigation also clears any cached payload from the previous demo role.
       // eslint-disable-next-line @next/next/no-location-assign-relative-destination -- Role rotation must discard cached privileged client state.
       window.location.assign(`/workspace?section=${section}`);
@@ -69,15 +76,18 @@ export function DemoCenter({
         <Link className="entry-brand" href="/">
           marketplace<strong>OS</strong>
         </Link>
-        <span>DEMO</span>
+        <div className="entry-header-actions">
+          <button type="button" onClick={() => setGuideReplay((value) => value + 1)}>
+            <CircleHelp size={16} />
+            Rehber
+          </button>
+          <span>DEMO</span>
+        </div>
       </header>
       <main id="demo-main" className="entry-main">
-        <section className="entry-launch" id="demo-launch" ref={launchRef}>
+        <section className="entry-launch" id="demo-launch">
           <p className="entry-eyebrow">PAZAR TİCARET</p>
           <h1>Çalışma alanını açın</h1>
-          <p className="entry-description">
-            Sipariş, depo ve finans. Tek çalışma alanında.
-          </p>
           {activeRole && (
             <div className="entry-session">
               <Check size={16} />
@@ -92,6 +102,7 @@ export function DemoCenter({
           <label>
             Demo rolü
             <select
+              id="demo-role"
               aria-label="Demo rolü"
               value={role}
               disabled={pending}
@@ -109,6 +120,7 @@ export function DemoCenter({
           <label>
             Başlangıç ekranı
             <select
+              id="demo-section"
               aria-label="Başlangıç ekranı"
               value={section}
               disabled={pending}
@@ -124,6 +136,7 @@ export function DemoCenter({
             </select>
           </label>
           <button
+            id="demo-enter"
             className="primary entry-submit"
             disabled={pending}
             onClick={() => void enter()}
@@ -145,16 +158,15 @@ export function DemoCenter({
             </Link>
           )}
           <details className="entry-note">
-            <summary>Demo hakkında</summary>
+            <summary>Demo sınırları</summary>
             <p>
-              Rol seçimi demo incelemesi içindir; gerçek kullanıcı girişi
-              değildir. Ozon ve Paraşüt bağlı değil. Belgeler DEMO / TASLAK
-              niteliğindedir. Mevcut oturumda rol değiştirmek kayıtları
-              sıfırlamaz.
+              Bu ortamda gerçek kullanıcı girişi veya Ozon/Paraşüt bağlantısı
+              yoktur. Belgeler DEMO / TASLAK niteliğindedir.
             </p>
           </details>
         </section>
       </main>
+      <GuidedTour id="entry-v1" steps={entryGuide} replay={guideReplay} />
     </div>
   );
 }

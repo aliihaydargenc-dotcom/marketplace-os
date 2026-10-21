@@ -49,6 +49,8 @@ import { lineContributions } from "@/domain/finance/allocation";
 import { PackingWorkbench } from "./packing-workbench";
 import { OrdersView } from "./orders-view";
 import { WorkspaceHeader } from "./workspace-header";
+import { GuidedTour } from "./guided-tour";
+import { workspaceGuide } from "@/domain/onboarding";
 import "./workspace-design.css";
 import { ReturnsWorkbench } from "./returns-workbench";
 import { InvoiceWorkbench } from "./invoice-workbench";
@@ -134,6 +136,7 @@ function WorkspaceBody({
     null,
   );
   const [packingOrderId, setPackingOrderId] = useState<string | null>(null);
+  const [guideReplay, setGuideReplay] = useState(0);
   const [financeMode, setFinanceMode] = useState<FinancialDateMode>("COHORT");
   const [orderId, setOrderId] = useState<string | null>(null),
     [productId, setProductId] = useState<string | null>(null),
@@ -519,6 +522,7 @@ function WorkspaceBody({
           section={section}
           busy={busy}
           onNavigate={navigate}
+          onGuide={() => setGuideReplay((value) => value + 1)}
           onRefresh={() => void load()}
           onLogout={() => {
             void api("/api/session", { method: "DELETE" })
@@ -1033,7 +1037,9 @@ function WorkspaceBody({
                   PDF raporu ↗
                 </a>
               </div>
-              <p className="finance-note">
+              <details className="finance-note">
+                <summary>Hesaplama ve kur yöntemi</summary>
+                <p>
                 Katkı = net satış − komisyon − lojistik − bilinen ürün maliyeti.
                 Tahsilat veya resmi muhasebe kârı değildir. İadede
                 komisyon/lojistik otomatik geri alınmaz. TRY ve RUB toplanmaz.
@@ -1042,6 +1048,7 @@ function WorkspaceBody({
                 özgün para birimindedir; karşılıklar satır bazında
                 yuvarlandığından toplamın dönüşümünden küçük farklar olabilir.
               </p>
+              </details>
               <section className="panel comparison-panel">
                 <h2>Önceki dönem karşılaştırması</h2>
                 <p>
@@ -1168,11 +1175,17 @@ function WorkspaceBody({
               Marketplace OS <b>0.1</b> · Demo
             </span>
             <span>
-              Fiziksel stok ≠ rezervasyon · İşlemler denetim kayıtlarına yazılır
+              Örnek veriler · Gerçek Ozon/Paraşüt bağlantısı yok
             </span>
           </footer>
         </main>
       </div>
+      <GuidedTour
+        id="workspace-v1"
+        steps={workspaceGuide}
+        replay={guideReplay}
+        ready={!order && !product && !creating}
+      />
       {(order || product || creating) && (
         <div
           className="drawer-backdrop record-sheet-backdrop"

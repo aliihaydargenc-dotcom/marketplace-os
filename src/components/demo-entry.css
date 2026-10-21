@@ -117,3 +117,14 @@
     font-size: 27px;
   }
 }
+
+.entry-header-actions { display: flex; align-items: center; gap: 16px; }
+.entry-header-actions button {
+  display: inline-flex; gap: 6px; align-items: center; padding: 7px 2px;
+  color: #d9e5f5; background: none; border: 0; font-size: 12px; cursor: pointer;
+}
+.entry-header-actions button:hover { color: white; }
+.entry-header-actions button:focus-visible { outline: 2px solid #88b9ff; outline-offset: 4px; }
+.entry-header-actions > span { font-size: 10px; background: #ffffff12; padding: 4px 8px; border-radius: 4px; }
+.entry-launch h1 { margin-bottom: 26px; }
+.entry-note { margin-top: 16px; }

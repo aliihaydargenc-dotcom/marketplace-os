@@ -134,3 +134,8 @@ Gerçek Ozon/Paraşüt/kargo, resmi finans mutabakatı, FBO operasyonu, outbox/w
 ## Kısa plan şablonu
 
 Görev ID / sorun / kapsam dışı / değişecek dosyalar / veri-yetki etkisi / kabul örneği / minimum kontrol / sonraki Codex kontrolü / gerçek sonuç / commit.
+
+
+## UX-02 — Demo rehberi ve açıklama sadeleştirme
+
+Ek kabul: İlk girişte karartmalı kontrol odaklı kısa tur; tekrarlamayan tarayıcı tercihi; Geç/İleri/Geri/Bitir, Escape, yeniden açma, responsive ve klavye kontrolü. Ana sayfada metin yığını yerine doğrudan işlem. Finans formülleri ve canlı entegrasyon yokluğu gizlenmez; gerektiğinde açılan alanda tutulur. Kullanıcı kabulü ve son kod için toplu test olmadan VERIFIED/production READY değil.
