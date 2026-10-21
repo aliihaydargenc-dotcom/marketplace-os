@@ -147,6 +147,6 @@ UX03-1 Operasyon Merkezi / Aksiyon Merkezi: 796dd1d; gerçek snapshot bazlı gö
 
 UX03-2 Sipariş 360°: feature/ux03-order-360 dalında IMPLEMENTED / UNVERIFIED. Sipariş penceresi, süreç durumu ve bağlı kayıt zincirini birleştirir. Beş hedefli test yazıldı fakat çalıştırılmadı. Finans/stok migration ve mutasyon yok. Karar: UX03_ORDER360_20261021.md.
 
-UX03-3 Hazırlama İstasyonu 2.0: BACKLOG. Barkod terminali odak sürekliliği, seri adet işleme, gerçek scanner doğrulaması, tamamlanınca sıradaki siparişe geçiş, aynı siparişin iki operatör tarafından açılması; atomik atama/claim ayrı server/DB testi ister.
+UX03-3 Hazırlama İstasyonu 2.0: IMPLEMENTED / UNVERIFIED (dal). Seri scanner kuyruğu ve terminal üstlen/bırak/devral arayüzü, PostgreSQL süreli claim ve diğer terminali engelleyen işlem kapısı kodlandı. Ayrı login/gerçek kullanıcı ataması değildir. DB migration ve UI/E2E doğrulaması açık; ana dala alınmaz.
 
 UX03-4 Kabul ve ölçek: BACKLOG. 30 karma sipariş / en az 3 sorunlu kayıt, 2 operatör çakışması, 1.000+ kayıt, 1440/1920 ekran, gerçek barkod okuyucu, depo/muhasebe rol sınırı ve tam FBS transaction regresyonu. Typecheck, lint, format, build ve test kanıtı olmadan main merge / Vercel READY iddiası yok.

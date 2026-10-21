@@ -152,3 +152,13 @@ Bu kutular son kullanıcı tarafından işaretlenmedi. Yeni production linki anc
 - [ ] Depo rolünde finans ve belge zinciri yok; muhasebe stok/sevk mutation yetkisi sunucuda; FBO hazırlama ve sevk edilemez.
 - [ ] 30 karma sipariş ve en az üç blokaj; 1000+ kayıt liste/detay performansı; iki eşzamanlı operatör ve fiziksel barkod okuyucu (UX03-3 kapsamında).
 - [ ] GitHub aday SHA / Vercel aday SHA / production SHA ayrı doğrulanır; yeni yayın ancak tek kontrollü paketle.
+
+## UX03-3 — Terminal sahipliği ve barkod kabulü (yeni aday)
+
+- [ ] İzole PostgreSQL'de 0008 migration; tests/domain.test.ts senaryolarında iki terminal aynı siparişi üstlenme yarışında tek kazanan; yönetici devralma, 403 rol engeli, eski terminalden RESERVE/SCAN/SHIP 409, doğru terminalden sevk ve lease temizliği.
+- [ ] Yönetici/Depo: hazırlama masası → siparişi üstlen → seri barkod → sevk; başka sekmeden üstlenme 409 ve görünür geri bildirim; yönetici devralması sonrası önceki terminal yeni barkod yazamaz.
+- [ ] 120 saniye lease, 40 saniye yenileme, sekme kapatma/arka plan, ağ kopması ve başarısız ilk işlem; stale ekran tekrar okutma yapmaz. Reset sonrasında eski generation kabul edilmez.
+- [ ] Bir alandaki terminal diğer workspace siparişini alamaz; muhasebe terminal claim/devralma kullanamaz; FBO için lease veya FBS mutasyonu yoktur.
+- [ ] 1440/1920/390 masaüstü ve dar ekran, klavye F8/Enter, fiziksel barkod cihazı, 30/1000 kayıt yükü.
+- [ ] Eski sipariş detayının claimsiz akışında geriye dönük uyumluluk var; aktif claim bulunan sipariş eski detaydan değiştirilemez. Bu, zorunlu her işlemde claim doğrulaması anlamına gelmez.
+- [ ] Bu listedeki hiçbir sonuç çalıştırılmadan PASS yazılmaz; main merge / Vercel yoktur.

@@ -49,3 +49,20 @@
     transition: none;
   }
 }
+
+.packing-lease-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 11px 13px;
+  background: #eef5fc;
+  border: 1px solid #bfd2e7;
+  border-radius: 5px;
+}
+.packing-lease-status > div:first-child { display: grid; gap: 3px; }
+.packing-lease-status strong { font-size: 13px; color: #17375c; }
+.packing-lease-status small { color: #536c89; font-size: 11px; }
+.packing-lease-buttons { display: flex; flex-wrap: wrap; gap: 7px; }
+.packing-lease-buttons button { font-size: 12px; }

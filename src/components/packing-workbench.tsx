@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
   Boxes,
@@ -26,6 +26,13 @@ const lanes: { id: PackingLane; label: string }[] = [
   { id: "READY", label: "Sevke hazır" },
   { id: "BLOCKED", label: "Stok engeli" },
 ];
+
+type LeaseAction = "STATUS" | "CLAIM" | "RENEW" | "RELEASE" | "TAKE_OVER";
+type PackingLeaseState = {
+  mine: boolean;
+  operatorName: string | null;
+  expiresAt: string | null;
+};
 
 type Props = {
   data: WorkspaceSnapshot;
@@ -56,8 +63,8 @@ export function PackingWorkbench({
     ? queue[(queue.findIndex((o) => o.id === active.id) + 1) % queue.length]
     : undefined;
 
-  async function shipAndContinue(order: Order) {
-    await onCommand({ action: "SHIP", orderId: order.id });
+  async function shipAndContinue(order: Order, terminalId: string) {
+    await onCommand({ action: "SHIP", orderId: order.id, terminalId });
     setSelectedId(next?.id !== order.id ? (next?.id ?? null) : null);
     setFeedback(
       `${order.number} sevk edildi. Stok ve bağlı kayıtlar güncellendi.`,
@@ -171,7 +178,7 @@ export function PackingWorkbench({
             hasNext={!!next && next.id !== active.id}
             onCommand={onCommand}
             onRefresh={onRefresh}
-            onShip={() => shipAndContinue(active)}
+            onShip={(terminalId) => shipAndContinue(active, terminalId)}
             onSkip={() => {
               setSelectedId(next?.id ?? null);
               setFeedback("");
@@ -206,7 +213,7 @@ function PackingStation({
 }: Omit<Props, "onOpen"> & {
   order: Order;
   hasNext: boolean;
-  onShip: () => Promise<void>;
+  onShip: (terminalId: string) => Promise<void>;
   onSkip: () => void;
   onOpen: () => void;
 }) {
@@ -227,16 +234,99 @@ function PackingStation({
     new Map(order.lines.map((line) => [line.product_id, line.packed])),
   );
   const [waiting, setWaiting] = useState(0);
-  const locked = busy || pending;
+  const [lease, setLease] = useState<PackingLeaseState | null>(null);
+  const [leaseBusy, setLeaseBusy] = useState(false);
+  const [leaseError, setLeaseError] = useState("");
+  const terminalId = useRef("");
+  const ownsLease = useRef(false);
+  const hasLease = lease?.mine === true;
+  const locked = busy || pending || leaseBusy;
   const scannable = ["RESERVED", "PACKING"].includes(order.status);
   const total = order.lines.reduce((n, l) => n + l.quantity, 0);
   const packed = order.lines.reduce((n, l) => n + l.packed, 0);
   const shortages = packingShortages(order, data.products);
   const catalog = new Map(data.products.map((p) => [p.id, p]));
 
+  const requestLease = useCallback(
+    async (action: LeaseAction): Promise<PackingLeaseState> => {
+      const response = await fetch("/api/packing-lease", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action,
+          orderId: order.id,
+          terminalId: terminalId.current,
+          generation: data.workspace.generation,
+        }),
+        keepalive: action === "RELEASE",
+      });
+      const result = (await response.json()) as PackingLeaseState & { error?: string };
+      if (!response.ok) throw new Error(result.error ?? "Terminal işlemi başarısız");
+      ownsLease.current = result.mine;
+      setLease(result);
+      return result;
+    },
+    [order.id, data.workspace.generation],
+  );
+
   useEffect(() => {
-    if (scannable && !locked) inputRef.current?.focus();
-  }, [scannable, locked]);
+    terminalId.current = crypto.randomUUID();
+    ownsLease.current = false;
+    setLease(null);
+    setLeaseError("");
+    void requestLease("STATUS").catch((error: unknown) =>
+      setLeaseError(error instanceof Error ? error.message : "Terminal okunamadı"),
+    );
+    const heartbeat = window.setInterval(() => {
+      if (!ownsLease.current) return;
+      void requestLease("RENEW").catch((error: unknown) => {
+        ownsLease.current = false;
+        setLease(null);
+        setLeaseError(
+          (error instanceof Error ? error.message : "Terminal bağlantısı kesildi") +
+            " Siparişi yenileyip tekrar üstlenin.",
+        );
+      });
+    }, 40000);
+    return () => {
+      window.clearInterval(heartbeat);
+      if (!ownsLease.current) return;
+      ownsLease.current = false;
+      void fetch("/api/packing-lease", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "RELEASE",
+          orderId: order.id,
+          terminalId: terminalId.current,
+          generation: data.workspace.generation,
+        }),
+        keepalive: true,
+      });
+    };
+  }, [requestLease, order.id, data.workspace.generation]);
+
+  async function changeLease(action: LeaseAction) {
+    if (leaseBusy || pending) return;
+    setLeaseBusy(true);
+    setLeaseError("");
+    try {
+      await requestLease(action);
+    } catch (error) {
+      setLeaseError(error instanceof Error ? error.message : "Sahiplik değiştirilemedi");
+      try {
+        await requestLease("STATUS");
+      } catch {
+        setLease(null);
+      }
+    } finally {
+      setLeaseBusy(false);
+    }
+  }
+
+  useEffect(() => {
+    if (scannable && hasLease && !locked) inputRef.current?.focus();
+  }, [scannable, hasLease, locked]);
 
   useEffect(() => {
     if (scanRunning.current || scanQueue.current.length) return;
@@ -260,13 +350,13 @@ function PackingStation({
       )
         return;
       if (document.querySelector('[role="dialog"][aria-modal="true"]')) return;
-      if (!scannable) return;
+      if (!scannable || !hasLease) return;
       event.preventDefault();
       inputRef.current?.focus();
     };
     document.addEventListener("keydown", focusScanner);
     return () => document.removeEventListener("keydown", focusScanner);
-  }, [scannable]);
+  }, [scannable, hasLease]);
 
   useEffect(() => {
     // React Strict Mode re-runs mount effects in development.
@@ -295,6 +385,7 @@ function PackingStation({
           orderId: order.id,
           barcode: next,
           expectedPackedTotal: predictedTotal.current,
+          terminalId: terminalId.current,
         });
         predictedTotal.current += 1;
         const product = data.products.find((p) => p.barcode === next);
@@ -337,7 +428,7 @@ function PackingStation({
 
   function queueBarcode() {
     const code = barcode.trim();
-    if (!code || disposed.current || !scannable) return;
+    if (!code || disposed.current || !scannable || !hasLease) return;
     if (inFlight.current && !scanRunning.current) {
       setError("Önce mevcut işlemin tamamlanmasını bekleyin.");
       return;
@@ -411,6 +502,50 @@ function PackingStation({
           </button>
         </div>
       </header>
+      <div className="packing-lease-status" role="status" aria-live="polite">
+        <div>
+          <strong>
+            {hasLease
+              ? "Bu sipariş bu terminalde"
+              : lease?.operatorName
+                ? "Başka terminalde hazırlanıyor"
+                : lease
+                  ? "Henüz üstlenilmedi"
+                  : "Terminal durumu kontrol ediliyor"}
+          </strong>
+          <small>
+            {lease?.operatorName
+              ? "Operatör: " + lease.operatorName
+              : "Her siparişi bir terminal üstlenir."}
+          </small>
+        </div>
+        <div className="packing-lease-buttons">
+          {hasLease ? (
+            <button type="button" disabled={locked} onClick={() => void changeLease("RELEASE")}>
+              Bırak
+            </button>
+          ) : (
+            <>
+              <button type="button" disabled={locked} onClick={() => void changeLease("CLAIM")}>
+                Siparişi üstlen
+              </button>
+              {data.actor.role === "ADMIN" && lease?.operatorName && (
+                <button
+                  type="button"
+                  disabled={locked}
+                  onClick={() => void changeLease("TAKE_OVER")}
+                >
+                  Yönetici olarak devral
+                </button>
+              )}
+            </>
+          )}
+          <button type="button" disabled={locked} onClick={() => void changeLease("STATUS")}>
+            Durumu yenile
+          </button>
+        </div>
+      </div>
+      {leaseError && <p className="error" role="alert">{leaseError}</p>}
       <div className="packing-progress">
         <span>
           {statusLabels[order.status]}
@@ -479,7 +614,7 @@ function PackingStation({
           </small>
         </div>
       )}
-      {scannable && (
+      {scannable && hasLease && (
         <form
           className="packing-scanner"
           onSubmit={(e) => {
@@ -546,10 +681,10 @@ function PackingStation({
           <button
             type="button"
             className="primary"
-            disabled={locked || shortages.length > 0}
+            disabled={locked || !hasLease || shortages.length > 0}
             onClick={() =>
               void perform(
-                () => onCommand({ action: "RESERVE", orderId: order.id }),
+                () => onCommand({ action: "RESERVE", orderId: order.id, terminalId: terminalId.current }),
                 "Stok rezerve edildi. Barkod okutabilirsiniz.",
               )
             }
@@ -561,8 +696,8 @@ function PackingStation({
           <button
             type="button"
             className="primary"
-            disabled={locked}
-            onClick={() => void perform(onShip, "Sevkiyat kaydedildi.")}
+            disabled={locked || !hasLease}
+            onClick={() => void perform(() => onShip(terminalId.current), "Sevkiyat kaydedildi.")}
           >
             <Truck size={17} /> Sevk et ve sıradakine geç
           </button>
