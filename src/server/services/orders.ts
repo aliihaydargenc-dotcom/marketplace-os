@@ -52,7 +52,7 @@ export async function applyOrder(
   }
   const o = await loadFbsOrder(tx, w, c.orderId);
   if (c.action === "RESERVE" || c.action === "SCAN" || c.action === "SHIP")
-    await assertPackingLease(tx, w, c.orderId, c.terminalId);
+    await assertPackingLease(tx, w, c.orderId, a.userId, c.terminalId);
   const update = (status: string) => updateOrderStatus(tx, w, o.id, status);
   if (c.action === "RESERVE") {
     if (["RESERVED", "PACKING", "READY"].includes(o.status)) return o.id;

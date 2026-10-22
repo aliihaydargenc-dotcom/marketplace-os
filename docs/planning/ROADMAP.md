@@ -143,6 +143,14 @@ Görev ID / sorun / kapsam dışı / değişecek dosyalar / veri-yetki etkisi / 
 Ek kabul: İlk girişte karartmalı kontrol odaklı kısa tur; tekrarlamayan tarayıcı tercihi; Geç/İleri/Geri/Bitir, Escape, yeniden açma, responsive ve klavye kontrolü. Ana sayfada metin yığını yerine doğrudan işlem. Finans formülleri ve canlı entegrasyon yokluğu gizlenmez; gerektiğinde açılan alanda tutulur. Kullanıcı kabulü ve son kod için toplu test olmadan VERIFIED/production READY değil.
 
 
+## UX03 — 22 Ekim teknik kapanış kararı
+
+**Teknik geliştirme: VERIFIED / KAPATILDI.** 1–4 kapsamları bu aşamada yeniden alt görevlere bölünmeyecek. `feature/ux03-order-360` SHA `9f3fdae5dfd5eca2eba4ac88fe1200f9363fc908` üzerine yerel sandbox çalışma ağacında entegrasyon yapıldı. 1.205 gerçek PostgreSQL siparişi / 30 karma sipariş / 3 stok engeli; iki operatör ve terminal kimliği güvenliği; 80'lik kademeli kuyruk; 390px taşma onarımı doğrulandı. Kapanış kanıtı `docs/qa/UX03_FINAL_20261022.md` ve tam testlerden gelir.
+
+**Ayrı kalan kabul (kapatılmadı):** gerçek fiziksel barkod okuyucu, iki fiziksel operatör ve kullanıcının görsel/geçiş/günlük kullanım onayı. Bunlar teknik geliştirmeyi yeni UX03-4x adımlarına dönüştürmez; tek bütünleşik kullanıcı kabulünde yapılır. **Yayın kapısı:** kullanıcının toplu yayın izni + GitHub commit/push/merge + uzak ortam READY/QA; henüz gerçekleştirilmedi. GitHub Quality otomatik tetiklenmez.
+
+Aşağıdaki UX03-1..4 maddeleri tarihsel başlangıç/ilerleme kaydıdır; güncel son durum yukarıdaki kapanıştır.
+
 ## UX03 — Operasyon Deneyimi Analizi: güncel iş sırası
 
 UX03-1 Operasyon Merkezi / Aksiyon Merkezi: 796dd1d; gerçek snapshot bazlı görev kuyruğu. Önceki teknik rapor: 87/87 Vitest, 8/8 Chromium E2E, typecheck/lint/format/build PASS. Bu sonuç sonraki commitlere otomatik aktarılmaz.

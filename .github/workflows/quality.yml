@@ -56,6 +56,9 @@ jobs:
       - run: npx vitest run tests/migrations.db.test.ts
         env:
           MIGRATION_DB_TEST: '1'
+      - run: npx vitest run tests/ux03-real-scale.db.test.ts
+        env:
+          UX03_SCALE_DB_TEST: '1'
       - run: npm run build
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e

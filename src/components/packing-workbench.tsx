@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowRight,
   Boxes,
@@ -13,12 +13,15 @@ import type { Order, WorkspaceSnapshot } from "@/domain/types";
 import { statusLabels } from "@/domain/types";
 import type { Command } from "@/domain/orders/commands";
 import {
-  packingQueue,
+  filterPackingQueue,
+  groupPackingQueue,
+  packingPage,
   packingShortages,
   type PackingLane,
 } from "@/domain/orders/packing";
 import "./packing-v2.css";
 
+const INITIAL_BATCH = 80;
 const lanes: { id: PackingLane; label: string }[] = [
   { id: "ALL", label: "Tüm bekleyenler" },
   { id: "NEW", label: "Rezervasyona uygun" },
@@ -57,11 +60,25 @@ export function PackingWorkbench({
     initialOrderId ?? null,
   );
   const [feedback, setFeedback] = useState("");
-  const queue = packingQueue(data.orders, data.products, lane, search);
-  const active = queue.find((o) => o.id === selectedId) ?? queue[0];
+  const [visibleCount, setVisibleCount] = useState(INITIAL_BATCH);
+  const groups = useMemo(
+    () => groupPackingQueue(data.orders, data.products),
+    [data.orders, data.products],
+  );
+  const queue = useMemo(
+    () => filterPackingQueue(groups[lane], data.products, search),
+    [groups, lane, data.products, search],
+  );
+  const activeIndex = queue.findIndex((o) => o.id === selectedId);
+  const active = queue[activeIndex >= 0 ? activeIndex : 0];
   const next = active
-    ? queue[(queue.findIndex((o) => o.id === active.id) + 1) % queue.length]
+    ? queue[((activeIndex >= 0 ? activeIndex : 0) + 1) % queue.length]
     : undefined;
+  const displayed = packingPage(queue, visibleCount, active?.id ?? null);
+  const blockedIds = useMemo(
+    () => new Set(groups.BLOCKED.map((o) => o.id)),
+    [groups],
+  );
 
   async function shipAndContinue(order: Order, terminalId: string) {
     await onCommand({ action: "SHIP", orderId: order.id, terminalId });
@@ -87,8 +104,7 @@ export function PackingWorkbench({
           </p>
         </div>
         <span className="packing-count">
-          {packingQueue(data.orders, data.products, "ALL", "").length} bekleyen
-          sipariş
+          {groups.ALL.length} bekleyen sipariş
         </span>
       </div>
       <div className="packing-lanes" aria-label="Hazırlama kuyrukları">
@@ -100,13 +116,12 @@ export function PackingWorkbench({
             disabled={busy}
             onClick={() => {
               setLane(item.id);
+              setVisibleCount(INITIAL_BATCH);
               setSelectedId(null);
             }}
           >
             {item.label}
-            <b>
-              {packingQueue(data.orders, data.products, item.id, "").length}
-            </b>
+            <b>{groups[item.id].length}</b>
           </button>
         ))}
       </div>
@@ -121,15 +136,16 @@ export function PackingWorkbench({
               disabled={busy}
               onChange={(e) => {
                 setSearch(e.target.value);
+                setVisibleCount(INITIAL_BATCH);
                 setSelectedId(null);
               }}
             />
           </label>
           <div className="packing-queue-list">
-            {queue.map((order) => {
+            {displayed.map((order) => {
               const units = order.lines.reduce((n, l) => n + l.quantity, 0);
               const packed = order.lines.reduce((n, l) => n + l.packed, 0);
-              const blocked = packingShortages(order, data.products).length > 0;
+              const blocked = blockedIds.has(order.id);
               return (
                 <button
                   type="button"
@@ -166,6 +182,18 @@ export function PackingWorkbench({
             })}
             {!queue.length && (
               <p className="packing-empty">Bu kuyrukta eşleşen sipariş yok.</p>
+            )}
+            {queue.length > visibleCount && (
+              <button
+                type="button"
+                className="packing-show-more"
+                disabled={busy}
+                onClick={() => setVisibleCount((n) => n + INITIAL_BATCH)}
+                aria-label="Sonraki 80 siparişi göster"
+              >
+                Daha fazla göster · ilk {Math.min(visibleCount, queue.length)} /{" "}
+                {queue.length} kayıt
+              </button>
             )}
           </div>
         </aside>

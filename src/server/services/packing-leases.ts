@@ -30,9 +30,22 @@ async function activeLease(tx: Tx, workspaceId: string, orderId: string) {
   return lease ?? null;
 }
 
-function view(lease: Lease | null, terminalId: string): PackingLeaseState {
+// Client-generated terminal ID is not a credential; bind to authenticated user.
+function ownsLease(lease: Lease | null, userId: string, terminalId?: string) {
+  return Boolean(
+    lease &&
+    terminalId &&
+    lease.terminal_id === terminalId &&
+    lease.user_id === userId,
+  );
+}
+function view(
+  lease: Lease | null,
+  userId: string,
+  terminalId: string,
+): PackingLeaseState {
   return {
-    mine: lease?.terminal_id === terminalId,
+    mine: ownsLease(lease, userId, terminalId),
     operatorName: lease?.name ?? null,
     expiresAt: lease ? new Date(lease.expires_at).toISOString() : null,
   };
@@ -45,10 +58,13 @@ export async function assertPackingLease(
   tx: Tx,
   workspaceId: string,
   orderId: string,
+  userId: string,
   terminalId?: string,
 ) {
   const lease = await activeLease(tx, workspaceId, orderId);
-  if (lease && lease.terminal_id !== terminalId)
+  // Terminal-scoped operations must own an ACTIVE lease. Without terminalId,
+  // legacy order-detail commands remain valid only if no lease is active.
+  if (terminalId ? !ownsLease(lease, userId, terminalId) : Boolean(lease))
     throw new DomainError(
       "Sipariş başka bir hazırlama terminalinde. Durumu yenileyin.",
       409,
@@ -84,30 +100,34 @@ export async function packingLease(
     if (workspace.generation !== generation)
       throw new DomainError("Demo sıfırlandı; sayfayı yenileyin", 409);
     const current = await activeLease(tx, w, orderId);
-    if (action === "STATUS") return view(current, terminalId);
+    if (action === "STATUS") return view(current, actor.userId, terminalId);
     if (action === "RELEASE") {
-      if (current?.terminal_id === terminalId)
+      if (ownsLease(current, actor.userId, terminalId))
         await tx.execute(
-          sql`DELETE FROM packing_claims WHERE workspace_id=${w}::uuid AND order_id=${orderId} AND terminal_id=${terminalId}::uuid`,
+          sql`DELETE FROM packing_claims WHERE workspace_id=${w}::uuid AND order_id=${orderId} AND terminal_id=${terminalId}::uuid AND user_id=${actor.userId}`,
         );
-      return view(await activeLease(tx, w, orderId), terminalId);
+      return view(await activeLease(tx, w, orderId), actor.userId, terminalId);
     }
     if (!["NEW", "RESERVED", "PACKING", "READY"].includes(order.status))
       throw new DomainError("Tamamlanmış sipariş sahiplenilemez", 409);
     if (action === "RENEW") {
-      if (!current || current.terminal_id !== terminalId)
+      if (!ownsLease(current, actor.userId, terminalId))
         throw new DomainError(
           "Hazırlama sahipliği sona erdi; yeniden üstlenin",
           409,
         );
       await tx.execute(
         sql`UPDATE packing_claims SET expires_at=now()+interval '120 seconds'
-            WHERE workspace_id=${w}::uuid AND order_id=${orderId} AND terminal_id=${terminalId}::uuid`,
+            WHERE workspace_id=${w}::uuid AND order_id=${orderId} AND terminal_id=${terminalId}::uuid AND user_id=${actor.userId}`,
       );
     } else {
       if (action === "TAKE_OVER" && user.role !== "ADMIN")
         throw new DomainError("Devralma yalnız yöneticiye açıktır", 403);
-      if (action === "CLAIM" && current && current.terminal_id !== terminalId)
+      if (
+        action === "CLAIM" &&
+        current &&
+        !ownsLease(current, actor.userId, terminalId)
+      )
         throw new DomainError(
           "Sipariş başka bir terminal tarafından hazırlanıyor",
           409,
@@ -125,6 +145,6 @@ export async function packingLease(
             ${actor.userId},'{}'::jsonb,now())`,
       );
     }
-    return view(await activeLease(tx, w, orderId), terminalId);
+    return view(await activeLease(tx, w, orderId), actor.userId, terminalId);
   });
 }

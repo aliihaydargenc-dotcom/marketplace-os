@@ -81,3 +81,23 @@
 .packing-lease-buttons button {
   font-size: 12px;
 }
+
+/* Large queues render in controlled batches; searchable beyond visible rows. */
+.packing-queue-list .packing-show-more {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  padding: 11px;
+  border: 1px dashed #b2c6de;
+  border-radius: 5px;
+  background: #f7faff;
+  color: #23548b;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.packing-queue-list .packing-show-more:focus-visible {
+  outline: 2px solid #2268cc;
+  outline-offset: 2px;
+}

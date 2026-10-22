@@ -88,6 +88,114 @@ describe.skipIf(process.env.CONCURRENCY_DB_TEST !== "1")(
       }
     });
 
+    it("binds a claimed terminal to authenticated operator, not to an ID alone", async () => {
+      const id = await create(2);
+      const terminal = randomUUID();
+      expect(
+        (await packingLease(warehouse, id, terminal, "CLAIM", 1)).mine,
+      ).toBe(true);
+      expect((await packingLease(admin, id, terminal, "STATUS", 1)).mine).toBe(
+        false,
+      );
+      await expect(
+        packingLease(admin, id, terminal, "CLAIM", 1),
+      ).rejects.toMatchObject({ status: 409 });
+      await expect(
+        packingLease(admin, id, terminal, "RENEW", 1),
+      ).rejects.toMatchObject({ status: 409 });
+      await packingLease(admin, id, terminal, "RELEASE", 1);
+      expect(
+        (await packingLease(warehouse, id, terminal, "STATUS", 1)).mine,
+      ).toBe(true);
+      await expect(
+        send({ action: "RESERVE", orderId: id, terminalId: terminal }, admin),
+      ).rejects.toMatchObject({ status: 409 });
+      await send(
+        { action: "RESERVE", orderId: id, terminalId: terminal },
+        warehouse,
+      );
+      await expect(
+        send(
+          {
+            action: "SCAN",
+            orderId: id,
+            barcode: "QA-BARCODE",
+            expectedPackedTotal: 0,
+            terminalId: terminal,
+          },
+          admin,
+        ),
+      ).rejects.toMatchObject({ status: 409 });
+      expect((await state(id)).o.lines[0].packed).toBe(0);
+      await packingLease(warehouse, id, terminal, "RELEASE", 1);
+      await send({ action: "CANCEL", orderId: id, reason: "QA done" });
+    });
+
+    it("manager takeover revokes old terminal, and shipment remains single-entry", async () => {
+      const id = await create(2),
+        first = randomUUID(),
+        second = randomUUID();
+      const before = await state(id);
+      await packingLease(warehouse, id, first, "CLAIM", 1);
+      await send(
+        { action: "RESERVE", orderId: id, terminalId: first },
+        warehouse,
+      );
+      await send(
+        {
+          action: "SCAN",
+          orderId: id,
+          barcode: "QA-BARCODE",
+          expectedPackedTotal: 0,
+          terminalId: first,
+        },
+        warehouse,
+      );
+      expect((await packingLease(admin, id, second, "TAKE_OVER", 1)).mine).toBe(
+        true,
+      );
+      await expect(
+        packingLease(warehouse, id, first, "RENEW", 1),
+      ).rejects.toMatchObject({ status: 409 });
+      await expect(
+        send({ action: "RESERVE", orderId: id, terminalId: first }, warehouse),
+      ).rejects.toMatchObject({ status: 409 });
+      await expect(
+        send(
+          {
+            action: "SCAN",
+            orderId: id,
+            barcode: "QA-BARCODE",
+            expectedPackedTotal: 1,
+            terminalId: first,
+          },
+          warehouse,
+        ),
+      ).rejects.toMatchObject({ status: 409 });
+      await send(
+        {
+          action: "SCAN",
+          orderId: id,
+          barcode: "QA-BARCODE",
+          expectedPackedTotal: 1,
+          terminalId: second,
+        },
+        admin,
+      );
+      await expect(
+        send({ action: "SHIP", orderId: id, terminalId: first }, warehouse),
+      ).rejects.toMatchObject({ status: 409 });
+      await send({ action: "SHIP", orderId: id, terminalId: second }, admin);
+      const after = await state(id);
+      expect(after.p.physical).toBe(before.p.physical - 2);
+      expect(after.ledger.filter((l) => l.kind === "SHIPMENT")).toHaveLength(1);
+      expect(after.finance.filter((f) => f.kind === "SALE")).toHaveLength(1);
+      expect(after.s.invoices.filter((i) => i.order_id === id)).toHaveLength(1);
+      expect(
+        after.s.integrationEvents?.filter((e) => e.order_id === id),
+      ).toHaveLength(2);
+    });
+
     it("pins every overlapping transaction to one PostgreSQL backend", async () => {
       await Promise.all(
         Array.from({ length: 8 }, () =>

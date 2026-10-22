@@ -1,5 +1,8 @@
 # Codex toplu test devri
 
+**22 Ekim UX03 teknik kapanışı:** İzole PostgreSQL 18.6 üzerinde 1.205 gerçek sipariş/30 karma kayıt/3 stok engeli; 113/113 Vitest (24 dosya, tüm DB bayrakları açık), 13/13 Chromium E2E ve typecheck/lint/format/production build PASS. UX03-1..4 teknik geliştirmeleri kapatıldı. Ayrı gerçek scanner/iki fiziksel operatör, kullanıcı manuel UX kabulü ve uzaktan yayın/READY hâlâ açık. Güncel kanıt: ../qa/UX03_FINAL_20261022.md. Yukarıdaki eski test sayıları tarihsel kayıt kalır; kapanıştaki test sayısını düşürmez. GitHub Quality yalnız manuel tetiklenir, yeni gerçek hacim testi UX03_SCALE_DB_TEST=1 bayrağıyla çalışır.**
+
+
 **21 Ekim güncel Codex sonucu:** yerel düzeltmeli UX03 adayında tüm DB bayrakları açık **104/104 test (0 skipped)**, production build üzerinde Chromium **12/12 (0 retry)** ve typecheck/lint/format/build PASS. Yeni `tests/concurrency.db.test.ts` için `CONCURRENCY_DB_TEST=1`, `tests/migrations.db.test.ts` için `MIGRATION_DB_TEST=1` gerekir; ikinci paket disposable DB oluşturabilmek için CREATEDB yetkisi ister. Migration 0009 dahil uygulanmalı. [Kapsam, başarısızlıklar ve düzeltmeler](../qa/UX03_MERGE_20261021.md). Aşağıdaki kutuların tamamı bu koşuda kapanmış sayılmaz: fiziksel scanner, 30/1000+ ölçek ve kullanıcı manuel kabulü açık kalır. Main/push/deploy yapılmadı; bağımlılık audit bulguları açık.
 
 21 Ekim 2026. Kullanıcı arayüz/geçiş deneyimini elle kontrol edecek. Aşağıdaki liste **bekleyen kabul işleri**dir; geçmiş test iddiası değildir. Eski sonuçlar `../TEST_REPORT.md` içinde tarihli saklanır.

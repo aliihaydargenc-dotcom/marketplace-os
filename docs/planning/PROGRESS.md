@@ -1,5 +1,11 @@
 # Durum ve ilerleme kaydı
 
+## UX03 — Son teknik kapanış (22 Ekim 2026)
+
+**VERIFIED / TEKNİK OLARAK KAPALI.** Operasyon Merkezi, Sipariş 360°, Hazırlama İstasyonu 2.0 ve kabul/ölçek geliştirmeleri aynı izole QA çalışma ağacında birleştirildi. 1.205 gerçek PostgreSQL siparişi üzerinden 30 karma kayıt / 3 stok sorunu dahil testler eklendi; terminalin hem kullanıcıya hem kimliğe bağlanması, devralma sonrası eski erişimin reddi, 80 kayıtlık sayfalama ve mobil taşma düzeltmeleri bütünleşik denendi. 0001–0009 migration, PostgreSQL concurrency, tüm Vitest bayrakları, Chromium, production build, tip/lint/biçim kontrollerinin sonucu `docs/qa/UX03_FINAL_20261022.md` içindedir. **Bu sonuç yalnız izole checkout içindir; GitHub branch, main ve Vercel yayını değişmedi.**
+
+**BEKLİYOR (UX03 kod görevi değil):** fiziksel barkod okuyucu ve farklı gerçek cihaz/operatör kabulü; kullanıcının görsel/geçiş/günlük kullanım onayı; tek toplu GitHub push ve Vercel READY. Önceki UX03-1..4 ve QA tarihsel notları bu bölümün altında aynen korunmaktadır. Sonraki adım yeni UX03-4g geliştirmesi değil, tek seferlik kullanıcı kabulü/yayın kararıdır.
+
 ## QA-01 / UX03 — güncel yerel doğrulama (21 Ekim)
 
 GitHub `feature/ux03-order-360=d48f751`, main `796dd1d`: 10 commit ileri / 0 geri. Yerel düzeltmeli aday: 104/104 Vitest, 12/12 Chromium E2E, typecheck/lint/format/production build PASS. TCP için doğru Drizzle sürücüsü, `0009` claim FK düzeltmesi ve seed test izolasyonu eklendi. Migration temiz kurulum, mevcut veriyle yükseltme, tekrar ve aktif claim cascade PASS; tüm DB bayrakları açık, 0 skipped. UX03-2 ve UX03-3'ün raporda belirtilen teknik otomatik kapsamı VERIFIED; fiziksel scanner, 30/1000+ kayıt ölçeği ve kullanıcı kabulü VERIFIED değildir. [Ayrıntılı QA raporu](../qa/UX03_MERGE_20261021.md). Audit bulguları açık olduğundan koşulsuz merge onayı verilmedi; main/production değişmedi. Düzeltmeler yereldir; push/deploy yapılmadı.
