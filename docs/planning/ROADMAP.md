@@ -2,6 +2,8 @@
 
 Güncelleme: 21 Ekim 2026. Planlama, yeni bir uygulama modu veya tamamlandı beyanı değildir; repo içinde sürdürülen iş sırasıdır. Kapsam: `../PRODUCT_REQUIREMENTS.md`. Durumlar `PROGRESS.md` içinde takip edilir.
 
+**22 Ekim UX-04 güncellemesi:** Seçilen Operasyon Defteri kabuğunda navigasyon, filtre/boş durum, yenileme ve mobil kullanım revizyonları koda işlendi (**IMPLEMENTED**). Bu ortamda npm paket kaynağına erişilemediğinden yeni build/E2E ve manuel UI kabulü **BEKLİYOR**. Önceki UX-01 onayı yeni UX-04 sürümünü otomatik doğrulamaz. Ayrıntı: [`../UX_UI_REVIEW_20261022.md`](../UX_UI_REVIEW_20261022.md).
+
 ## Tamamlanma kuralı
 
 BACKLOG → IN_PROGRESS → IMPLEMENTED → VERIFIED. BLOCKED: somut engel ve yeniden başlatma koşulu yazılır. IMPLEMENTED = kod repoda; VERIFIED = belirtilen kabul senaryosu gerçekten denenmiş. Birkaç başarılı test tüm ürünü doğrulamaz. Yeni commit eski test kanıtını otomatik devralmaz.

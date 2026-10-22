@@ -1,5 +1,9 @@
 # Durum ve ilerleme kaydı
 
+### UX-04 — 22 Ekim 2026 / kullanıcıya sunulacak ZIP
+
+**IMPLEMENTED / kullanıcı kabulü ve production doğrulaması bekliyor.** Seçilen Operasyon Defteri ekranı korunarak hızlı bölüm geçişi, Geri/İleri geçmişi, filtre/boş durum eylemleri, yükleme-yenileme geri bildirimi, tablo okunurluğu, tarih aralığı kontrolü ve dar ekran uyumu kaynak koda işlendi. Yeni navigasyon E2E senaryoları eklendi. Test kanıtı sınırı: bağımsız TS/TSX sözdizimi ve CSS parse kontrolü; npm registry erişimi engellendiği için typecheck/lint/format/build/Playwright **bu teslim için geçildi denilemez**. Önceki test kanıtları UX-04 değişikliklerini doğrulamaz. Vercel Git otomatik deploy kapalı; manuel yayın, ön test ve migration sonrasıdır. Ayrıntı: [`../UX_UI_REVIEW_20261022.md`](../UX_UI_REVIEW_20261022.md).
+
 **Geçerli son karar:** demo işlevlerini mevcut düzeni koruyarak tamamla → teknik toplu kontrol → kapsamlı tasarım → kullanıcının manuel kabulü. Önceki UX-01 tasarım kapısı ve görev sonrası kullanıcı bekleme kuralları iptal; tarihsel kayıtlar aşağıda korunur. Yeni özellik bu karar kaydıyla tamamlanmış sayılmaz.
 
 21 Ekim 2026. Başlangıç denetimi: `84e5de9275e794e157d75ae8bc96debc2199f838`. Bu belge eski raporu değiştirmez; kod, önceki kanıt ve yeni doğrulama ayrıdır.

@@ -6,6 +6,15 @@ Ozon Global üzerinde satış yapan bir işletme için masaüstü öncelikli, T�
 
 Gerçek Ozon/Paraşüt bağlantısı ve e-Fatura gönderimi yoktur. FBO yalnızca açıkça işaretli referans görünümüdür. API anahtarı gerekmez. Belgeler **DEMO / TASLAK** niteliğindedir.
 
+## UI/UX revizyonu — 22 Ekim 2026
+
+Mevcut **Operasyon Defteri** görünümü korunarak hızlı bölüm geçişi (`Ctrl+K` / `⌘K`), Siparişler araması (`/`), tarayıcı Geri/İleri ile gezinme, etkin filtreler, boş sonuçlar, yükleme/yenileme bildirimleri, tarih aralığı doğrulaması ve responsive iyileştirmeler eklendi. İşletme verisi/ledger mantığı ve migration dosyaları değiştirilmedi.
+
+- [UI / UX denetimi, yapılan revizeler ve bekleyen kabul testleri](docs/UX_UI_REVIEW_20261022.md)
+- [GitHub ve Vercel yükleme/kontrol talimatları](GITHUB_VERCEL_KURULUM.md)
+
+Bu ZIP teslimi için üretim dağıtımı yapılmadı; paket kaynağı ortamında npm registry erişimi olmadığından `npm ci` / tam build henüz doğrulanmadı. GitHub / Vercel'e yüklemeden önce teknik kontrol talimatlarını uygulayın.
+
 ## Geliştirmeye devam
 
 **UI-01:** Ana adres Demo Merkezi'dir; günlük çalışma `/workspace` altında açılır. Rol ve izinli başlangıç ekranı seçilebilir. Açık oturuma devam veya aynı demo alanında rol değişimi yapılır; merkeze dönüş kayıtları sıfırlamaz. Gerçek kullanıcı hesabı/şifre girişi henüz yoktur. [Tasarım referansları ve kararları](docs/research/DESIGN_REFERENCES.md) repoda saklanır.

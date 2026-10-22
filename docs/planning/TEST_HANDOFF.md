@@ -69,7 +69,7 @@ Hedefli komut: ayrı test DB bağlantısıyla `ORDER_VIEWS_DB_TEST=1 npx vitest 
 - [ ] Aynı alanda depo/muhasebe kişisel görünümü yöneticiye karışmasın. Başka tarayıcı/alan tercihi farklı olsun. Ortak snapshot veya rapor başka kullanıcının görünümünü içermesin.
 - [ ] Aynı revision'da iki sekme: ikinci yazma 409; kullanıcı yeniden yükleyince veri kaybı yerine güncel tercih görünsün. Reset sonrası eski generation yazması reddedilsin. Reset tercihleri koruyabilir; satır seçimi saklanmasın.
 - [ ] Mağaza adı/autoDraft düzenlemesi tüm kişisel görünümleri korusun. Pasif kullanıcı read/write alamaz. Oturumsuz /api/order-views 401 ve farklı Origin write 403 verir.
-- [ ] 1440×900 / 1920×1080 / 390px: toolbar, filtre ve sonuçlar taşmasın; tablolar kendi içinde kayabilsin. Ctrl/Cmd+K aramayı odaklasın.
+- [ ] 1440×900 / 1920×1080 / 390px: toolbar, filtre ve sonuçlar taşmasın; tablolar kendi içinde kayabilsin. Ctrl/Cmd+K hızlı bölüm geçişini açsın; Siparişler içinde / aramayı odaklasın.
 
 ## UI-01 — Önceki giriş/çalışma kabul listesi
 
