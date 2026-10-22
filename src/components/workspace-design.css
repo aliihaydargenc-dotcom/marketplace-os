@@ -812,7 +812,14 @@
   }
   .design-ledger .page-heading {
     gap: 12px;
-    align-items: flex-start;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .design-ledger .page-heading .heading-actions {
+    flex-wrap: wrap;
+    flex-shrink: 1;
+    max-width: 100%;
+    min-width: 0;
   }
   .design-ledger .page-heading > div:first-child {
     flex-direction: column;

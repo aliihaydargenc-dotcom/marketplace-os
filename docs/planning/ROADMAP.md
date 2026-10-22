@@ -1,5 +1,7 @@
 # Geliştirme planı
 
+**21 Ekim QA-01 güncel ek:** yerel düzeltmeli UX03 adayında 104/104 Vitest + 12/12 Chromium E2E + typecheck/lint/format/build PASS. TCP transaction ve claim cascade düzeltmeleri ile `0009` gerekir. Aşağıdaki IMPLEMENTED/UNVERIFIED notlarının otomatik teknik bölümü [merge öncesi raporla](../qa/UX03_MERGE_20261021.md) güncellenmiştir. Fiziksel scanner, ölçek, kullanıcı kabulü ve audit bulguları açık; main merge/push/production yayını yapılmadı.
+
 Güncelleme: 21 Ekim 2026. Planlama, yeni bir uygulama modu veya tamamlandı beyanı değildir; repo içinde sürdürülen iş sırasıdır. Kapsam: `../PRODUCT_REQUIREMENTS.md`. Durumlar `PROGRESS.md` içinde takip edilir.
 
 ## Tamamlanma kuralı
@@ -139,3 +141,22 @@ Görev ID / sorun / kapsam dışı / değişecek dosyalar / veri-yetki etkisi / 
 ## UX-02 — Demo rehberi ve açıklama sadeleştirme
 
 Ek kabul: İlk girişte karartmalı kontrol odaklı kısa tur; tekrarlamayan tarayıcı tercihi; Geç/İleri/Geri/Bitir, Escape, yeniden açma, responsive ve klavye kontrolü. Ana sayfada metin yığını yerine doğrudan işlem. Finans formülleri ve canlı entegrasyon yokluğu gizlenmez; gerektiğinde açılan alanda tutulur. Kullanıcı kabulü ve son kod için toplu test olmadan VERIFIED/production READY değil.
+
+
+## UX03 — 22 Ekim teknik kapanış kararı
+
+**Teknik geliştirme: VERIFIED / KAPATILDI.** 1–4 kapsamları bu aşamada yeniden alt görevlere bölünmeyecek. `feature/ux03-order-360` SHA `9f3fdae5dfd5eca2eba4ac88fe1200f9363fc908` üzerine yerel sandbox çalışma ağacında entegrasyon yapıldı. 1.205 gerçek PostgreSQL siparişi / 30 karma sipariş / 3 stok engeli; iki operatör ve terminal kimliği güvenliği; 80'lik kademeli kuyruk; 390px taşma onarımı doğrulandı. Kapanış kanıtı `docs/qa/UX03_FINAL_20261022.md` ve tam testlerden gelir.
+
+**Ayrı kalan kabul (kapatılmadı):** gerçek fiziksel barkod okuyucu, iki fiziksel operatör ve kullanıcının görsel/geçiş/günlük kullanım onayı. Bunlar teknik geliştirmeyi yeni UX03-4x adımlarına dönüştürmez; tek bütünleşik kullanıcı kabulünde yapılır. **Yayın kapısı:** kullanıcının toplu yayın izni + GitHub commit/push/merge + uzak ortam READY/QA; henüz gerçekleştirilmedi. GitHub Quality otomatik tetiklenmez.
+
+Aşağıdaki UX03-1..4 maddeleri tarihsel başlangıç/ilerleme kaydıdır; güncel son durum yukarıdaki kapanıştır.
+
+## UX03 — Operasyon Deneyimi Analizi: güncel iş sırası
+
+UX03-1 Operasyon Merkezi / Aksiyon Merkezi: 796dd1d; gerçek snapshot bazlı görev kuyruğu. Önceki teknik rapor: 87/87 Vitest, 8/8 Chromium E2E, typecheck/lint/format/build PASS. Bu sonuç sonraki commitlere otomatik aktarılmaz.
+
+UX03-2 Sipariş 360°: feature/ux03-order-360 dalında IMPLEMENTED / UNVERIFIED. Sipariş penceresi, süreç durumu ve bağlı kayıt zincirini birleştirir. Beş hedefli test yazıldı fakat çalıştırılmadı. Finans/stok migration ve mutasyon yok. Karar: UX03_ORDER360_20261021.md.
+
+UX03-3 Hazırlama İstasyonu 2.0: IMPLEMENTED / UNVERIFIED (dal). Seri scanner kuyruğu ve terminal üstlen/bırak/devral arayüzü, PostgreSQL süreli claim ve diğer terminali engelleyen işlem kapısı kodlandı. Ayrı login/gerçek kullanıcı ataması değildir. DB migration ve UI/E2E doğrulaması açık; ana dala alınmaz.
+
+UX03-4 Kabul ve ölçek: BACKLOG. 30 karma sipariş / en az 3 sorunlu kayıt, 2 operatör çakışması, 1.000+ kayıt, 1440/1920 ekran, gerçek barkod okuyucu, depo/muhasebe rol sınırı ve tam FBS transaction regresyonu. Typecheck, lint, format, build ve test kanıtı olmadan main merge / Vercel READY iddiası yok.

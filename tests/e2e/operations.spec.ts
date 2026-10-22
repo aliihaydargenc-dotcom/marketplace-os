@@ -51,6 +51,9 @@ test("desktop FBS: create → reserve → barcode → ship → invoice → finan
     dialog.getByText("E2E kurgusal müşteri", { exact: true }),
   ).toBeVisible();
   const number = await dialog.locator(".drawer-header h2").innerText();
+  await expect(
+    dialog.getByRole("region", { name: "Sipariş 360 derece süreç görünümü" }),
+  ).toBeVisible();
   await dialog
     .getByRole("button", { name: "Stok kontrol et & rezerve et" })
     .click();
@@ -70,6 +73,23 @@ test("desktop FBS: create → reserve → barcode → ship → invoice → finan
   await expect(
     dialog.getByRole("link", { name: "DEMO / TASLAK PDF" }),
   ).toBeVisible();
+  const trace = dialog.getByRole("region", {
+    name: "Siparişin bağlı kayıtları",
+  });
+  await trace.getByRole("button", { name: "Stok", exact: true }).click();
+  await expect(
+    trace.getByText("Stok hareketi · SHIPMENT", { exact: true }),
+  ).toHaveCount(2);
+  await trace.getByRole("button", { name: "Finans", exact: true }).click();
+  await expect(trace.getByText("Finans · SALE", { exact: true })).toBeVisible();
+  await trace.getByRole("button", { name: "Belge", exact: true }).click();
+  await expect(
+    trace.getByText("DEMO / TASLAK oluşturuldu", { exact: true }),
+  ).toBeVisible();
+  await page.screenshot({
+    path: "test-results/order360-invoice-1440.png",
+    fullPage: true,
+  });
   const href = await dialog
     .getByRole("link", { name: "DEMO / TASLAK PDF" })
     .getAttribute("href");
@@ -118,6 +138,10 @@ test("desktop FBS: create → reserve → barcode → ship → invoice → finan
     .click();
   await expect(
     dialog.getByText("İade tamamlandı", { exact: true }),
+  ).toBeVisible();
+  await trace.getByRole("button", { name: "İade", exact: true }).click();
+  await expect(
+    trace.getByText("Kalite kontrol kararı", { exact: true }),
   ).toBeVisible();
   expect(errors).toEqual([]);
   await dialog.getByRole("button", { name: "Detayı kapat" }).click();

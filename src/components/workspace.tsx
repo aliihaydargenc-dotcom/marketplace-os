@@ -60,6 +60,7 @@ import { InventoryDocuments } from "./inventory-documents";
 import { CatalogTools, ProductEditor, ProductSource } from "./catalog-tools";
 import { OzonMarketPanel } from "./ozon-market-panel";
 import { ActionCenter } from "./action-center";
+import { Order360Overview, Order360Trace } from "./order-360";
 import {
   CurrencyDisplayProvider,
   CurrencyDisplayControls,
@@ -917,6 +918,7 @@ function WorkspaceBody({
               busy={busy}
               onCommand={run}
               onOpen={openOrder}
+              onRefresh={load}
             />
           )}
           {section === "returns" && allowed("QC") && (
@@ -1492,13 +1494,14 @@ function WorkspaceBody({
                     </strong>
                   </div>
                 </div>
+                <Order360Overview order={order} data={data} />
                 {order.fulfillment === "FBO" && (
                   <div className="info-box">
                     FBO referans kaydı. Yerel rezervasyon, hazırlama ve sevkiyat
                     kapalıdır. Gerçek Ozon FBO davranışı simüle edilmez.
                   </div>
                 )}
-                <h3>
+                <h3 id="order360-products" tabIndex={-1}>
                   Sipariş ürünleri <span>{totalUnits} adet</span>
                 </h3>
                 <div className="order-lines">
@@ -1530,7 +1533,11 @@ function WorkspaceBody({
                 </div>
                 {order.fulfillment === "FBS" && (
                   <>
-                    <div className="flow-progress">
+                    <div
+                      id="order360-operations"
+                      tabIndex={-1}
+                      className="flow-progress"
+                    >
                       <span>Hazırlama doğrulaması</span>
                       <strong>
                         {progress} / {totalUnits}
@@ -1751,7 +1758,7 @@ function WorkspaceBody({
                 )}
                 {data.actor.role !== "WAREHOUSE" && financialOrder && (
                   <>
-                    <h3>
+                    <h3 id="order360-finance" tabIndex={-1}>
                       Finansal sonuç <span>{order.currency}</span>
                     </h3>
                     <div className="finance-detail">
@@ -1793,77 +1800,10 @@ function WorkspaceBody({
                     run={run}
                   />
                 )}
-                <h3>Demo sağlayıcı kayıtları</h3>
-                {(data.integrationEvents ?? [])
-                  .filter((e) => e.order_id === order.id)
-                  .map((e) => (
-                    <p key={e.id}>
-                      {date(e.created_at)} · {e.provider} · {e.operation} ·
-                      Dışarı gönderilmedi
-                    </p>
-                  ))}
-                <h3>Stok ve finans bağlantıları</h3>
-                <div className="reference-list">
-                  {data.ledger
-                    .filter((l) => l.reference === order.id)
-                    .map((l) => (
-                      <div key={l.id}>
-                        <span>
-                          {l.kind} · {l.warehouse_id}
-                        </span>
-                        <strong>
-                          {l.quantity > 0 ? "+" : ""}
-                          {l.quantity}{" "}
-                          {
-                            data.products.find((p) => p.id === l.product_id)
-                              ?.sku
-                          }
-                        </strong>
-                      </div>
-                    ))}
-                  {data.financial
-                    .filter((f) => f.order_id === order.id)
-                    .map((f) => (
-                      <div key={f.id}>
-                        <span>
-                          {date(f.created_at)} · {f.kind} · {f.id}
-                        </span>
-                        <strong>{displayMoney(f.amount, f.currency)}</strong>
-                      </div>
-                    ))}
-                </div>
-                {data.actor.role !== "WAREHOUSE" && order.invoice_id && (
-                  <details>
-                    <summary>Belge durum geçmişi</summary>
-                    {(data.invoiceEvents ?? [])
-                      .filter((e) => e.order_id === order.id)
-                      .map((e) => (
-                        <p key={e.id}>
-                          {date(e.created_at)} · {e.from_status ?? "Yeni"} →{" "}
-                          {e.to_status} · {e.reason} · {e.actor}
-                        </p>
-                      ))}
-                  </details>
-                )}
-                <h3>İşlem geçmişi</h3>
-                <div className="timeline">
-                  {data.audit
-                    .filter((e) => e.reference === order.id)
-                    .map((e) => (
-                      <article key={e.id}>
-                        <span className="timeline-dot" />
-                        <div>
-                          <strong>{e.action}</strong>
-                          <small>
-                            {date(e.created_at)} · {e.actor}
-                          </small>
-                          {"reason" in e.details && (
-                            <p>{String(e.details.reason)}</p>
-                          )}
-                        </div>
-                      </article>
-                    ))}
-                </div>
+                <h3 id="order360-trace" tabIndex={-1}>
+                  Bağlı kayıtlar ve işlem geçmişi
+                </h3>
+                <Order360Trace order={order} data={data} />
               </div>
             )}
             {product && (

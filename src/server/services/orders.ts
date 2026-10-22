@@ -9,6 +9,7 @@ import { movement } from "./inventory";
 import { recordShipmentFinance } from "./finance";
 import { draft } from "./invoices";
 import { loadFbsOrder, updateOrderStatus } from "./order-context";
+import { assertPackingLease } from "./packing-leases";
 export async function applyOrder(
   tx: Tx,
   a: Actor,
@@ -50,6 +51,8 @@ export async function applyOrder(
     return id;
   }
   const o = await loadFbsOrder(tx, w, c.orderId);
+  if (c.action === "RESERVE" || c.action === "SCAN" || c.action === "SHIP")
+    await assertPackingLease(tx, w, c.orderId, a.userId, c.terminalId);
   const update = (status: string) => updateOrderStatus(tx, w, o.id, status);
   if (c.action === "RESERVE") {
     if (["RESERVED", "PACKING", "READY"].includes(o.status)) return o.id;
@@ -64,6 +67,17 @@ export async function applyOrder(
     await update("RESERVED");
   }
   if (c.action === "SCAN") {
+    // Workspace FOR UPDATE lock is held by execute(); compare inside the same
+    // transaction to reject concurrent stale scans before any quantity changes.
+    if (
+      c.expectedPackedTotal !== undefined &&
+      o.lines.reduce((sum, line) => sum + line.packed, 0) !==
+        c.expectedPackedTotal
+    ) {
+      throw new DomainError(
+        "Sipariş başka bir ekranda değişti; güncelleyip tekrar kontrol edin.",
+      );
+    }
     if (!["RESERVED", "PACKING"].includes(o.status))
       throw new DomainError("Önce stok rezervasyonu yapın");
     const [p] = await rows<{ id: string }>(
@@ -120,6 +134,9 @@ export async function applyOrder(
     await tx.execute(
       sql`UPDATE orders SET status='SHIPPED',shipped_at=now() WHERE workspace_id=${w}::uuid AND id=${o.id}`,
     );
+    await tx.execute(
+      sql`DELETE FROM packing_claims WHERE workspace_id=${w}::uuid AND order_id=${o.id}`,
+    );
     await recordIntegration(
       tx,
       w,
@@ -151,6 +168,9 @@ export async function applyOrder(
       sql`UPDATE reservations SET active=false WHERE workspace_id=${w}::uuid AND order_id=${o.id}`,
     );
     await update("CANCELLED");
+    await tx.execute(
+      sql`DELETE FROM packing_claims WHERE workspace_id=${w}::uuid AND order_id=${o.id}`,
+    );
   }
   return o.id;
 }

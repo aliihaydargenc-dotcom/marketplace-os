@@ -1,5 +1,10 @@
 # Codex toplu test devri
 
+**22 Ekim UX03 teknik kapanışı:** İzole PostgreSQL 18.6 üzerinde 1.205 gerçek sipariş/30 karma kayıt/3 stok engeli; 113/113 Vitest (24 dosya, tüm DB bayrakları açık), 13/13 Chromium E2E ve typecheck/lint/format/production build PASS. UX03-1..4 teknik geliştirmeleri kapatıldı. Ayrı gerçek scanner/iki fiziksel operatör, kullanıcı manuel UX kabulü ve uzaktan yayın/READY hâlâ açık. Güncel kanıt: ../qa/UX03_FINAL_20261022.md. Yukarıdaki eski test sayıları tarihsel kayıt kalır; kapanıştaki test sayısını düşürmez. GitHub Quality yalnız manuel tetiklenir, yeni gerçek hacim testi UX03_SCALE_DB_TEST=1 bayrağıyla çalışır.**
+
+
+**21 Ekim güncel Codex sonucu:** yerel düzeltmeli UX03 adayında tüm DB bayrakları açık **104/104 test (0 skipped)**, production build üzerinde Chromium **12/12 (0 retry)** ve typecheck/lint/format/build PASS. Yeni `tests/concurrency.db.test.ts` için `CONCURRENCY_DB_TEST=1`, `tests/migrations.db.test.ts` için `MIGRATION_DB_TEST=1` gerekir; ikinci paket disposable DB oluşturabilmek için CREATEDB yetkisi ister. Migration 0009 dahil uygulanmalı. [Kapsam, başarısızlıklar ve düzeltmeler](../qa/UX03_MERGE_20261021.md). Aşağıdaki kutuların tamamı bu koşuda kapanmış sayılmaz: fiziksel scanner, 30/1000+ ölçek ve kullanıcı manuel kabulü açık kalır. Main/push/deploy yapılmadı; bağımlılık audit bulguları açık.
+
 21 Ekim 2026. Kullanıcı arayüz/geçiş deneyimini elle kontrol edecek. Aşağıdaki liste **bekleyen kabul işleri**dir; geçmiş test iddiası değildir. Eski sonuçlar `../TEST_REPORT.md` içinde tarihli saklanır.
 
 ## Geçerli test sorumluluğu ve zamanlama
@@ -141,3 +146,24 @@ Geliştirici yerel UI ve teknik kontrolleri PROGRESS ve design-qa.md içinde. Ku
 - [ ] Güncel kur erişimi olan yayın ortamında ≈ tutar seçimi ve kaynak/tarih ayrıntısı; önizlemede kur yoksa sessiz demo kuruna düşülmemesi.
 
 Bu kutular son kullanıcı tarafından işaretlenmedi. Yeni production linki ancak ayrı READY/smoke kanıtıyla verilir.
+
+
+## UX03-2 — Sipariş 360° doğrulama devri
+
+- [ ] Aynı aday SHA üzerinde npm ci, typecheck, lint, format:check ve build; başarısızsa main'e alma.
+- [ ] tests/order-360.test.ts beş senaryo: stok/rezervasyon, barkod/sevk, DEMO fatura hatası/maliyet, depo görünümü, FBO referansı/kronoloji.
+- [ ] İzole PostgreSQL üzerinde ilgili tam domain/DB regresyonu; mevcut stok ve finans bütünlüğü bozulmamalı.
+- [ ] Chromium: Siparişler'den 360 süreç, ürün/işlem/finans/kayıt geçişleri, filtre/ilk 10/tümü, Escape ve modal odak; 1440×900, 1920×1080, 390px dar görünüm.
+- [ ] Depo rolünde finans ve belge zinciri yok; muhasebe stok/sevk mutation yetkisi sunucuda; FBO hazırlama ve sevk edilemez.
+- [ ] 30 karma sipariş ve en az üç blokaj; 1000+ kayıt liste/detay performansı; iki eşzamanlı operatör ve fiziksel barkod okuyucu (UX03-3 kapsamında).
+- [ ] GitHub aday SHA / Vercel aday SHA / production SHA ayrı doğrulanır; yeni yayın ancak tek kontrollü paketle.
+
+## UX03-3 — Terminal sahipliği ve barkod kabulü (yeni aday)
+
+- [ ] İzole PostgreSQL'de 0008 migration; tests/domain.test.ts senaryolarında iki terminal aynı siparişi üstlenme yarışında tek kazanan; yönetici devralma, 403 rol engeli, eski terminalden RESERVE/SCAN/SHIP 409, doğru terminalden sevk ve lease temizliği.
+- [ ] Yönetici/Depo: hazırlama masası → siparişi üstlen → seri barkod → sevk; başka sekmeden üstlenme 409 ve görünür geri bildirim; yönetici devralması sonrası önceki terminal yeni barkod yazamaz.
+- [ ] 120 saniye lease, 40 saniye yenileme, sekme kapatma/arka plan, ağ kopması ve başarısız ilk işlem; stale ekran tekrar okutma yapmaz. Reset sonrasında eski generation kabul edilmez.
+- [ ] Bir alandaki terminal diğer workspace siparişini alamaz; muhasebe terminal claim/devralma kullanamaz; FBO için lease veya FBS mutasyonu yoktur.
+- [ ] 1440/1920/390 masaüstü ve dar ekran, klavye F8/Enter, fiziksel barkod cihazı, 30/1000 kayıt yükü.
+- [ ] Eski sipariş detayının claimsiz akışında geriye dönük uyumluluk var; aktif claim bulunan sipariş eski detaydan değiştirilemez. Bu, zorunlu her işlemde claim doğrulaması anlamına gelmez.
+- [ ] Bu listedeki hiçbir sonuç çalıştırılmadan PASS yazılmaz; main merge / Vercel yoktur.

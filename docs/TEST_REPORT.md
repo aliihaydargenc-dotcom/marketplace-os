@@ -1,5 +1,13 @@
 # Doğrulama raporu
 
+## 21 Ekim 2026 — QA-01 / UX03 merge öncesi
+
+`main=796dd1d`, aday dal `d48f751`: GitHub'da 10 ileri / 0 geri doğrulandı. Yerel düzeltmeli adayda **104/104 Vitest (22 dosya, 0 skipped)**, **12/12 Chromium E2E (0 retry)**, typecheck/lint/format/production build PASS. Gerçek yerel PostgreSQL 18.4'te 0001–0009 temiz kurulum/tekrar ve mevcut verili yükseltme PASS. Yanlış TCP transaction sürücüsü, claim sahiplik FK'sı ve seed test izolasyonu düzeltildi. [Ayrıntılı bulgular, komutlar, kanıtlar ve açık merge sınırları](qa/UX03_MERGE_20261021.md).
+
+Main merge, push, production DB migration, Vercel deploy veya yeni kabul yayını yapılmadı. İstenen teknik kapılar başarılı; bağımlılık audit bulguları, fiziksel scanner/ölçek ve kullanıcı kabulü açık. Aşağıdaki eski sonuçlar tarihsel kayıttır.
+
+---
+
 ## 21 Ekim 2026 — INV-02 iade masası
 
 `npx vitest run tests/returns.test.ts tests/navigation.test.ts`: **6/6 PASS**, 596ms. 4 saf iade testi: FBS/status/orphan/sıralama ve immutability; SKU/barkod/Türkçe/gerekçe araması; order referansı bazlı karantina ve kayıp ürün/durum engeli; bekleme saati. 2 navigasyon testi: mevcut URL allowlist ve yeni returns bölümünde depo erişimi/muhasebe güvenli varsayılanı. Typecheck/lint (0 uyarı)/format/production build PASS. QC sunucu mutasyonu/DB migration değişmedi; geniş DB/E2E ve yeni browser kabul/ret işlemi bu görevde koşulmadı. Yayın ve salt okuma canlı kontrol ayrıca kaydedilir.

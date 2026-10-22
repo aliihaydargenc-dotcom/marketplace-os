@@ -1,5 +1,15 @@
 # Durum ve ilerleme kaydı
 
+## UX03 — Son teknik kapanış (22 Ekim 2026)
+
+**VERIFIED / TEKNİK OLARAK KAPALI.** Operasyon Merkezi, Sipariş 360°, Hazırlama İstasyonu 2.0 ve kabul/ölçek geliştirmeleri aynı izole QA çalışma ağacında birleştirildi. 1.205 gerçek PostgreSQL siparişi üzerinden 30 karma kayıt / 3 stok sorunu dahil testler eklendi; terminalin hem kullanıcıya hem kimliğe bağlanması, devralma sonrası eski erişimin reddi, 80 kayıtlık sayfalama ve mobil taşma düzeltmeleri bütünleşik denendi. 0001–0009 migration, PostgreSQL concurrency, tüm Vitest bayrakları, Chromium, production build, tip/lint/biçim kontrollerinin sonucu `docs/qa/UX03_FINAL_20261022.md` içindedir. **Bu sonuç yalnız izole checkout içindir; GitHub branch, main ve Vercel yayını değişmedi.**
+
+**BEKLİYOR (UX03 kod görevi değil):** fiziksel barkod okuyucu ve farklı gerçek cihaz/operatör kabulü; kullanıcının görsel/geçiş/günlük kullanım onayı; tek toplu GitHub push ve Vercel READY. Önceki UX03-1..4 ve QA tarihsel notları bu bölümün altında aynen korunmaktadır. Sonraki adım yeni UX03-4g geliştirmesi değil, tek seferlik kullanıcı kabulü/yayın kararıdır.
+
+## QA-01 / UX03 — güncel yerel doğrulama (21 Ekim)
+
+GitHub `feature/ux03-order-360=d48f751`, main `796dd1d`: 10 commit ileri / 0 geri. Yerel düzeltmeli aday: 104/104 Vitest, 12/12 Chromium E2E, typecheck/lint/format/production build PASS. TCP için doğru Drizzle sürücüsü, `0009` claim FK düzeltmesi ve seed test izolasyonu eklendi. Migration temiz kurulum, mevcut veriyle yükseltme, tekrar ve aktif claim cascade PASS; tüm DB bayrakları açık, 0 skipped. UX03-2 ve UX03-3'ün raporda belirtilen teknik otomatik kapsamı VERIFIED; fiziksel scanner, 30/1000+ kayıt ölçeği ve kullanıcı kabulü VERIFIED değildir. [Ayrıntılı QA raporu](../qa/UX03_MERGE_20261021.md). Audit bulguları açık olduğundan koşulsuz merge onayı verilmedi; main/production değişmedi. Düzeltmeler yereldir; push/deploy yapılmadı.
+
 **Geçerli son karar:** demo işlevlerini mevcut düzeni koruyarak tamamla → teknik toplu kontrol → kapsamlı tasarım → kullanıcının manuel kabulü. Önceki UX-01 tasarım kapısı ve görev sonrası kullanıcı bekleme kuralları iptal; tarihsel kayıtlar aşağıda korunur. Yeni özellik bu karar kaydıyla tamamlanmış sayılmaz.
 
 21 Ekim 2026. Başlangıç denetimi: `84e5de9275e794e157d75ae8bc96debc2199f838`. Bu belge eski raporu değiştirmez; kod, önceki kanıt ve yeni doğrulama ayrıdır.
@@ -233,3 +243,16 @@ Pazar verisi dashboard'da KPI kartlarından sonra yerleştirildi; mevcut operasy
 ### 21 Ekim — Teknik QA tamamlandı / kullanıcı kabulü bekliyor
 
 İzole PostgreSQL 18 üzerinde 0001–0007 migration ve 80/80 tam test paketi PASS. Native Playwright Chromium ile 6/6 E2E PASS. TypeScript, ESLint, Prettier ve Next.js üretim derlemesi PASS. Kaynak düzeltme commit `eb9ae025`. Geçici (30 dakika oturum süresi) Vercel Sandbox demo: `https://sb-4kislw650242.vercel.run/`, bağlantı HTTP 200; production ve ana Neon DB değişmedi. Kullanıcı incelemesi bekleniyor, kalıcı sürüm/production deploy henüz yapılmadı. Kabulde saptanan geçiş, tasarım veya iş akışı bulguları bu teknik başarıdan ayrı kaydedilecek.
+
+
+### UX03-2 — Sipariş 360° çalışma dalı (21 Ekim)
+
+Durum: IMPLEMENTED / UNVERIFIED, dal feature/ux03-order-360 (main'e alınmadı). Mevcut sipariş penceresine süreç şeridi, role göre kayıt/görev uyarıları, bölüm içi odak geçişleri ve filtrelenebilir kronolojik stok/finans/belge/iade/denetim/demo sağlayıcı zinciri eklendi. Birbirini tekrarlayan eski işlem listeleri kaldırıldı. FBO işlem düğmesi gizlendi; canlı Ozon/Paraşüt veya e-Fatura yok. SQL, servis komutları ve yetki kuralları değiştirilmedi.
+
+tests/order-360.test.ts içinde beş hedefli test YAZILDI, ÇALIŞTIRILMADI. Projenin tam bağımlılıklarıyla yerel checkout kurulamadığından typecheck/lint/format/build/DB/E2E sonucu verilmez. GitHub commit ve diff doğrulandı. Otomatik deploy kapalı; yeni production yayını yok. Zorunlu tekrar kontroller ROADMAP/TEST_HANDOFF içindedir.
+
+### UX03-3 — İzole kod doğrulaması
+
+Vercel geçici sandbox ortamında public repo `1fe1c983` checkout'u + biçimlendirilmiş ve lint düzeltilmiş dokuz dosya: `npm ci` PASS; `npm run typecheck` PASS; `npm run lint` PASS; `npm run format:check` PASS; `npx vitest run tests/packing.test.ts tests/order-360.test.ts` **8/8 PASS** (3 + 5); `npm run build` PASS, Next.js 16.4.2. Güncellenen dokuz dosyanın Git blob SHA'ları sandbox dosyalarıyla bire bir eşleşti. Bu QA sonucu çalışma dalındaki biçimlendirme commit'i için geçerlidir.
+
+**Açık:** PostgreSQL transaction regresyonu (yeni eşzamanlı iki sekme testi yalnız yazıldı), tam DB/E2E paketi, gerçek barkod tarayıcısı, operatör atama/lease, 1000+ kayıt yükü ve kullanıcının UI/geçiş kabulü. Canlı Ozon bağlantısı veya gerçek kullanıcı ataması yok; üretim yayını yok.

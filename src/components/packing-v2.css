@@ -1,0 +1,103 @@
+/* UX03-3: scanner terminal usability; existing horizontal workspace shell retained. */
+.packing-station-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+}
+.packing-station-tools button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.packing-scanner:focus-within {
+  border-color: #5d91d5;
+  box-shadow: 0 0 0 2px rgba(34, 104, 204, 0.12);
+}
+.packing-scan-queue {
+  margin-top: 10px;
+  padding: 9px 12px;
+  border: 1px solid #b6cae4;
+  background: #eaf2ff;
+  color: #25578b;
+  border-radius: 4px;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.packing-station > .error {
+  border-left: 3px solid #b45336;
+  padding: 10px 12px;
+  background: #fff5ef;
+  font-size: 12px;
+}
+@media (max-width: 650px) {
+  .packing-station-tools {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .packing-scanner > div {
+    flex-wrap: wrap;
+  }
+  .packing-scanner input {
+    width: 100%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .packing-scanner,
+  .packing-scan-queue {
+    animation: none;
+    transition: none;
+  }
+}
+
+.packing-lease-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 11px 13px;
+  background: #eef5fc;
+  border: 1px solid #bfd2e7;
+  border-radius: 5px;
+}
+.packing-lease-status > div:first-child {
+  display: grid;
+  gap: 3px;
+}
+.packing-lease-status strong {
+  font-size: 13px;
+  color: #17375c;
+}
+.packing-lease-status small {
+  color: #536c89;
+  font-size: 11px;
+}
+.packing-lease-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.packing-lease-buttons button {
+  font-size: 12px;
+}
+
+/* Large queues render in controlled batches; searchable beyond visible rows. */
+.packing-queue-list .packing-show-more {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  padding: 11px;
+  border: 1px dashed #b2c6de;
+  border-radius: 5px;
+  background: #f7faff;
+  color: #23548b;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.packing-queue-list .packing-show-more:focus-visible {
+  outline: 2px solid #2268cc;
+  outline-offset: 2px;
+}
