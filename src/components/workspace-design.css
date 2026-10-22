@@ -1055,3 +1055,326 @@
   margin: 5px 0 0;
   line-height: 1.5;
 }
+
+/* UX-04: predictable transitions, responsive navigation and visible interaction states. */
+
+.ledger-header .ledger-command-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 9px;
+  border: 1px solid #ffffff2b;
+  border-radius: 5px;
+  color: #e5edfa;
+  white-space: nowrap;
+  font-size: 12px;
+}
+
+.ledger-header .ledger-command-trigger:hover,
+.ledger-header .ledger-command-trigger:focus-visible {
+  background: #ffffff20;
+}
+
+.ledger-command-trigger kbd {
+  padding: 2px 5px;
+  border: 1px solid #ffffff33;
+  border-radius: 3px;
+  color: #aebed2;
+  font-family: inherit;
+  font-size: 10px;
+}
+
+.ledger-header .ledger-refresh[aria-busy="true"] {
+  opacity: .85;
+  cursor: progress;
+}
+
+.ledger-spin {
+  animation: ledger-spinning 900ms linear infinite;
+}
+
+@keyframes ledger-spinning {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes ledger-section-reveal {
+  from {
+    opacity: .45;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.design-ledger .page-heading h1 {
+  animation: ledger-section-reveal 170ms ease-out;
+}
+
+.design-ledger .page-heading h1:focus {
+  outline: 0;
+}
+
+.design-ledger .page-heading h1:focus-visible {
+  outline: 2px solid #2673f6;
+  outline-offset: 4px;
+  border-radius: 3px;
+}
+
+.design-ledger .table-page-summary {
+  color: #5b6c83;
+  font-variant-numeric: tabular-nums;
+}
+
+.design-ledger .order-active-filters {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 3px 0 12px;
+  font-size: 11px;
+  color: #475d77;
+}
+
+.design-ledger .order-active-filters > span:not(.order-active-count) {
+  border: 1px solid #dce8f9;
+  background: #f2f7ff;
+  border-radius: 4px;
+  padding: 4px 8px;
+  max-width: min(340px, 100%);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.design-ledger .order-active-filters .order-active-count {
+  font-weight: 650;
+  margin-right: 5px;
+}
+
+.design-ledger .order-active-filters button {
+  border: 0;
+  padding: 5px 7px;
+  font-size: 11px;
+  color: #1264f4;
+  background: transparent;
+}
+
+.design-ledger .order-active-filters button:hover {
+  background: #edf4ff;
+}
+
+.design-ledger .order-date-error {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 9px 12px;
+  margin-bottom: 10px;
+  border-left: 3px solid #bf503d;
+  color: #9d3e31;
+  background: #fff5f1;
+  font-size: 12px;
+}
+
+.design-ledger .order-date-error button {
+  padding: 4px 8px;
+  font-size: 11px;
+}
+
+.order-empty-state {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  padding: 24px 12px;
+  color: #75859b;
+  text-align: center;
+}
+
+.order-empty-state strong {
+  color: #263b55;
+  font-size: 14px;
+}
+
+.order-empty-state p {
+  color: #64758c;
+  font-size: 12px;
+}
+
+.order-empty-state button {
+  border: 1px solid #cfe0ff;
+  background: #f0f6ff;
+  color: #0d55c2;
+  padding: 7px 11px;
+  margin-top: 4px;
+}
+
+.ledger-loading-label {
+  margin-bottom: 18px;
+  color: #61738c;
+  font-size: 13px;
+}
+
+.ledger-loading-skeleton {
+  display: grid;
+  gap: 13px;
+  width: 100%;
+  max-width: 1400px;
+}
+
+.ledger-skeleton-title, .ledger-skeleton-toolbar, .ledger-skeleton-row {
+  background: linear-gradient(90deg, #edf1f7 0%, #f7f9fc 50%, #edf1f7 100%);
+  background-size: 200% 100%;
+  animation: ledger-skeleton 1.4s ease-in-out infinite;
+  border-radius: 4px;
+}
+
+.ledger-skeleton-title {
+  height: 30px;
+  width: 220px;
+  margin-bottom: 12px;
+}
+
+.ledger-skeleton-toolbar {
+  height: 42px;
+  margin-bottom: 12px;
+}
+
+.ledger-skeleton-row {
+  height: 43px;
+}
+
+@keyframes ledger-skeleton {
+  from {
+    background-position-x: 100%;
+  }
+  to {
+    background-position-x: -100%;
+  }
+}
+
+.workspace-recovery-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 22px;
+}
+
+@media (max-width: 1460px) {
+  .ledger-command-trigger kbd {
+    display: none;
+  }
+}
+
+@media (max-width: 1180px) {
+  .ledger-header .ledger-command-trigger span {
+    display: none;
+  }
+}
+
+@media (max-width: 1060px) and (min-width: 961px) {
+  .ledger-header {
+    gap: 12px;
+    padding-inline: 14px;
+  }
+  .ledger-header nav {
+    gap: 8px;
+  }
+  .ledger-header-tools {
+    gap: 6px;
+  }
+}
+
+@media (max-width: 960px) {
+  .ledger-header nav {
+    scrollbar-width: thin;
+    scrollbar-color: #637a97 transparent;
+  }
+  .ledger-header nav button {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 420px) {
+  .ledger-header {
+    padding-inline: 12px;
+  }
+  .ledger-header .ledger-brand {
+    font-size: 16px;
+  }
+  .ledger-header-tools {
+    gap: 3px;
+  }
+  .ledger-header .ledger-command-trigger,
+  .ledger-header .ledger-refresh,
+  .ledger-header .ledger-help {
+    padding: 5px;
+  }
+  .ledger-header nav {
+    gap: 17px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ledger-spin, .design-ledger .page-heading h1,
+  .ledger-skeleton-title, .ledger-skeleton-toolbar, .ledger-skeleton-row {
+    animation: none !important;
+  }
+}
+
+@media (max-width: 960px) {
+  .design-ledger .order-view-state {
+    display: inline;
+    max-width: none;
+  }
+}
+
+/* Valid date presets and non-interactive export while the range is invalid. */
+
+.design-ledger .period-toolbar button[aria-pressed="true"] {
+  color: #0d55bf;
+  background: #eaf2ff;
+  border-color: #bfd4fa;
+  font-weight: 650;
+}
+
+.design-ledger .period-toolbar input[aria-invalid="true"] {
+  border-color: #c85c4c;
+}
+
+.design-ledger .report-disabled {
+  display: inline-flex;
+  align-items: center;
+  color: #8c96a5;
+  background: #f1f3f6;
+  border: 1px solid #e2e6ed;
+  opacity: .8;
+  cursor: not-allowed;
+}
+
+.design-ledger .ledger-period-error {
+  margin-top: -8px;
+  margin-bottom: 17px;
+  flex-wrap: wrap;
+}
+
+.design-ledger .ledger-period-error button {
+  border-color: #e2bcb8;
+  background: white;
+  color: #a43e36;
+  padding: 5px 9px;
+}
+
+@media (max-width: 650px) {
+  .design-ledger .period-toolbar {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+  .design-ledger .period-toolbar > div {
+    flex-wrap: wrap;
+  }
+}

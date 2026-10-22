@@ -33,6 +33,7 @@ export function DataTable<T extends { id: string }>({
   renderExpanded,
   toolsId,
   toolsContainer,
+  emptyState,
 }: {
   data: T[];
   columns: ColumnDef<T>[];
@@ -47,6 +48,7 @@ export function DataTable<T extends { id: string }>({
   renderExpanded?: (row: T) => ReactNode;
   toolsId?: string;
   toolsContainer?: HTMLElement | null;
+  emptyState?: ReactNode;
 }) {
   const [sorting, setSorting] = useState<SortingState>([]),
     [visibility, setVisibility] = useState<VisibilityState>({}),
@@ -62,6 +64,13 @@ export function DataTable<T extends { id: string }>({
     ...pagination,
     pageSize: layout?.pageSize ?? pagination.pageSize,
   };
+  const startRow = data.length
+    ? currentPagination.pageIndex * currentPagination.pageSize + 1
+    : 0;
+  const endRow = Math.min(
+    data.length,
+    (currentPagination.pageIndex + 1) * currentPagination.pageSize,
+  );
   // React Compiler does not memoize TanStack Table; this component is intentionally uncompiled.
   // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
@@ -146,9 +155,9 @@ export function DataTable<T extends { id: string }>({
                 {onSelection && (
                   <th>
                     <input
-                      aria-label="Sayfadaki siparişleri seç"
+                      aria-label={`${label} – sayfadaki kayıtları seç`}
                       type="checkbox"
-                      disabled={disabled}
+                      disabled={disabled || !data.length}
                       ref={(el) => {
                         if (el)
                           el.indeterminate = table.getIsSomePageRowsSelected();
@@ -204,7 +213,7 @@ export function DataTable<T extends { id: string }>({
                       <input
                         type="checkbox"
                         disabled={disabled}
-                        aria-label={`${r.id} seç`}
+                        aria-label={`${"number" in r.original && typeof r.original.number === "string" ? r.original.number : r.id} seç`}
                         checked={r.getIsSelected()}
                         onChange={r.getToggleSelectedHandler()}
                       />
@@ -221,7 +230,13 @@ export function DataTable<T extends { id: string }>({
                         className="row-open"
                         disabled={disabled}
                         onClick={() => onOpen(r.original)}
-                        aria-label={`${r.id} detay`}
+                        aria-label={`${"number" in r.original && typeof r.original.number === "string" ? r.original.number : r.id} detay`}
+                        aria-expanded={
+                          renderExpanded ? expandedId === r.id : undefined
+                        }
+                        title={
+                          renderExpanded ? "Satır detayını aç/kapat" : "Kaydı aç"
+                        }
                       >
                         {renderExpanded ? <MoreHorizontal size={17} /> : "Aç ↗"}
                       </button>
@@ -245,8 +260,15 @@ export function DataTable<T extends { id: string }>({
             ))}
             {!data.length && (
               <tr>
-                <td colSpan={columns.length + 2} className="empty">
-                  Bu filtrelerle eşleşen kayıt yok.
+                <td
+                  colSpan={
+                    table.getVisibleLeafColumns().length +
+                    (onSelection ? 1 : 0) +
+                    (onOpen ? 1 : 0)
+                  }
+                  className="empty"
+                >
+                  {emptyState ?? "Bu filtrelerle eşleşen kayıt yok."}
                 </td>
               </tr>
             )}
@@ -254,7 +276,8 @@ export function DataTable<T extends { id: string }>({
         </table>
       </div>
       <footer className="table-footer">
-        <span>
+        <span className="table-page-summary" role="status">
+          {startRow}–{endRow} / {data.length} kayıt ·{" "}
           {table.getState().pagination.pageIndex + 1} /{" "}
           {Math.max(1, table.getPageCount())} sayfa
         </span>

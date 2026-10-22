@@ -49,6 +49,7 @@ import { lineContributions } from "@/domain/finance/allocation";
 import { PackingWorkbench } from "./packing-workbench";
 import { OrdersView } from "./orders-view";
 import { WorkspaceHeader } from "./workspace-header";
+import { WorkspaceCommandMenu } from "./workspace-command-menu";
 import { GuidedTour } from "./guided-tour";
 import { workspaceGuide } from "@/domain/onboarding";
 import "./workspace-design.css";
@@ -65,7 +66,7 @@ import {
   CurrencyDisplayControls,
   displayMoney,
 } from "./currency-display";
-import { type WorkspaceSection as Section } from "@/domain/navigation";
+import { resolveSection, type WorkspaceSection as Section } from "@/domain/navigation";
 const nav = [
   { id: "dashboard", name: "Operasyon Merkezi", icon: LayoutDashboard },
   { id: "orders", name: "Siparişler", icon: ShoppingBag },
@@ -91,6 +92,10 @@ const date = (v: string) =>
   });
 const today = () =>
   new Date().toLocaleDateString("sv-SE", { timeZone: "Europe/Istanbul" });
+const daysAgo = (days: number) =>
+  new Date(Date.now() - (days - 1) * 86400000).toLocaleDateString("sv-SE", {
+    timeZone: "Europe/Istanbul",
+  });
 function Badge({ status }: { status: string }) {
   return (
     <span className={`badge ${status.toLowerCase()}`}>
@@ -124,15 +129,15 @@ function WorkspaceBody({
     [section, setSection] = useState<Section>(initialSection),
     [loading, setLoading] = useState(true),
     [busy, setBusy] = useState(false),
+    [refreshing, setRefreshing] = useState(false),
+    [commandOpen, setCommandOpen] = useState(false),
     [error, setError] = useState(""),
     [notice, setNotice] = useState("");
   const [search, setSearch] = useState(""),
     [status, setStatus] = useState("ALL"),
     [stockFilter, setStockFilter] = useState("ALL"),
     [currency, setCurrency] = useState<"RUB" | "TRY">("RUB"),
-    [from, setFrom] = useState(() =>
-      new Date(Date.now() - 29 * 86400000).toISOString().slice(0, 10),
-    ),
+    [from, setFrom] = useState(() => daysAgo(30)),
     [to, setTo] = useState(today);
   const [orderViewSlot, setOrderViewSlot] = useState<HTMLDivElement | null>(
     null,
@@ -150,17 +155,27 @@ function WorkspaceBody({
     barcodeRef = useRef<HTMLInputElement>(null),
     closeRef = useRef<HTMLButtonElement>(null),
     openerRef = useRef<HTMLElement | null>(null);
-  const load = useCallback(async () => {
+  const load = useCallback(async (): Promise<boolean> => {
+    setRefreshing(true);
     try {
-      const s = await api<WorkspaceSnapshot>("/api/workspace");
-      setData(s);
+      const snapshot = await api<WorkspaceSnapshot>("/api/workspace");
+      setData(snapshot);
+      setError("");
+      return true;
     } catch (e) {
-      if ((e as Error).message !== "Demo oturumu açın")
-        setError((e as Error).message);
+      setError(`Veriler yenilenemedi: ${(e as Error).message}`);
+      return false;
     } finally {
-      setLoading(false);
+      setRefreshing(false);
     }
   }, []);
+  const refresh = useCallback(async (announce = false) => {
+    const updated = await load();
+    if (announce && updated) setNotice("Veriler güncellendi.");
+  }, [load]);
+  const silentRefresh = useCallback(async () => {
+    await refresh();
+  }, [refresh]);
   useEffect(() => {
     let active = true;
     api<WorkspaceSnapshot>("/api/workspace")
@@ -190,9 +205,10 @@ function WorkspaceBody({
             menu.querySelector("summary")?.focus();
           });
       }
-      if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
         e.preventDefault();
-        searchRef.current?.focus();
+        if (!busy && !orderId && !productId && !creating)
+          setCommandOpen((value) => !value);
       }
     }
     function dismissMenus(event: PointerEvent) {
@@ -211,7 +227,7 @@ function WorkspaceBody({
       document.removeEventListener("keydown", key);
       document.removeEventListener("pointerdown", dismissMenus);
     };
-  }, []);
+  }, [busy, orderId, productId, creating]);
   useEffect(() => {
     if (orderId || productId || creating) {
       const overflow = document.body.style.overflow;
@@ -240,8 +256,12 @@ function WorkspaceBody({
         }),
       });
       if (!quiet) {
-        await load();
-        setNotice("İşlem kaydedildi. İlgili kayıtlar güncellendi.");
+        const updated = await load();
+        setNotice(
+          updated
+            ? "İşlem kaydedildi. İlgili kayıtlar güncellendi."
+            : "İşlem kaydedildi; ancak güncel veriler alınamadı. Yeniden yenileyin.",
+        );
       }
       return result;
     } catch (e) {
@@ -267,17 +287,44 @@ function WorkspaceBody({
     void run(c).catch(() => {});
   }
   function navigate(next: Section) {
-    setSection(next);
-    window.history.replaceState(null, "", `/workspace?section=${next}`);
-    setSearch("");
-    setStatus("ALL");
+    setCommandOpen(false);
+    if (next !== section) {
+      setNotice("");
+      const url = new URL(window.location.href);
+      url.searchParams.set("section", next);
+      window.history.pushState({ section: next }, "", url);
+      setSection(next);
+      setSearch("");
+      setStatus("ALL");
+    }
     requestAnimationFrame(() => {
-      document
-        .getElementById("workspace-heading")
-        ?.focus({ preventScroll: true });
+      document.getElementById("workspace-heading")?.focus({ preventScroll: true });
       window.scrollTo({ top: 0, behavior: "instant" });
     });
   }
+  const actorRole = data?.actor.role;
+  useEffect(() => {
+    if (!actorRole) return;
+    const restore = () => {
+      const destination = resolveSection(
+        new URLSearchParams(window.location.search).get("section"),
+        actorRole,
+      );
+      setSection(destination);
+      setSearch("");
+      setStatus("ALL");
+      setOrderId(null);
+      setProductId(null);
+      setCreating(false);
+      setCommandOpen(false);
+      requestAnimationFrame(() => {
+        document.getElementById("workspace-heading")?.focus({ preventScroll: true });
+        window.scrollTo({ top: 0, behavior: "instant" });
+      });
+    };
+    window.addEventListener("popstate", restore);
+    return () => window.removeEventListener("popstate", restore);
+  }, [actorRole]);
   if (loading)
     return (
       <div className="app-shell design-ledger">
@@ -288,7 +335,14 @@ function WorkspaceBody({
           <span className="ledger-demo">DEMO</span>
         </header>
         <main className="workspace-main" aria-busy="true">
-          <p role="status">Çalışma alanı yükleniyor…</p>
+          <p role="status" className="ledger-loading-label">Çalışma alanı yükleniyor…</p>
+          <div className="ledger-loading-skeleton" aria-hidden="true">
+            <div className="ledger-skeleton-title" />
+            <div className="ledger-skeleton-toolbar" />
+            {Array.from({ length: 7 }, (_, index) => (
+              <div className="ledger-skeleton-row" key={index} />
+            ))}
+          </div>
         </main>
       </div>
     );
@@ -301,9 +355,19 @@ function WorkspaceBody({
           {error ||
             "Oturumunuz sona ermiş olabilir. Demo Merkezi’nden yeniden giriş yapın."}
         </p>
-        <Link className="button primary" href="/">
-          Demo Merkezi’ne dön
-        </Link>
+        <div className="workspace-recovery-actions">
+          <button
+            type="button"
+            className="primary"
+            onClick={() => {
+              setLoading(true);
+              void load().finally(() => setLoading(false));
+            }}
+          >
+            Yeniden dene
+          </button>
+          <Link className="button" href="/">Demo Merkezi’ne dön</Link>
+        </div>
       </main>
     );
   const dateMode = section === "finance" ? financeMode : "COHORT";
@@ -516,9 +580,13 @@ function WorkspaceBody({
   const progress = order ? order.lines.reduce((s, l) => s + l.packed, 0) : 0,
     totalUnits = order ? order.lines.reduce((s, l) => s + l.quantity, 0) : 0;
   const financialOrder = order ? profitability(order, data.financial) : null;
+  const invalidPeriod = from > to;
   return (
     <div className="app-shell design-ledger">
-      <div className="main-shell" inert={!!(order || product || creating)}>
+      <div
+        className="main-shell"
+        inert={!!(order || product || creating || commandOpen)}
+      >
         <a className="workspace-skip" href="#workspace-content">
           İçeriğe geç
         </a>
@@ -526,9 +594,11 @@ function WorkspaceBody({
           data={data}
           section={section}
           busy={busy}
+          refreshing={refreshing}
           onNavigate={navigate}
+          onCommand={() => setCommandOpen(true)}
           onGuide={() => setGuideReplay((value) => value + 1)}
-          onRefresh={() => void load()}
+          onRefresh={() => void refresh(true)}
           onLogout={() => {
             void api("/api/session", { method: "DELETE" })
               .then(() => {
@@ -545,7 +615,7 @@ function WorkspaceBody({
         >
           <div className="page-heading">
             <div>
-              <h1 id="workspace-heading" tabIndex={-1}>
+              <h1 id="workspace-heading" key={section} tabIndex={-1}>
                 {nav.find((n) => n.id === section)?.name}
               </h1>
               {section === "orders" && (
@@ -558,14 +628,23 @@ function WorkspaceBody({
               )}
 
               {["finance", "dashboard"].includes(section) &&
-                allowed("REPORT") && (
+                allowed("REPORT") &&
+                (invalidPeriod ? (
+                  <span
+                    className="button report-disabled"
+                    aria-disabled="true"
+                    title="Rapor için önce geçerli tarih aralığı seçin"
+                  >
+                    Excel raporu ↗
+                  </span>
+                ) : (
                   <a
                     className="button"
                     href={`/api/export?format=xlsx&currency=${currency}&from=${from}&to=${to}&mode=${dateMode}`}
                   >
                     Excel raporu ↗
                   </a>
-                )}
+                ))}
               {["orders", "dashboard"].includes(section) &&
                 allowed("CREATE_ORDER") && (
                   <button className="primary" onClick={openCreate}>
@@ -604,6 +683,7 @@ function WorkspaceBody({
                   Başlangıç
                   <input
                     aria-label="Başlangıç tarihi"
+                    aria-invalid={invalidPeriod}
                     type="date"
                     value={from}
                     onChange={(e) => {
@@ -616,6 +696,7 @@ function WorkspaceBody({
                   Bitiş
                   <input
                     aria-label="Bitiş tarihi"
+                    aria-invalid={invalidPeriod}
                     type="date"
                     value={to}
                     onChange={(e) => {
@@ -624,6 +705,8 @@ function WorkspaceBody({
                   />
                 </label>
                 <button
+                  type="button"
+                  aria-pressed={from === today() && to === today()}
                   onClick={() => {
                     setFrom(today());
                     setTo(today());
@@ -632,12 +715,20 @@ function WorkspaceBody({
                   Bugün
                 </button>
                 <button
+                  type="button"
+                  aria-pressed={from === daysAgo(7) && to === today()}
                   onClick={() => {
-                    setFrom(
-                      new Date(Date.now() - 29 * 86400000)
-                        .toISOString()
-                        .slice(0, 10),
-                    );
+                    setFrom(daysAgo(7));
+                    setTo(today());
+                  }}
+                >
+                  Son 7 gün
+                </button>
+                <button
+                  type="button"
+                  aria-pressed={from === daysAgo(30) && to === today()}
+                  onClick={() => {
+                    setFrom(daysAgo(30));
                     setTo(today());
                   }}
                 >
@@ -654,6 +745,24 @@ function WorkspaceBody({
                   <option value="TRY">Türk lirası kayıtları (TRY)</option>
                 </select>
               )}
+            </div>
+          )}
+          {invalidPeriod && ["dashboard", "finance"].includes(section) && (
+            <div className="alert error ledger-period-error" role="alert">
+              <AlertTriangle size={18} />
+              <span>
+                Başlangıç tarihi bitişten sonra olamaz. Göstergeler ve Excel
+                raporu için tarih aralığını düzeltin.
+              </span>
+              <button
+                type="button"
+                onClick={() => {
+                  setFrom(daysAgo(30));
+                  setTo(today());
+                }}
+              >
+                Son 30 güne dön
+              </button>
             </div>
           )}
           {section === "dashboard" && (
@@ -906,7 +1015,7 @@ function WorkspaceBody({
               initialStatus={status !== "ALL" ? status : undefined}
               busy={busy}
               onBulkBusy={setBusy}
-              onRefresh={load}
+              onRefresh={silentRefresh}
             />
           )}
           {section === "packing" && allowed("SCAN") && (
@@ -926,7 +1035,7 @@ function WorkspaceBody({
               busy={busy}
               onCommand={run}
               onOpen={openOrder}
-              onRefresh={load}
+              onRefresh={silentRefresh}
             />
           )}
           {section === "inventory" && (
@@ -1005,7 +1114,7 @@ function WorkspaceBody({
               data={data}
               busy={busy}
               run={run}
-              reload={load}
+              reload={silentRefresh}
               onOpen={openOrder}
             />
           )}
@@ -1221,11 +1330,19 @@ function WorkspaceBody({
           </footer>
         </main>
       </div>
+      {commandOpen && (
+        <WorkspaceCommandMenu
+          role={data.actor.role}
+          active={section}
+          onNavigate={navigate}
+          onClose={() => setCommandOpen(false)}
+        />
+      )}
       <GuidedTour
         id="workspace-v1"
         steps={workspaceGuide}
         replay={guideReplay}
-        ready={!order && !product && !creating}
+        ready={!order && !product && !creating && !commandOpen}
       />
       {(order || product || creating) && (
         <div

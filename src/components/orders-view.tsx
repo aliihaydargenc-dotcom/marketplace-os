@@ -149,7 +149,15 @@ export function OrdersView({
 
   useEffect(() => {
     const shortcut = (event: KeyboardEvent) => {
-      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+      if (
+        event.key === "/" &&
+        !event.ctrlKey && !event.metaKey && !event.altKey &&
+        !(event.target instanceof HTMLInputElement) &&
+        !(event.target instanceof HTMLTextAreaElement) &&
+        !(event.target instanceof HTMLSelectElement) &&
+        !(event.target instanceof HTMLElement && event.target.isContentEditable) &&
+        !document.querySelector('[role="dialog"][aria-modal="true"]')
+      ) {
         event.preventDefault();
         searchRef.current?.focus();
       }
@@ -180,6 +188,10 @@ export function OrdersView({
     ? !sameViewConfig(config, selectedView.config)
     : !sameViewConfig(config, defaultOrderView());
   const dateError = !!filters.from && !!filters.to && filters.from > filters.to;
+  const hasActiveFilters = Boolean(
+    filters.query || filters.status !== "ALL" || filters.fulfillment !== "ALL" ||
+    filters.from || filters.to,
+  );
   const canReserve = (permissions.RESERVE as readonly string[]).includes(
     data.actor.role,
   );
@@ -577,14 +589,16 @@ export function OrdersView({
             <Search size={17} />
             <input
               ref={searchRef}
+              type="search"
               aria-label="Sipariş ara"
+              aria-keyshortcuts="/"
               value={filters.query}
               maxLength={200}
               placeholder="Sipariş, alıcı, SKU veya barkod…"
               disabled={locked}
               onChange={(e) => updateFilters({ query: e.target.value })}
             />
-            <kbd>Ctrl K</kbd>
+            <kbd>/</kbd>
           </div>
           <details className="order-filter-popover">
             <summary>
@@ -681,47 +695,52 @@ export function OrdersView({
                   Türkiye saati · {filtered.length} / {data.orders.length} kayıt
                 </small>
               </div>
-              {dateError && (
-                <p className="error" role="alert">
-                  Başlangıç tarihi bitişten sonra olamaz.
-                </p>
-              )}
-              {(filters.query ||
-                filters.status !== "ALL" ||
-                filters.fulfillment !== "ALL" ||
-                filters.from ||
-                filters.to) && (
-                <div className="order-filter-summary">
-                  <span>Etkin filtreler</span>
-                  {filters.status !== "ALL" && (
-                    <span>{statusLabels[filters.status]}</span>
-                  )}
-                  {filters.fulfillment !== "ALL" && (
-                    <span>{filters.fulfillment}</span>
-                  )}
-                  {filters.query && <span>Arama: {filters.query}</span>}
-                  {(filters.from || filters.to) && (
-                    <span>
-                      {filters.from || "Başlangıç yok"} →{" "}
-                      {filters.to || "Bitiş yok"}
-                    </span>
-                  )}
-                  <button
-                    type="button"
-                    disabled={locked}
-                    onClick={() => updateFilters(defaultOrderView().filters)}
-                  >
-                    <X size={12} />
-                    Filtreleri temizle
-                  </button>
-                </div>
-              )}
             </div>
           </details>
           <div id="order-columns-slot" ref={setColumnsSlot} />
           <CurrencyDisplayControls />
         </div>
       </div>
+      {dateError && (
+        <div className="order-date-error" role="alert">
+          <span>
+            Başlangıç tarihi bitişten sonra olamaz. Tarih aralığını düzeltin
+            veya filtreleri sıfırlayın.
+          </span>
+          <button
+            type="button"
+            disabled={locked}
+            onClick={() => updateFilters({ from: "", to: "" })}
+          >
+            Tarihleri temizle
+          </button>
+        </div>
+      )}
+      {hasActiveFilters && (
+        <div
+          className="order-active-filters"
+          aria-label="Etkin sipariş filtreleri"
+        >
+          <span className="order-active-count">{filtered.length} sonuç</span>
+          {filters.status !== "ALL" && (
+            <span>{statusLabels[filters.status]}</span>
+          )}
+          {filters.fulfillment !== "ALL" && <span>{filters.fulfillment}</span>}
+          {filters.query && <span>Arama: {filters.query}</span>}
+          {(filters.from || filters.to) && (
+            <span>
+              {filters.from || "Başlangıç yok"} – {filters.to || "Bitiş yok"}
+            </span>
+          )}
+          <button
+            type="button"
+            disabled={locked}
+            onClick={() => updateFilters(defaultOrderView().filters)}
+          >
+            <X size={13} /> Filtreleri temizle
+          </button>
+        </div>
+      )}
       {selected.length > 0 && (
         <div className="order-bulkbar">
           <div>
@@ -816,6 +835,34 @@ export function OrdersView({
         }}
         disabled={locked}
         label="Siparişler"
+        emptyState={
+          <div className="order-empty-state">
+            <Search size={25} aria-hidden="true" />
+            <strong>
+              {dateError
+                ? "Tarih aralığı geçersiz"
+                : hasActiveFilters
+                  ? "Eşleşen sipariş bulunamadı"
+                  : "Henüz sipariş yok"}
+            </strong>
+            <p>
+              {dateError
+                ? "Başlangıç ve bitiş tarihlerini kontrol edin."
+                : hasActiveFilters
+                  ? "Arama terimini değiştirin veya etkin filtreleri kaldırın."
+                  : "Yeni bir demo siparişi ekleyerek başlayabilirsiniz."}
+            </p>
+            {hasActiveFilters && (
+              <button
+                type="button"
+                disabled={locked}
+                onClick={() => updateFilters(defaultOrderView().filters)}
+              >
+                Filtreleri temizle
+              </button>
+            )}
+          </div>
+        }
       />
     </section>
   );

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 import {
   Boxes,
@@ -13,6 +13,7 @@ import {
   CircleHelp,
   RotateCcw,
   ScanBarcode,
+  Search,
   Settings,
   ShoppingBag,
 } from "lucide-react";
@@ -32,7 +33,9 @@ export function WorkspaceHeader({
   data,
   section,
   busy,
+  refreshing,
   onNavigate,
+  onCommand,
   onRefresh,
   onLogout,
   onGuide,
@@ -40,12 +43,21 @@ export function WorkspaceHeader({
   data: WorkspaceSnapshot;
   section: WorkspaceSection;
   busy: boolean;
+  refreshing: boolean;
   onNavigate: (section: WorkspaceSection) => void;
+  onCommand: () => void;
   onRefresh: () => void;
   onLogout: () => void;
   onGuide: () => void;
 }) {
   const menuRef = useRef<HTMLDetailsElement>(null);
+  const navRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    navRef.current?.querySelector('[aria-current="page"]')?.scrollIntoView({
+      block: "nearest",
+      inline: "nearest",
+    });
+  }, [section]);
   return (
     <header className="ledger-header">
       <button
@@ -56,7 +68,7 @@ export function WorkspaceHeader({
       >
         marketplace<strong>OS</strong>
       </button>
-      <nav aria-label="Çalışma alanları" data-tour="workspace-nav">
+      <nav ref={navRef} aria-label="Çalışma alanları" data-tour="workspace-nav">
         {sections
           .filter((item) => canOpenSection(data.actor.role, item.id))
           .map((item) => (
@@ -72,6 +84,19 @@ export function WorkspaceHeader({
           ))}
       </nav>
       <div className="ledger-header-tools">
+        <button
+          type="button"
+          className="ledger-command-trigger"
+          aria-label="Hızlı bölüm geçişi"
+          aria-keyshortcuts="Control+k Meta+k"
+          title="Hızlı geçiş (Ctrl+K / ⌘K)"
+          disabled={busy}
+          onClick={onCommand}
+        >
+          <Search size={16} />
+          <span>Bölümler</span>
+          <kbd>Ctrl K</kbd>
+        </button>
         <details
           ref={menuRef}
           className="workspace-menu"
@@ -144,11 +169,13 @@ export function WorkspaceHeader({
         </span>
         <button
           className="ledger-refresh"
-          disabled={busy}
+          disabled={busy || refreshing}
+          aria-busy={refreshing}
           onClick={onRefresh}
-          aria-label="Verileri yenile"
+          aria-label={refreshing ? "Veriler yenileniyor" : "Verileri yenile"}
+          title={refreshing ? "Yenileniyor…" : "Verileri yenile"}
         >
-          <RefreshCw size={16} />
+          <RefreshCw size={16} className={refreshing ? "ledger-spin" : ""} />
         </button>
       </div>
     </header>
